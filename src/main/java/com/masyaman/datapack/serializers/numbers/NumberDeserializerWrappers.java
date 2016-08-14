@@ -1,0 +1,88 @@
+package com.masyaman.datapack.serializers.numbers;
+
+import com.masyaman.datapack.reflection.TypeDescriptor;
+import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.streams.DataReader;
+
+import java.io.IOException;
+
+abstract class NumberDeserializerWrappers<E extends Number> implements Deserializer<E> {
+
+    public static <E extends Number> Deserializer<E> convertTo(Deserializer<? extends Number> deserializer, TypeDescriptor<E> type) {
+        if (type.getType().isAssignableFrom(Long.class) || long.class.isAssignableFrom(type.getType()) || Long.class.isAssignableFrom(type.getType())) {
+            return (Deserializer<E>) deserializer;
+        } else if (int.class.isAssignableFrom(type.getType()) || Integer.class.isAssignableFrom(type.getType())) {
+            return new Deserializer<E>() {
+                @Override
+                public E deserialize() throws IOException {
+                    Number val = deserializer.deserialize();
+                    return (E) (val == null ? null : val.intValue());
+                }
+            };
+        } else if (double.class.isAssignableFrom(type.getType()) || Double.class.isAssignableFrom(type.getType())) {
+            return new Deserializer<E>() {
+                @Override
+                public E deserialize() throws IOException {
+                    Number val = deserializer.deserialize();
+                    return (E) (val == null ? null : val.doubleValue());
+                }
+            };
+        } else if (float.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType())) {
+            return new Deserializer<E>() {
+                @Override
+                public E deserialize() throws IOException {
+                    Number val = deserializer.deserialize();
+                    return (E) (val == null ? null : val.floatValue());
+                }
+            };
+        } else {
+            throw new IllegalArgumentException("Class " + type.getType().getName() + " is not supported");
+        }
+    }
+
+    public static Deserializer<Double> scaleBy(DataReader dr, Deserializer<? extends Number> deserializer) throws IOException {
+        double decimalScale = dr.readUnsignedLong().doubleValue();
+        final double scale = Math.pow(10, decimalScale);
+        return new Deserializer<Double>() {
+            @Override
+            public Double deserialize() throws IOException {
+                Number val = deserializer.deserialize();
+                return (val == null ? null : (val.doubleValue() / scale));
+            }
+        };
+    }
+
+    public static Deserializer<Long> diffDeserializer(Deserializer<Long> deserializer) {
+        return new Deserializer<Long>() {
+            private long prev = 0L;
+            @Override
+            public Long deserialize() throws IOException {
+                Long val = deserializer.deserialize();
+                if (val == null) {
+                    return null;
+                }
+                val += prev;
+                prev = val;
+                return val;
+            }
+        };
+    }
+
+    public static Deserializer<Long> linearDeserializer(Deserializer<Long> deserializer) {
+        return new Deserializer<Long>() {
+            private long prev = 0L;
+            private long prev2 = 0L;
+            @Override
+            public Long deserialize() throws IOException {
+                Long val = deserializer.deserialize();
+                if (val == null) {
+                    return null;
+                }
+                val += prev * 2 - prev2;
+                prev2 = prev;
+                prev = val;
+                return val;
+            }
+        };
+    }
+}
