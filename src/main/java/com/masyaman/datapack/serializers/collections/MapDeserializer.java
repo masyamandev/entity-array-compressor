@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
+import com.masyaman.datapack.reflection.ConstructorUtils;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
@@ -9,12 +10,16 @@ import java.util.*;
 
 class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
 
+    private static final Class[] CLASSES = {HashMap.class, TreeMap.class, LinkedHashMap.class};
+
     private DataReader is;
+    private TypeDescriptor type;
     private Deserializer<K> keyDeserializer;
     private Deserializer<V> valueDeserializer;
 
-    public MapDeserializer(DataReader is, TypeDescriptor<K> keyType, TypeDescriptor<V> valueType) throws IOException {
+    public MapDeserializer(DataReader is, TypeDescriptor type, TypeDescriptor<K> keyType, TypeDescriptor<V> valueType) throws IOException {
         this.is = is;
+        this.type = type;
         keyDeserializer = is.createAndRegisterDeserializer(keyType);
         valueDeserializer = is.createAndRegisterDeserializer(valueType);
     }
@@ -26,7 +31,12 @@ class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
             return null;
         }
         int len = length.intValue();
-        Map<K, V> map = new HashMap<>();
+        Map<K, V> map = null;
+        try {
+            map = (Map<K, V>) ConstructorUtils.createInstance(type.getType(), CLASSES);
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Class initializatoin exception", e);
+        }
 //        for (int i = 0; i < len; i++) {
 //            map.put(keyDeserializer.deserialize(), valueDeserializer.deserialize());
 //        }

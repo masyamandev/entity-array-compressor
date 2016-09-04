@@ -3,9 +3,6 @@ package com.masyaman.datapack.serializers.collections;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.objects.UnknownTypeCachedSerializationFactory;
-import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
-import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
@@ -14,25 +11,16 @@ import java.util.Map;
 class MapSerializer<K, V> implements Serializer<Map<K, V>> {
 
     private DataWriter os;
+//    private TypeDescriptor<K> keyType;
     private Serializer<K> keySerializer;
     private Serializer<V> valueSerializer;
 
-    public MapSerializer(DataWriter os, TypeDescriptor<K> keyType, TypeDescriptor<V> valueType) throws IOException {
-        this.os = os;
-        keySerializer = os.createAndRegisterSerializer(getSerializer(keyType), keyType);
-        valueSerializer = os.createAndRegisterSerializer(getSerializer(valueType), valueType);
-    }
 
-    private <T> SerializationFactory<T> getSerializer(TypeDescriptor<T> type) {
-        if (type.getType() == String.class) {
-            return (SerializationFactory<T>) StringCachedSerializationFactory.INSTANCE;
-        }
-        SerializationFactory serializationFactory = os.getSerializationFactoryLookup().getSerializationFactory(type);
-        if (serializationFactory == null) {
-//            serializationFactory = UnknownTypeSerializationFactory.INSTANCE;
-            serializationFactory = UnknownTypeCachedSerializationFactory.INSTANCE;
-        }
-        return serializationFactory;
+    public MapSerializer(DataWriter os, SerializationFactory<K> keySerializationFactory, TypeDescriptor<K> keyType,
+                         SerializationFactory<V> valueSerializationFactory, TypeDescriptor<V> valueType) throws IOException {
+        this.os = os;
+        this.keySerializer = os.createAndRegisterSerializer(keySerializationFactory, keyType);
+        this.valueSerializer = os.createAndRegisterSerializer(valueSerializationFactory, valueType);
     }
 
     @Override
@@ -52,5 +40,15 @@ class MapSerializer<K, V> implements Serializer<Map<K, V>> {
         for (Map.Entry<K, V> entry : map.entrySet()) {
             valueSerializer.serialize(entry.getValue());
         }
+//        List<K> keys = new ArrayList<>(map.keySet());
+//        if (!(map instanceof SortedMap) && (Comparable.class.isAssignableFrom(keyType.getType()))) {
+//            Collections.sort(keys, (Comparator<? super K>) Comparator.naturalOrder());
+//        }
+//        for (K key : keys) {
+//            keySerializer.serialize(key);
+//        }
+//        for (K key : keys) {
+//            valueSerializer.serialize(map.get(key));
+//        }
     }
 }

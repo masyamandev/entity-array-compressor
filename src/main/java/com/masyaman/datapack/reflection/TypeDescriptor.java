@@ -18,11 +18,11 @@ public class TypeDescriptor<T> {
         this(type, type.getAnnotations());
     }
 
-    public TypeDescriptor(Class type, Annotation[] annotations) {
+    public TypeDescriptor(Class type, Annotation... annotations) {
         this(type, null, annotations);
     }
 
-    public TypeDescriptor(Class type, Type parametrizedType, Annotation[] annotations) {
+    public TypeDescriptor(Class type, Type parametrizedType, Annotation... annotations) {
         this.type = type;
         this.parametrizedType = parametrizedType instanceof ParameterizedType ? (ParameterizedType) parametrizedType : null;
         this.annotations = annotations;
