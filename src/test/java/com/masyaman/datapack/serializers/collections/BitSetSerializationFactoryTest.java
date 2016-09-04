@@ -6,6 +6,7 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +19,7 @@ public class BitSetSerializationFactoryTest {
     public static final SerializationFactory FACTORY = BitSetSerializationFactory.INSTANCE;
     public static final TypeDescriptor BITSET_TYPE = new TypeDescriptor(BitSet.class);
 
+    @Test
     public void test1Byte() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
@@ -31,13 +33,14 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(1 + 1 + 2 + 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<String> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
         assertThat(deserializer.deserialize()).isNull();
         assertThat(deserializer.deserialize()).isEqualTo(bitset());
         assertThat(deserializer.deserialize()).isEqualTo(bitset(2));
         assertThat(deserializer.deserialize()).isEqualTo(bitset(2, 7));
     }
 
+    @Test
     public void test2Byte() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
@@ -50,12 +53,13 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(3 + 3 + 3);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<String> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
         assertThat(deserializer.deserialize()).isEqualTo(bitset(8));
         assertThat(deserializer.deserialize()).isEqualTo(bitset(8, 15));
         assertThat(deserializer.deserialize()).isEqualTo(bitset(1, 8, 15));
     }
 
+    @Test
     public void test2Longs() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
@@ -68,7 +72,7 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(9 + 10 + 10);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<String> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
         assertThat(deserializer.deserialize()).isEqualTo(bitset(63));
         assertThat(deserializer.deserialize()).isEqualTo(bitset(64));
         assertThat(deserializer.deserialize()).isEqualTo(bitset(1, 65));
