@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
+import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
+
 public class MapSerializationFactory extends SerializationFactory {
 
     public static final MapSerializationFactory INSTANCE = new MapSerializationFactory();
@@ -35,12 +38,15 @@ public class MapSerializationFactory extends SerializationFactory {
 
     @Override
     public Serializer createSerializer(DataWriter os, TypeDescriptor type) throws IOException {
-        TypeDescriptor keyType = new TypeDescriptor(type.getParametrizedType(0), type.getAnnotations());
-        TypeDescriptor valueType = new TypeDescriptor(type.getParametrizedType(1), type.getAnnotations());
-
         // TODO remove (SerializeKeyBy)
         SerializeKeyBy keyDeclared = (SerializeKeyBy) type.getAnnotation(SerializeKeyBy.class);
         SerializeValueBy valueDeclared = (SerializeValueBy) type.getAnnotation(SerializeValueBy.class);
+
+        TypeDescriptor keyType = new TypeDescriptor(serializeAs(keyDeclared, type.getParametrizedType(0)),
+                annotationsFrom(keyDeclared, type.getAnnotations()));
+        TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getParametrizedType(1)),
+                annotationsFrom(valueDeclared, type.getAnnotations()));
+
 
         SerializationFactory keyFactory = keyDeclared != null ? getInstance(keyDeclared.value()) : getSerializer(os, keyType);
         SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);

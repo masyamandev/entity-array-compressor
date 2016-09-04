@@ -3,17 +3,19 @@ package com.masyaman.datapack.annotations;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 
+import java.lang.annotation.Annotation;
+
 import static com.masyaman.datapack.serializers.SerializationFactory.*;
 
 public class AnnotationsHelper {
-
-    public static SerializationFactory getSerializationFactoryFromAnnotation(TypeDescriptor type) {
-        SerializeBy annotation = (SerializeBy) type.getAnnotation(SerializeBy.class); // TODO cast
-        if (annotation != null) {
-            return getInstance(annotation.value());
-        }
-        return null;
-    }
+//
+//    public static SerializationFactory getSerializationFactoryFromAnnotation(TypeDescriptor type) {
+//        SerializeBy annotation = (SerializeBy) type.getAnnotation(SerializeBy.class); // TODO cast
+//        if (annotation != null) {
+//            return getInstance(annotation.value());
+//        }
+//        return null;
+//    }
 
     public static int getDecimalPrecision(TypeDescriptor type, int defaultPrecision) {
         DecimalPrecision annotation = (DecimalPrecision) type.getAnnotation(DecimalPrecision.class); // TODO cast
@@ -21,5 +23,41 @@ public class AnnotationsHelper {
             return annotation.value();
         }
         return defaultPrecision;
+    }
+
+    public static Class serializeAs(SerializeBy serializeBy, Class inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.serializeAs(), inherited) : inherited;
+    }
+    public static Annotation[] annotationsFrom(SerializeBy serializeBy, Annotation[] inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.annotationsFrom(), inherited) : inherited;
+    }
+
+    public static Class serializeAs(SerializeKeyBy serializeBy, Class inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.serializeAs(), inherited) : inherited;
+    }
+    public static Annotation[] annotationsFrom(SerializeKeyBy serializeBy, Annotation[] inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.annotationsFrom(), inherited) : inherited;
+    }
+
+    public static Class serializeAs(SerializeValueBy serializeBy, Class inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.serializeAs(), inherited) : inherited;
+    }
+    public static Annotation[] annotationsFrom(SerializeValueBy serializeBy, Annotation[] inherited) {
+        return (serializeBy != null) ? getOrDefault(serializeBy.annotationsFrom(), inherited) : inherited;
+    }
+
+    private static Class getOrDefault(Class clazz, Class inherited) {
+        if (clazz != null && clazz != InheritFromParent.class) {
+            return clazz;
+        } else {
+            return inherited;
+        }
+    }
+    private static Annotation[] getOrDefault(Class clazz, Annotation[] inherited) {
+        if (clazz != null && clazz != InheritFromParent.class) {
+            return clazz.getAnnotations();
+        } else {
+            return inherited;
+        }
     }
 }

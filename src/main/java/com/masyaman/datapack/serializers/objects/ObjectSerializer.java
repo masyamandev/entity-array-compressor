@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.SerializeBy;
 import com.masyaman.datapack.reflection.ClassUtils;
 import com.masyaman.datapack.reflection.Getter;
 import com.masyaman.datapack.reflection.TypeDescriptor;
@@ -11,6 +12,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
+import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
+import static com.masyaman.datapack.serializers.SerializationFactory.getInstance;
 
 class ObjectSerializer<T> implements Serializer<T> {
 
@@ -30,7 +35,13 @@ class ObjectSerializer<T> implements Serializer<T> {
         os.writeUnsignedLong((long) getterMap.size());
         for (Map.Entry<String, Getter> getterEntry : getterMap.entrySet()) {
             Getter getter = getterEntry.getValue();
-            SerializationFactory serializationFactory = os.getSerializationFactoryLookup().getSerializationFactory(getter.type());
+
+            SerializeBy declared = (SerializeBy) getter.type().getAnnotation(SerializeBy.class); // TODO: cast
+            TypeDescriptor declaredType = new TypeDescriptor(serializeAs(declared, getter.type().getType()),
+                    annotationsFrom(declared, getter.type().getAnnotations()));
+
+            SerializationFactory serializationFactory = declared != null ? getInstance(declared.value()) :
+                    os.getSerializationFactoryLookup().getSerializationFactory(declaredType);
             if (serializationFactory == UnsupportedSerializationFactory.INSTANCE) {
                 System.out.println("Unable to find serializer for " + clazz.getName() + "." + getterEntry.getKey());
 //                continue;
@@ -39,18 +50,31 @@ class ObjectSerializer<T> implements Serializer<T> {
             }
             // TODO add unknown serializer
             os.writeString(getterEntry.getKey());
-            serializers.add(os.createAndRegisterSerializer(serializationFactory, getter.type()));
+            serializers.add(os.createAndRegisterSerializer(serializationFactory, declaredType));
             getters.add(getter);
         }
     }
 
     @Override
     public void serialize(T o) throws IOException {
-        for (int i = 0; i < getters.size(); i++) {
-            try {
-                serializers.get(i).serialize(getters.get(i).get(o));
-            } catch (ReflectiveOperationException e) {
-                throw new IOException("Unable to serialize", e);
+        if (o == null) {
+            for (int i = 0; i < getters.size(); i++) {
+                serializers.get(i).serialize(null);
+            }
+            os.writeUnsignedLong(null); // mark object as null;
+        } else {
+            boolean allNulls = true;
+            for (int i = 0; i < getters.size(); i++) {
+                try {
+                    Object field = getters.get(i).get(o);
+                    serializers.get(i).serialize(field);
+                    allNulls &= field == null;
+                } catch (ReflectiveOperationException e) {
+                    throw new IOException("Unable to serialize", e);
+                }
+            }
+            if (allNulls) {
+                os.writeUnsignedLong(0L);
             }
         }
     }

@@ -8,13 +8,13 @@ import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 class ObjectDeserializer<T> implements Deserializer<T> {
 
+    private DataReader is;
     private Constructor<T> constructor;
 
     // TODO make setter with serializer
@@ -22,6 +22,7 @@ class ObjectDeserializer<T> implements Deserializer<T> {
     private List<Deserializer> deserializers = new ArrayList<>();
 
     public ObjectDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
+        this.is = is;
 
         String className = is.readString();
         Class<T> clazz;
@@ -59,6 +60,20 @@ class ObjectDeserializer<T> implements Deserializer<T> {
 
     @Override
     public T deserialize() throws IOException {
+
+        List fields = new ArrayList<>(setters.size());
+        boolean allNulls = true;
+
+        for (int i = 0; i < setters.size(); i++) {
+            Object field = deserializers.get(i).deserialize();
+            fields.add(field);
+            allNulls &= field == null;
+        }
+
+        if (allNulls && is.readUnsignedLong() == null) {
+            return null;
+        }
+
         T object;
         try {
             object = constructor.newInstance();
@@ -68,7 +83,7 @@ class ObjectDeserializer<T> implements Deserializer<T> {
 
         for (int i = 0; i < setters.size(); i++) {
             try {
-                setters.get(i).set(object, deserializers.get(i).deserialize());
+                setters.get(i).set(object, fields.get(i));
             } catch (ReflectiveOperationException e) {
                 throw new IOException("Unable to serialize", e);
             }

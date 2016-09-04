@@ -1,13 +1,14 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.annotations.SerializeBy;
-import com.masyaman.datapack.annotations.SerializeKeyBy;
+import com.masyaman.datapack.annotations.DecimalPrecision;
+import com.masyaman.datapack.annotations.InheritFromParent;
 import com.masyaman.datapack.annotations.instances.SerializeKeyByInstance;
 import com.masyaman.datapack.annotations.instances.SerializeValueByInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
+import com.masyaman.datapack.serializers.numbers.DoubleFixedSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
@@ -18,7 +19,6 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -88,6 +88,9 @@ public class MapSerializationFactoryTest {
             map.put("keyLong" + i, Long.valueOf(i));
         }
         for (int i = 10; i < 40; i++) {
+            map.put("keyDounble" + i, Double.valueOf(i) / 10);
+        }
+        for (int i = 10; i < 40; i++) {
             map.put(Integer.valueOf(i), "value" + i);
         }
         checkSerialization(map, MAP_TYPE, map.size() * 10, map.size() * 16 + HEADER_MAX_SIZE);
@@ -125,6 +128,58 @@ public class MapSerializationFactoryTest {
         checkSerialization(map, HASH_MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
     }
 
+    @Test
+    public void testInheritKey() throws Exception {
+        Map map = new HashMap<>();
+        map.put(1.111, 1.111);
+        map.put(2.222, 2.222);
+
+        TypeDescriptor td = new TypeDescriptor(Map.class,
+                new SerializeKeyByInstance(DoubleFixedSerializationFactory.class, Double.class, Precision1.class),
+                new SerializeValueByInstance(DoubleFixedSerializationFactory.class, Double.class, InheritFromParent.class));
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);
+
+        serializer.serialize(map);
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new DataReader(is), MAP_TYPE);
+        Map deserialized = deserializer.deserialize();
+
+        Map expected = new HashMap<>();
+        expected.put(1.1, 1.111);
+        expected.put(2.2, 2.222);
+        assertThat(deserialized).isEqualTo(expected);
+    }
+
+    @Test
+    public void testInheritValue() throws Exception {
+        Map map = new HashMap<>();
+        map.put(1.111, 1.111);
+        map.put(2.222, 2.222);
+
+        TypeDescriptor td = new TypeDescriptor(Map.class,
+                new SerializeKeyByInstance(DoubleFixedSerializationFactory.class, Double.class, InheritFromParent.class),
+                new SerializeValueByInstance(DoubleFixedSerializationFactory.class, Double.class, Precision1.class));
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);
+
+        serializer.serialize(map);
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new DataReader(is), MAP_TYPE);
+        Map deserialized = deserializer.deserialize();
+
+        Map expected = new HashMap<>();
+        expected.put(1.111, 1.1);
+        expected.put(2.222, 2.2);
+        assertThat(deserialized).isEqualTo(expected);
+    }
+
 
     private void checkSerialization(Map map, TypeDescriptor td, int minSize, int maxSize) throws IOException {
         checkSerialization(map, td, td, minSize, maxSize);
@@ -144,5 +199,8 @@ public class MapSerializationFactoryTest {
         assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
         assertThat(deserialized).isEqualTo(map);
     }
+
+    @DecimalPrecision(1)
+    private static class Precision1 {}
 
 }

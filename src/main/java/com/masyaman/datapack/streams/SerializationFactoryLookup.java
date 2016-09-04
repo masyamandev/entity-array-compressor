@@ -50,10 +50,6 @@ public class SerializationFactoryLookup {
     }
 
     public SerializationFactory getSerializationFactory(TypeDescriptor type) {
-        SerializationFactory explicitlySpecified = AnnotationsHelper.getSerializationFactoryFromAnnotation(type);
-        if (explicitlySpecified != null) {
-            return explicitlySpecified;
-        }
         switch (type.getType().getName()) {
             case "java.lang.String":
                 return StringSerializationFactory.INSTANCE;

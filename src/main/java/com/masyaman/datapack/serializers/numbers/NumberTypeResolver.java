@@ -29,7 +29,11 @@ public class NumberTypeResolver {
     }
 
     public static void writeType(DataWriter dw, TypeDescriptor type) throws IOException {
-        dw.writeCachedString(CLASS_TO_TYPE.get(type.getType()));
+        String typeString = CLASS_TO_TYPE.get(type.getType());
+        if (typeString == null) {
+            throw new IOException("Unable to serialize type " + type.getType().getCanonicalName() + " as number.");
+        }
+        dw.writeCachedString(typeString);
     }
 
     public static TypeDescriptor readType(DataReader dr, TypeDescriptor expectedType) throws IOException {
