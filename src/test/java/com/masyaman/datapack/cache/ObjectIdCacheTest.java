@@ -264,6 +264,7 @@ public class ObjectIdCacheTest {
                 case 2:
                     int pos = random.nextInt(cache.size());
                     Object element = cache.removePosition(pos);
+                    assertThat(element).isNotNull();
                     cache.addHead(element);
                     break;
             }

@@ -1,13 +1,16 @@
 package com.masyaman.datapack.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
 
     private ObjectIdCacheTreeNode<E> rootNode;
 
-    private ObjectIdCacheTreeNode.LeafNodeBuilder leafNodeBuilder = ObjectIdCacheTreeNode.DEFAULT_LEAF_NODE_BUILDER;
+    private Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap = new HashMap<>();
 
     public ObjectIdCacheTree(int maxSize) {
-        this.rootNode = new ObjectIdCacheTreeNode<>(0, maxSize, leafNodeBuilder);
+        this.rootNode = new ObjectIdCacheTreeNode<>(0, maxSize, lookupInfoMap);
     }
 
     @Override
@@ -27,27 +30,42 @@ public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
 
     @Override
     public boolean contains(E element) {
-        return rootNode.contains(element);
+        return lookupInfoMap.containsKey(element);
     }
 
     @Override
     public int removeElement(E element) {
-        return rootNode.removeElement(element);
+        ObjectIdCacheTreeNode.LookupInfo lookupInfo = lookupInfoMap.remove(element);
+        if (lookupInfo == null) {
+            return -1;
+        }
+        return rootNode.removeElement(element, lookupInfo);
     }
 
     @Override
     public E removePosition(int position) {
-        return rootNode.removePosition(position);
+        E element = rootNode.removePosition(position);
+        if (element != null) {
+            lookupInfoMap.remove(element);
+        }
+        return element;
     }
 
     @Override
     public E addHead(E element) {
-        E tail = rootNode.addHead(element);
-        if (tail != null && rootNode.size() < maxSize()) {
-            rootNode = new ObjectIdCacheTreeNode<>(rootNode, tail);
+        ObjectIdCacheTreeNode.LookupInfo lookupInfo = new ObjectIdCacheTreeNode.LookupInfo();
+        lookupInfoMap.put(element, lookupInfo);
+        E tail = rootNode.addHead(element, lookupInfo);
+        if (tail == null) {
             return null;
         }
-        return tail;
+        if (rootNode.size() < maxSize()) {
+            rootNode = new ObjectIdCacheTreeNode<>(rootNode, tail, lookupInfoMap);
+            return null;
+        } else {
+            lookupInfoMap.remove(tail);
+            return tail;
+        }
     }
 
     @Override

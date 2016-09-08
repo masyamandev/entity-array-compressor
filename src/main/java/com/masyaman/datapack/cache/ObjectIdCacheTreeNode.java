@@ -2,146 +2,149 @@ package com.masyaman.datapack.cache;
 
 import java.util.*;
 
-class ObjectIdCacheTreeNode<E> implements ObjectIdCache<E> {
-
-    public static final LeafNodeBuilder DEFAULT_LEAF_NODE_BUILDER = () -> new ObjectIdCacheList(1);
+class ObjectIdCacheTreeNode<E> {
 
     private int depth;
+    private int size;
     private int maxSize;
 
-    private Set<E> elementsLeft = new HashSet<>();
-    private Set<E> elementsRight = new HashSet<>();
-    private ObjectIdCache<E> headTailNode;
-    private ObjectIdCache<E> middleNode;
+    private Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap;
+
+    private ObjectIdCacheTreeNode<E> headTailNode;
+    private ObjectIdCacheTreeNode<E> middleNode;
     private int head = 0;
 
-    private LeafNodeBuilder<E> leafNodeBuilder;
+    boolean rotated = false;
 
-    // Could be used in tests only
-    ObjectIdCacheTreeNode(int maxSize) {
-        this(countBits(maxSize) + 1, maxSize, DEFAULT_LEAF_NODE_BUILDER);
-    }
+    private E leafElement = null;
 
-    ObjectIdCacheTreeNode(int depth, int maxSize, LeafNodeBuilder<E> leafNodeBuilder) {
+    ObjectIdCacheTreeNode(int depth, int maxSize, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
         this.depth = depth;
         this.maxSize = maxSize;
-        this.leafNodeBuilder = leafNodeBuilder;
+        this.size = 0;
+        this.lookupInfoMap = lookupInfoMap;
     }
 
-    ObjectIdCacheTreeNode(ObjectIdCacheTreeNode<E> headNode, E tailElement) {
+    ObjectIdCacheTreeNode(ObjectIdCacheTreeNode<E> headNode, E tailElement, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
         this.depth = headNode.depth + 1;
         this.maxSize = headNode.maxSize;
-        this.leafNodeBuilder = headNode.leafNodeBuilder;
-        this.head = 0;
+        this.lookupInfoMap = lookupInfoMap;
 
         this.middleNode = headNode;
-        this.elementsRight.addAll(headNode.elementsLeft);
-        this.elementsRight.addAll(headNode.elementsRight);
 
-        this.headTailNode = new ObjectIdCacheTreeNode(headNode.depth, headNode.maxSize, headNode.leafNodeBuilder);
-        this.headTailNode.addHead(tailElement);
-        this.elementsLeft.add(tailElement);
+        LookupInfo tailLookupInfo = lookupInfoMap.get(tailElement);
+
+        this.headTailNode = new ObjectIdCacheTreeNode(headNode.depth, headNode.maxSize, lookupInfoMap);
+        this.headTailNode.addHead(tailElement, tailLookupInfo);
+
+        this.rotated = true;
+        tailLookupInfo.setHead(depth, rotated);
+
+        this.size = headNode.size() + 1;
+
+        //System.out.println("depth = " + depth + ", size = " + size);
     }
 
-
-    private static int countBits(int i) {
-        int cnt = 0;
-        while (i != 0) {
-            i >>= 1;
-            cnt++;
-        }
-        return cnt;
-    }
-
-    @Override
     public int size() {
-        return elementsLeft.size() + elementsRight.size();
+        return size;
     }
 
-    @Override
     public int maxSize() {
         return maxSize;
     }
 
-    @Override
-    public boolean contains(E element) {
-        return elementsLeft.contains(element) || elementsRight.contains(element);
-    }
-
-    @Override
-    public int removeElement(E element) {
-        if (elementsRight.remove(element)) {
-            return getMiddleNode().removeElement(element) + head;
+    public int removeElement(E element, LookupInfo lookupInfo) {
+        if (depth == 0) {
+            if (!element.equals(leafElement)) {
+                throw new RuntimeException(":(");
+            }
+            leafElement = null;
+            size = 0;
+            return 0;
         }
-        if (elementsLeft.remove(element)) {
-            int pos = getHeadTailNode().removeElement(element);
+
+        size--;
+        if (lookupInfo.isHead(depth, rotated)) {
+            int pos = getHeadTailNode().removeElement(element, lookupInfo);
             if (pos < head) {
                 head--;
                 return pos;
             } else {
-                return pos + elementsRight.size();
+                return pos + getMiddleNode().size();
             }
+        } else {
+            return getMiddleNode().removeElement(element, lookupInfo) + head;
         }
-        return -1;
     }
 
-    @Override
     public E removePosition(int position) {
         if (position < 0 || position >= size()) {
             return null;
         }
+        if (depth == 0) {
+            E element = leafElement;
+            leafElement = null;
+            size = 0;
+            return element;
+        }
+
+        size--;
         if (position < head) {
             E e = getHeadTailNode().removePosition(position);
-            elementsLeft.remove(e);
             head--;
             return e;
-        } else if (position < head + elementsRight.size()) {
+        } else if (position < head + getMiddleNode().size()) {
             E e = getMiddleNode().removePosition(position - head);
-            elementsRight.remove(e);
             return e;
         } else {
-            E e = getHeadTailNode().removePosition(position - elementsRight.size());
-            elementsLeft.remove(e);
+            E e = getHeadTailNode().removePosition(position - getMiddleNode().size());
             return e;
         }
     }
 
-    @Override
     public E get(int position) {
         if (position < 0 || position >= size()) {
             return null;
         }
+        if (depth == 0) {
+            return leafElement;
+        }
+
         if (position < head) {
             return getHeadTailNode().get(position);
-        } else if (position < head + elementsRight.size()) {
+        } else if (position < head + getMiddleNode().size()) {
             return getMiddleNode().get(position - head);
         } else {
-            return getHeadTailNode().get(position - elementsRight.size());
+            return getHeadTailNode().get(position - getMiddleNode().size());
         }
     }
 
-    @Override
-    public E addHead(E element) {
-        ObjectIdCache<E> left = getHeadTailNode();
-        elementsLeft.add(element);
-        E tail = left.addHead(element);
-        elementsLeft.remove(tail);
+    public E addHead(E element, LookupInfo lookupInfo) {
+        if (depth == 0) {
+            size = 1;
+            E tail = leafElement;
+            leafElement = element;
+            return tail;
+        }
+        ObjectIdCacheTreeNode<E> left = getHeadTailNode();
+        lookupInfo.setHead(depth, rotated);
+        E tail = left.addHead(element, lookupInfo);
         head++;
         if (head > left.size()) {
             headTailNode = middleNode;
             middleNode = left;
-
-            Set<E> elLeft = elementsLeft;
-            elementsLeft = elementsRight;
-            elementsRight = elLeft;
+            rotated = !rotated;
 
             head = 0;
 
             if (tail != null) {
-                elementsLeft.add(tail);
-                tail = getHeadTailNode().addHead(tail);
-                elementsLeft.remove(tail);
+                LookupInfo tailLookupInfo = lookupInfoMap.get(tail);
+                tailLookupInfo.setHead(depth, rotated);
+                tail = getHeadTailNode().addHead(tail, tailLookupInfo);
             }
+        }
+        if (tail == null) {
+            size++;
         }
         return size() > maxSize() ? removePosition(size() - 1) : tail;
     }
@@ -159,21 +162,36 @@ class ObjectIdCacheTreeNode<E> implements ObjectIdCache<E> {
         return sb.toString();
     }
 
-    private ObjectIdCache<E> getHeadTailNode() {
+    private ObjectIdCacheTreeNode<E> getHeadTailNode() {
         if (headTailNode == null) {
-            headTailNode = (depth == 0) ? leafNodeBuilder.build() : new ObjectIdCacheTreeNode(depth - 1, maxSize, leafNodeBuilder);
+            headTailNode = new ObjectIdCacheTreeNode(depth - 1, maxSize, lookupInfoMap);
         }
         return headTailNode;
     }
 
-    private ObjectIdCache<E> getMiddleNode() {
+    private ObjectIdCacheTreeNode<E> getMiddleNode() {
         if (middleNode == null) {
-            middleNode = (depth == 0) ? leafNodeBuilder.build() : new ObjectIdCacheTreeNode(depth - 1, maxSize, leafNodeBuilder);
+            middleNode = new ObjectIdCacheTreeNode(depth - 1, maxSize, lookupInfoMap);
         }
         return middleNode;
     }
 
-    public interface LeafNodeBuilder<E> {
-        ObjectIdCache<E> build();
+    public static class LookupInfo {
+        private long nodeLookup;
+        public boolean isHead(int depth, boolean rotated) {
+            return ((nodeLookup & (1L << (depth - 1))) == 0) ^ rotated;
+        }
+        public void setHead(int depth, boolean rotated) {
+            if (rotated) {
+                nodeLookup |= (1L << (depth - 1));
+            } else {
+                nodeLookup &= ~(1L << (depth - 1));
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "" + nodeLookup;
+        }
     }
 }
