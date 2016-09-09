@@ -3,7 +3,7 @@ package com.masyaman.datapack.cache;
 import java.util.ArrayList;
 import java.util.List;
 
-// This implementation should not be used due to performance reasons
+// This implementation should not be used due to performance reasons, it's used for tests only
 class ObjectIdCacheList<E> implements ObjectIdCache<E> {
 
     private int maxSize = 0;

@@ -1,13 +1,9 @@
 package com.masyaman.datapack.cache;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 // This implementation should not be used for big sized caches due to performance reasons
 public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
 
-    public static int DEFAULT_LENGTH = 3;
+    public static int DEFAULT_BUFFER_SIZE = 32;
 
     private int maxSize = 0;
     private Object[] data;
@@ -15,8 +11,12 @@ public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
     private int size = 0;
 
     public ObjectIdCacheRingBuffer(int maxSize) {
+        this(maxSize, DEFAULT_BUFFER_SIZE);
+    }
+
+    public ObjectIdCacheRingBuffer(int maxSize, int initialBufferSize) {
         this.maxSize = maxSize;
-        this.data = new Object[Math.min(maxSize, DEFAULT_LENGTH)];
+        this.data = new Object[Math.min(maxSize, initialBufferSize)];
     }
 
     @Override
@@ -31,9 +31,26 @@ public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
 
     @Override
     public boolean contains(E element) {
-        for (int i = 0; i < size; i++) {
-            if (data[(i + head) % data.length].equals(element)) {
-                return true;
+        if (size == 0) {
+            return false;
+        }
+        int tail = (head + size) % data.length;
+        if (tail > head) {
+            for (int i = head; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    return true;
+                }
+            }
+        } else {
+            for (int i = head; i < data.length; i++) {
+                if (data[i].equals(element)) {
+                    return true;
+                }
+            }
+            for (int i = 0; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -49,15 +66,35 @@ public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
 
     @Override
     public int removeElement(E element) {
-        int idx = -1;
-        for (int i = 0; i < size; i++) {
-            if (data[(i + head) % data.length].equals(element)) {
-                idx = i;
-                break;
+        if (size == 0) {
+            return -1;
+        }
+        int tail = (head + size) % data.length;
+        if (tail > head) {
+            for (int i = head; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i - head;
+                    removePosition(idx);
+                    return idx;
+                }
+            }
+        } else {
+            for (int i = head; i < data.length; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i - head;
+                    removePosition(idx);
+                    return idx;
+                }
+            }
+            for (int i = 0; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i + data.length - head;
+                    removePosition(idx);
+                    return idx;
+                }
             }
         }
-        removePosition(idx);
-        return idx;
+        return -1;
     }
 
     @Override
