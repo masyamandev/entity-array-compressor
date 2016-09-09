@@ -34,12 +34,20 @@ public class ObjectIdCacheTest {
     @Parameterized.Parameters(name = "{0} {1}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
+                {ObjectIdCacheTree.class, Arrays.asList(2)},
+                {ObjectIdCacheTree.class, Arrays.asList(4)},
+                {ObjectIdCacheTree.class, Arrays.asList(6)},
+                {ObjectIdCacheTree.class, Arrays.asList(8)},
                 {ObjectIdCacheTree.class, Arrays.asList(10)},
                 {ObjectIdCacheTree.class, Arrays.asList(100)},
                 {ObjectIdCacheTree.class, Arrays.asList(1000)},
 //                {ObjectIdCacheTree.class, Arrays.asList(10000)},
 //                {ObjectIdCacheTree.class, Arrays.asList(100000)},
 //                {ObjectIdCacheTree.class, Arrays.asList(1000000)},
+                {ObjectIdCacheList.class, Arrays.asList(2)},
+                {ObjectIdCacheList.class, Arrays.asList(4)},
+                {ObjectIdCacheList.class, Arrays.asList(6)},
+                {ObjectIdCacheList.class, Arrays.asList(8)},
                 {ObjectIdCacheList.class, Arrays.asList(10)},
                 {ObjectIdCacheList.class, Arrays.asList(100)},
                 {ObjectIdCacheList.class, Arrays.asList(1000)},
@@ -235,18 +243,31 @@ public class ObjectIdCacheTest {
     @Test
     @Ignore("Slow test")
     public void testPerformance() throws Exception {
+
+        long startInitTime = System.nanoTime();
+        List<Integer> values = new ArrayList<>();
+        for (int i = 0; i < cache.maxSize() * 10; i++) {
+            values.add(i);
+        }
+        for (int i = 0; i < cache.maxSize(); i++) {
+            Object o = cache.addHead(values.get(i));
+            assertThat(cache.size()).isEqualTo(i + 1);
+            assertThat(o).isNull();
+        }
+        long initTime = System.nanoTime() - startInitTime;
+        System.out.println(String.format("Init time %.3f", initTime / 1000000000.0));
+
         for (int i = 0; i < 10; i++) {
-            long startTime = System.currentTimeMillis();
-//            runPerformance(cache.maxSize() * 100);
-            runPerformance(100000);
-            long time = System.currentTimeMillis() - startTime;
-            System.out.println(String.format("Run time %.3f", time / 1000.0));
+            long startTime = System.nanoTime();
+            runPerformance(values, 100000);
+            long time = System.nanoTime() - startTime;
+            System.out.println(String.format("Run time %.3f", time / 1000000000.0));
         }
     }
 
-    private void runPerformance(int operations) {
+    private void runPerformance(List values, int operations) {
         Random random = new Random(123456890);
-        int maxRandom = cache.maxSize() * 10;
+        int maxRandom = values.size();
 
         for (int i = 0; i < operations; i++) {
             switch (random.nextInt(3)) {
@@ -257,7 +278,7 @@ public class ObjectIdCacheTest {
                     }
                     break;
                 case 1:
-                    String val = "Val" + random.nextInt(cache.maxSize());
+                    Object val = values.get(random.nextInt(cache.maxSize()));
                     cache.removeElement(val);
                     cache.addHead(val);
                     break;
