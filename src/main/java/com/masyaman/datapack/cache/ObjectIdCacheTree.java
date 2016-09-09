@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
 
+    public static int LEAF_BUFFER_SIZE = ObjectIdCacheRingBuffer.DEFAULT_BUFFER_SIZE;
+
     private ObjectIdCacheTreeNode<E> rootNode;
 
     private Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap = new HashMap<>();

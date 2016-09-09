@@ -16,13 +16,16 @@ class ObjectIdCacheTreeNode<E> {
 
     boolean rotated = false;
 
-    private E leafElement = null;
+    private ObjectIdCache<E> leafElements = null;
 
     ObjectIdCacheTreeNode(int depth, int maxSize, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
         this.depth = depth;
         this.maxSize = maxSize;
         this.size = 0;
         this.lookupInfoMap = lookupInfoMap;
+        if (depth == 0) {
+            leafElements = new ObjectIdCacheRingBuffer<E>(Math.min(maxSize, ObjectIdCacheTree.LEAF_BUFFER_SIZE));
+        }
     }
 
     ObjectIdCacheTreeNode(ObjectIdCacheTreeNode<E> headNode, E tailElement, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
@@ -46,7 +49,7 @@ class ObjectIdCacheTreeNode<E> {
     }
 
     public int size() {
-        return size;
+        return (depth == 0) ? leafElements.size() : size;
     }
 
     public int maxSize() {
@@ -55,12 +58,7 @@ class ObjectIdCacheTreeNode<E> {
 
     public int removeElement(E element, LookupInfo lookupInfo) {
         if (depth == 0) {
-            if (!element.equals(leafElement)) {
-                throw new RuntimeException(":(");
-            }
-            leafElement = null;
-            size = 0;
-            return 0;
+            return leafElements.removeElement(element);
         }
 
         size--;
@@ -78,14 +76,11 @@ class ObjectIdCacheTreeNode<E> {
     }
 
     public E removePosition(int position) {
+        if (depth == 0) {
+            return leafElements.removePosition(position);
+        }
         if (position < 0 || position >= size()) {
             return null;
-        }
-        if (depth == 0) {
-            E element = leafElement;
-            leafElement = null;
-            size = 0;
-            return element;
         }
 
         size--;
@@ -103,11 +98,11 @@ class ObjectIdCacheTreeNode<E> {
     }
 
     public E get(int position) {
+        if (depth == 0) {
+            return leafElements.get(position);
+        }
         if (position < 0 || position >= size()) {
             return null;
-        }
-        if (depth == 0) {
-            return leafElement;
         }
 
         if (position < head) {
@@ -121,10 +116,7 @@ class ObjectIdCacheTreeNode<E> {
 
     public E addHead(E element, LookupInfo lookupInfo) {
         if (depth == 0) {
-            size = 1;
-            E tail = leafElement;
-            leafElement = element;
-            return tail;
+            return leafElements.addHead(element);
         }
         ObjectIdCacheTreeNode<E> left = getHeadTailNode();
         lookupInfo.setHead(depth, rotated);
