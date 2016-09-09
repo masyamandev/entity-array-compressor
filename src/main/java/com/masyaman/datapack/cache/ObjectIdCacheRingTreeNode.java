@@ -2,33 +2,33 @@ package com.masyaman.datapack.cache;
 
 import java.util.*;
 
-class ObjectIdCacheTreeNode<E> {
+class ObjectIdCacheRingTreeNode<E> {
 
     private int depth;
     private int size;
     private int maxSize;
 
-    private Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap;
+    private Map<E, ObjectIdCacheRingTreeNode.LookupInfo> lookupInfoMap;
 
-    private ObjectIdCacheTreeNode<E> headTailNode;
-    private ObjectIdCacheTreeNode<E> middleNode;
+    private ObjectIdCacheRingTreeNode<E> headTailNode;
+    private ObjectIdCacheRingTreeNode<E> middleNode;
     private int head = 0;
 
     boolean rotated = false;
 
     private ObjectIdCache<E> leafElements = null;
 
-    ObjectIdCacheTreeNode(int depth, int maxSize, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
+    ObjectIdCacheRingTreeNode(int depth, int maxSize, Map<E, ObjectIdCacheRingTreeNode.LookupInfo> lookupInfoMap) {
         this.depth = depth;
         this.maxSize = maxSize;
         this.size = 0;
         this.lookupInfoMap = lookupInfoMap;
         if (depth == 0) {
-            leafElements = new ObjectIdCacheRingBuffer<E>(Math.min(maxSize, ObjectIdCacheTree.LEAF_BUFFER_SIZE));
+            leafElements = new ObjectIdCacheRingBuffer<E>(Math.min(maxSize, ObjectIdCacheRingTree.LEAF_BUFFER_SIZE));
         }
     }
 
-    ObjectIdCacheTreeNode(ObjectIdCacheTreeNode<E> headNode, E tailElement, Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap) {
+    ObjectIdCacheRingTreeNode(ObjectIdCacheRingTreeNode<E> headNode, E tailElement, Map<E, ObjectIdCacheRingTreeNode.LookupInfo> lookupInfoMap) {
         this.depth = headNode.depth + 1;
         this.maxSize = headNode.maxSize;
         this.lookupInfoMap = lookupInfoMap;
@@ -37,7 +37,7 @@ class ObjectIdCacheTreeNode<E> {
 
         LookupInfo tailLookupInfo = lookupInfoMap.get(tailElement);
 
-        this.headTailNode = new ObjectIdCacheTreeNode(headNode.depth, headNode.maxSize, lookupInfoMap);
+        this.headTailNode = new ObjectIdCacheRingTreeNode(headNode.depth, headNode.maxSize, lookupInfoMap);
         this.headTailNode.addHead(tailElement, tailLookupInfo);
 
         this.rotated = true;
@@ -118,7 +118,7 @@ class ObjectIdCacheTreeNode<E> {
         if (depth == 0) {
             return leafElements.addHead(element);
         }
-        ObjectIdCacheTreeNode<E> left = getHeadTailNode();
+        ObjectIdCacheRingTreeNode<E> left = getHeadTailNode();
         lookupInfo.setHead(depth, rotated);
         E tail = left.addHead(element, lookupInfo);
         head++;
@@ -154,16 +154,16 @@ class ObjectIdCacheTreeNode<E> {
         return sb.toString();
     }
 
-    private ObjectIdCacheTreeNode<E> getHeadTailNode() {
+    private ObjectIdCacheRingTreeNode<E> getHeadTailNode() {
         if (headTailNode == null) {
-            headTailNode = new ObjectIdCacheTreeNode(depth - 1, maxSize, lookupInfoMap);
+            headTailNode = new ObjectIdCacheRingTreeNode(depth - 1, maxSize, lookupInfoMap);
         }
         return headTailNode;
     }
 
-    private ObjectIdCacheTreeNode<E> getMiddleNode() {
+    private ObjectIdCacheRingTreeNode<E> getMiddleNode() {
         if (middleNode == null) {
-            middleNode = new ObjectIdCacheTreeNode(depth - 1, maxSize, lookupInfoMap);
+            middleNode = new ObjectIdCacheRingTreeNode(depth - 1, maxSize, lookupInfoMap);
         }
         return middleNode;
     }

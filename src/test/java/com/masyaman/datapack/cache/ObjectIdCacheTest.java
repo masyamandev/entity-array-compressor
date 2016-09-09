@@ -1,7 +1,6 @@
 package com.masyaman.datapack.cache;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,16 +33,16 @@ public class ObjectIdCacheTest {
     @Parameterized.Parameters(name = "{0} {1}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
-                {ObjectIdCacheTree.class, Arrays.asList(2)},
-                {ObjectIdCacheTree.class, Arrays.asList(4)},
-                {ObjectIdCacheTree.class, Arrays.asList(6)},
-                {ObjectIdCacheTree.class, Arrays.asList(8)},
-                {ObjectIdCacheTree.class, Arrays.asList(10)},
-                {ObjectIdCacheTree.class, Arrays.asList(100)},
-                {ObjectIdCacheTree.class, Arrays.asList(1000)},
-//                {ObjectIdCacheTree.class, Arrays.asList(10000)},
-//                {ObjectIdCacheTree.class, Arrays.asList(100000)},
-//                {ObjectIdCacheTree.class, Arrays.asList(1000000)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(2)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(4)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(6)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(8)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(10)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(100)},
+                {ObjectIdCacheRingTree.class, Arrays.asList(1000)},
+//                {ObjectIdCacheRingTree.class, Arrays.asList(10000)},
+//                {ObjectIdCacheRingTree.class, Arrays.asList(100000)},
+//                {ObjectIdCacheRingTree.class, Arrays.asList(1000000)},
                 {ObjectIdCacheRingBuffer.class, Arrays.asList(2)},
                 {ObjectIdCacheRingBuffer.class, Arrays.asList(4)},
                 {ObjectIdCacheRingBuffer.class, Arrays.asList(6)},

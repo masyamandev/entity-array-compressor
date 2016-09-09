@@ -3,16 +3,16 @@ package com.masyaman.datapack.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
+public class ObjectIdCacheRingTree<E> implements ObjectIdCache<E> {
 
     public static int LEAF_BUFFER_SIZE = ObjectIdCacheRingBuffer.DEFAULT_BUFFER_SIZE;
 
-    private ObjectIdCacheTreeNode<E> rootNode;
+    private ObjectIdCacheRingTreeNode<E> rootNode;
 
-    private Map<E, ObjectIdCacheTreeNode.LookupInfo> lookupInfoMap = new HashMap<>();
+    private Map<E, ObjectIdCacheRingTreeNode.LookupInfo> lookupInfoMap = new HashMap<>();
 
-    public ObjectIdCacheTree(int maxSize) {
-        this.rootNode = new ObjectIdCacheTreeNode<>(0, maxSize, lookupInfoMap);
+    public ObjectIdCacheRingTree(int maxSize) {
+        this.rootNode = new ObjectIdCacheRingTreeNode<>(0, maxSize, lookupInfoMap);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
 
     @Override
     public int removeElement(E element) {
-        ObjectIdCacheTreeNode.LookupInfo lookupInfo = lookupInfoMap.remove(element);
+        ObjectIdCacheRingTreeNode.LookupInfo lookupInfo = lookupInfoMap.remove(element);
         if (lookupInfo == null) {
             return -1;
         }
@@ -55,14 +55,14 @@ public class ObjectIdCacheTree<E> implements ObjectIdCache<E> {
 
     @Override
     public E addHead(E element) {
-        ObjectIdCacheTreeNode.LookupInfo lookupInfo = new ObjectIdCacheTreeNode.LookupInfo();
+        ObjectIdCacheRingTreeNode.LookupInfo lookupInfo = new ObjectIdCacheRingTreeNode.LookupInfo();
         lookupInfoMap.put(element, lookupInfo);
         E tail = rootNode.addHead(element, lookupInfo);
         if (tail == null) {
             return null;
         }
         if (rootNode.size() < maxSize()) {
-            rootNode = new ObjectIdCacheTreeNode<>(rootNode, tail, lookupInfoMap);
+            rootNode = new ObjectIdCacheRingTreeNode<>(rootNode, tail, lookupInfoMap);
             return null;
         } else {
             lookupInfoMap.remove(tail);
