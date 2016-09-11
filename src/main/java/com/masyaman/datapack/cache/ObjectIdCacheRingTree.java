@@ -12,6 +12,9 @@ public class ObjectIdCacheRingTree<E> implements ObjectIdCache<E> {
     private Map<E, ObjectIdCacheRingTreeNode.LookupInfo> lookupInfoMap = new HashMap<>();
 
     public ObjectIdCacheRingTree(int maxSize) {
+        if (maxSize <= 0) {
+            maxSize = Integer.MAX_VALUE;
+        }
         this.rootNode = new ObjectIdCacheRingTreeNode<>(0, maxSize, lookupInfoMap);
     }
 

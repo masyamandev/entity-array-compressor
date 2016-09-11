@@ -15,6 +15,9 @@ public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
     }
 
     public ObjectIdCacheRingBuffer(int maxSize, int initialBufferSize) {
+        if (maxSize <= 0) {
+            maxSize = Integer.MAX_VALUE;
+        }
         this.maxSize = maxSize;
         this.data = new Object[Math.min(maxSize, initialBufferSize)];
     }
