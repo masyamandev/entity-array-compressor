@@ -18,7 +18,7 @@ public class FieldGetter<T> implements Getter<T> {
     }
 
     @Override
-    public TypeDescriptor type() {
+    public TypeDescriptor<?> type() {
         return typeDescriptor;
     }
 }

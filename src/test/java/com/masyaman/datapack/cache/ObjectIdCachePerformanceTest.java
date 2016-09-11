@@ -1,6 +1,7 @@
 package com.masyaman.datapack.cache;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,6 +12,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@Ignore("Slow test")
 @RunWith(Parameterized.class)
 public class ObjectIdCachePerformanceTest {
 
@@ -26,7 +28,7 @@ public class ObjectIdCachePerformanceTest {
 
     @Before
     public void init() throws Exception {
-        Constructor<? extends ObjectIdCache> constructor = clazz.getDeclaredConstructor(int.class);// TODO
+        Constructor<? extends ObjectIdCache> constructor = clazz.getDeclaredConstructor(int.class);
         this.cache = constructor.newInstance(constructorParams.toArray());
     }
 

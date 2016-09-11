@@ -34,9 +34,9 @@ class ObjectSerializer<T> implements Serializer<T> {
         Map<String, Getter> getterMap = ClassUtils.getterMap(clazz);
         os.writeUnsignedLong((long) getterMap.size());
         for (Map.Entry<String, Getter> getterEntry : getterMap.entrySet()) {
-            Getter getter = getterEntry.getValue();
+            Getter<?> getter = getterEntry.getValue();
 
-            SerializeBy declared = (SerializeBy) getter.type().getAnnotation(SerializeBy.class); // TODO: cast
+            SerializeBy declared = getter.type().getAnnotation(SerializeBy.class);
             TypeDescriptor declaredType = new TypeDescriptor(serializeAs(declared, getter.type().getType()),
                     annotationsFrom(declared, getter.type().getAnnotations()));
 
@@ -48,7 +48,6 @@ class ObjectSerializer<T> implements Serializer<T> {
             } else if (serializationFactory == null) {
                 serializationFactory = UnknownTypeSerializationFactory.INSTANCE;
             }
-            // TODO add unknown serializer
             os.writeString(getterEntry.getKey());
             serializers.add(os.createAndRegisterSerializer(serializationFactory, declaredType));
             getters.add(getter);

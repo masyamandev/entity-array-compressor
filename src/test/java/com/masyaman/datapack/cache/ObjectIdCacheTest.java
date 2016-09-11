@@ -26,7 +26,7 @@ public class ObjectIdCacheTest {
 
     @Before
     public void init() throws Exception {
-        Constructor<? extends ObjectIdCache> constructor = clazz.getDeclaredConstructor(int.class);// TODO
+        Constructor<? extends ObjectIdCache> constructor = clazz.getDeclaredConstructor(int.class);
         this.cache = constructor.newInstance(constructorParams.toArray());
     }
 

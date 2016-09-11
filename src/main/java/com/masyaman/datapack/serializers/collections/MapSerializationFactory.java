@@ -17,7 +17,7 @@ import java.util.Map;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
 
-public class MapSerializationFactory extends SerializationFactory {
+public class MapSerializationFactory<E> extends SerializationFactory<E> {
 
     public static final MapSerializationFactory INSTANCE = new MapSerializationFactory();
 
@@ -37,10 +37,9 @@ public class MapSerializationFactory extends SerializationFactory {
     }
 
     @Override
-    public Serializer createSerializer(DataWriter os, TypeDescriptor type) throws IOException {
-        // TODO remove (SerializeKeyBy)
-        SerializeKeyBy keyDeclared = (SerializeKeyBy) type.getAnnotation(SerializeKeyBy.class);
-        SerializeValueBy valueDeclared = (SerializeValueBy) type.getAnnotation(SerializeValueBy.class);
+    public <T extends E> Serializer<T> createSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
+        SerializeKeyBy keyDeclared = type.getAnnotation(SerializeKeyBy.class);
+        SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
 
         TypeDescriptor keyType = new TypeDescriptor(serializeAs(keyDeclared, type.getParametrizedType(0)),
                 annotationsFrom(keyDeclared, type.getAnnotations()));
@@ -54,10 +53,9 @@ public class MapSerializationFactory extends SerializationFactory {
         return new MapSerializer(os, keyFactory, keyType, valueFactory, valueType);
     }
 
-
     @Override
-    public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
-        return new MapDeserializer(is, type, new TypeDescriptor(type.getParametrizedType(0)), new TypeDescriptor(type.getParametrizedType(1))); // TODO
+    public <T extends E> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
+        return new MapDeserializer(is, type, new TypeDescriptor(type.getParametrizedType(0)), new TypeDescriptor(type.getParametrizedType(1)));
     }
 
     private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) {
