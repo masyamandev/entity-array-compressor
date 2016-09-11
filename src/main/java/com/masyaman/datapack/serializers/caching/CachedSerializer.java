@@ -13,15 +13,12 @@ public class CachedSerializer<E> implements Serializer<E> {
 
     private DataWriter os;
     private Serializer<E> serializer;
-    private int cacheSize;
 
     private ObjectIdCache<E> cache;
-    private int uncached = 0b00111111; // TODO 0b01111111
 
     public CachedSerializer(DataWriter os, Serializer<E> serializer, int cacheSize) throws IOException {
         this.os = os;
         this.serializer = serializer;
-        this.cacheSize = cacheSize;
         this.cache = new ObjectIdCacheRingTree<>(cacheSize);
         os.writeUnsignedLong((long) cacheSize);
     }
@@ -32,16 +29,12 @@ public class CachedSerializer<E> implements Serializer<E> {
            os.writeUnsignedLong(null);
            return;
         }
-        while (cache.size() > uncached) {
-            uncached <<= 7;
-            uncached |= 0xFF;
-        }
         int id = cache.removeElement(o);
 
         if (id >= 0) {
-            os.writeUnsignedLong((long) id);
+            os.writeUnsignedLong((long) id + 1);
         } else {
-            os.writeUnsignedLong((long) uncached);
+            os.writeUnsignedLong(0L);
             serializer.serialize(o);
         }
         cache.addHead(o);

@@ -13,7 +13,6 @@ public class SimpleCachedSerializer<E> implements Serializer<E> {
     private Serializer<E> serializer;
 
     private Map<E, Integer> cache = new HashMap<>();
-    private int uncached = 0b00111111; // TODO 0b01111111
 
     public SimpleCachedSerializer(DataWriter os, Serializer<E> serializer) {
         this.os = os;
@@ -26,13 +25,9 @@ public class SimpleCachedSerializer<E> implements Serializer<E> {
            os.writeUnsignedLong(null);
            return;
         }
-        while (cache.size() >= uncached) {
-            uncached <<= 7;
-            uncached |= 0xFF;
-        }
-        int id = cache.getOrDefault(o, uncached);
+        int id = cache.getOrDefault(o, -1) + 1;
         os.writeUnsignedLong((long) id);
-        if (id >= cache.size()) {
+        if (id == 0) {
             serializer.serialize(o);
             cache.put(o, cache.size());
         }

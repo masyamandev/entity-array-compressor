@@ -25,7 +25,7 @@ public class SimpleCachedDeserializer<E> implements Deserializer<E> {
         if (id == null) {
             return null;
         }
-        E value = cache.get(id.intValue());
+        E value = cache.get(id.intValue() - 1);
         if (value == null) {
             value = deserializer.deserialize();
             cache.put(cache.size(), value);

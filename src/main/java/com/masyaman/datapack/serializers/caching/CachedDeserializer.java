@@ -31,10 +31,10 @@ public class CachedDeserializer<E> implements Deserializer<E> {
             return null;
         }
         E value;
-        if (id >= cache.size()) {
+        if (id <= 0) {
             value = deserializer.deserialize();
         } else {
-            value = cache.removePosition(id.intValue());
+            value = cache.removePosition(id.intValue() - 1);
         }
         cache.addHead(value);
         return value;
