@@ -17,7 +17,7 @@ public class UnsignedLongSerializationFactory extends SerializationFactory<Numbe
     public static final UnsignedLongSerializationFactory INSTANCE = new UnsignedLongSerializationFactory();
 
     private UnsignedLongSerializationFactory() {
-        super("_USL");
+        super("_UL");
     }
 
     @Override
