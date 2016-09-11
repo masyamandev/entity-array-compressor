@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -32,7 +33,7 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        return new CachedSerializer(os, new UnknownTypeSerializer(os, type), 0);// TODO cache size
+        return new CachedSerializer(os, new UnknownTypeSerializer(os, type), AnnotationsHelper.getCacheSize(type));
     }
 
     @Override

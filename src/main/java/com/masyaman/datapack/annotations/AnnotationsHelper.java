@@ -1,11 +1,8 @@
 package com.masyaman.datapack.annotations;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
-import com.masyaman.datapack.serializers.SerializationFactory;
 
 import java.lang.annotation.Annotation;
-
-import static com.masyaman.datapack.serializers.SerializationFactory.*;
 
 public class AnnotationsHelper {
 
@@ -15,6 +12,14 @@ public class AnnotationsHelper {
             return annotation.value();
         }
         return defaultPrecision;
+    }
+
+    public static int getCacheSize(TypeDescriptor<?> type) {
+        CacheSize annotation = type.getAnnotation(CacheSize.class);
+        if (annotation != null) {
+            return annotation.value();
+        }
+        return 0;
     }
 
     public static Class serializeAs(SerializeBy serializeBy, Class inherited) {
