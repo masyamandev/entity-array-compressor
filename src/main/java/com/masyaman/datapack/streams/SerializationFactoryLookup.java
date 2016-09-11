@@ -1,17 +1,15 @@
 package com.masyaman.datapack.streams;
 
-import com.masyaman.datapack.annotations.AnnotationsHelper;
-import com.masyaman.datapack.annotations.SerializeBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.collections.BitSetSerializationFactory;
 import com.masyaman.datapack.serializers.collections.MapSerializationFactory;
 import com.masyaman.datapack.serializers.enums.EnumsSerializationFactory;
+import com.masyaman.datapack.serializers.numbers.*;
+import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeCachedSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnsupportedSerializationFactory;
-import com.masyaman.datapack.serializers.numbers.*;
-import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 
@@ -29,6 +27,7 @@ public class SerializationFactoryLookup {
             SignedLongDiffSerializationFactory.INSTANCE,
             SignedLongLinearSerializationFactory.INSTANCE,
             SignedLongSerializationFactory.INSTANCE,
+            UnsignedLongSerializationFactory.INSTANCE,
             EnumsSerializationFactory.INSTANCE,
             StringSerializationFactory.INSTANCE,
             StringCachedSerializationFactory.INSTANCE,

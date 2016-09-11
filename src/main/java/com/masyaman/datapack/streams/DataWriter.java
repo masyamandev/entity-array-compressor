@@ -5,6 +5,7 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
 import com.masyaman.datapack.serializers.numbers.LongSerializer;
+import com.masyaman.datapack.serializers.numbers.UnsignedLongSerializer;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializer;
 
@@ -34,8 +35,7 @@ public class DataWriter {
         this.serializationFactoryLookup = serializationFactoryLookup;
 
         signedLongSerializer = new LongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
-        unsignedLongSerializer = new LongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class)); // TODO: make unsigned
-        unsignedLongSerializer = new LongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class)); // TODO: make unsigned
+        unsignedLongSerializer = new UnsignedLongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
         stringSerializer = new StringSerializer(this);//StringSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
         stringCachedSerializer = new SimpleCachedSerializer(this, stringSerializer);//StringCachedSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
     }
