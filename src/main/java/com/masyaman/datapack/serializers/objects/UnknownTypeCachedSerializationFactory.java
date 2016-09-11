@@ -32,13 +32,11 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        return new CachedSerializer(os, new UnknownTypeSerializer(os, type), 0);
-//        return new SlowCachedSerializer(os, new UnknownTypeSerializer(os, type), 0); // TODO cache size
+        return new CachedSerializer(os, new UnknownTypeSerializer(os, type), 0);// TODO cache size
     }
 
     @Override
     public <E1 extends E> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
         return new CachedDeserializer(is, new UnknownTypeDeserializer(is, type));
-//        return new SlowCachedDeserializer(is, new UnknownTypeDeserializer(is, type));
     }
 }
