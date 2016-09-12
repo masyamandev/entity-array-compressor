@@ -6,6 +6,8 @@ import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
 
+import static com.masyaman.datapack.utils.MathUtils.median;
+
 abstract class NumberDeserializerWrappers<E extends Number> implements Deserializer<E> {
 
     public static <E extends Number> Deserializer<E> convertTo(Deserializer<? extends Number> deserializer, TypeDescriptor<E> type) {
@@ -80,6 +82,28 @@ abstract class NumberDeserializerWrappers<E extends Number> implements Deseriali
                 }
                 val += prev * 2 - prev2;
                 prev2 = prev;
+                prev = val;
+                return val;
+            }
+        };
+    }
+
+    public static Deserializer<Long> medianDeserializer(Deserializer<Long> deserializer) {
+        return new Deserializer<Long>() {
+            long prev = 0L;
+            long[] diffs = new long[3];
+            int pos = 0;
+            @Override
+            public Long deserialize() throws IOException {
+                Long val = deserializer.deserialize();
+                if (val == null) {
+                    return null;
+                }
+                val += prev + median(diffs);
+
+                diffs[pos] = val.longValue() - prev;
+                pos = (pos + 1) % diffs.length;
+
                 prev = val;
                 return val;
             }

@@ -23,9 +23,11 @@ public class SerializationFactoryLookup {
     static List<SerializationFactory> DEFAULT_FACTORIES = Arrays.asList(
             DoubleFixedDiffSerializationFactory.INSTANCE,
             DoubleFixedLinearSerializationFactory.INSTANCE,
+            DoubleFixedMedianSerializationFactory.INSTANCE,
             DoubleFixedSerializationFactory.INSTANCE,
             SignedLongDiffSerializationFactory.INSTANCE,
             SignedLongLinearSerializationFactory.INSTANCE,
+            SignedLongMedianSerializationFactory.INSTANCE,
             SignedLongSerializationFactory.INSTANCE,
             UnsignedLongSerializationFactory.INSTANCE,
             EnumsSerializationFactory.INSTANCE,

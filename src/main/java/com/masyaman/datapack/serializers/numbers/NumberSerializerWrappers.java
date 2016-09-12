@@ -5,6 +5,9 @@ import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import static com.masyaman.datapack.utils.MathUtils.median;
 
 abstract class NumberSerializerWrappers<T extends Number> implements Serializer<T> {
 
@@ -76,6 +79,30 @@ abstract class NumberSerializerWrappers<T extends Number> implements Serializer<
                 } else {
                     longSerializer.serialize(o.longValue() - (prev * 2 - prev2));
                     prev2 = prev;
+                    prev = o.longValue();
+                }
+            }
+        };
+    }
+
+    public static Serializer<Long> medianSerializer(Serializer<Long> longSerializer) {
+        return new Serializer<Long>() {
+            long prev = 0L;
+            long[] diffs = new long[3];
+            int pos = 0;
+            @Override
+            public void serialize(Long o) throws IOException {
+                if (o == null) {
+                    longSerializer.serialize(null);
+                } else {
+                    long serializedValue = o.longValue() - (prev + median(diffs));
+//                    System.out.println("" + (o.longValue() - prev) + "\t\t" + serializedValue + "\t\t" +
+//                            Arrays.asList(diffs[0], diffs[1], diffs[2]) + "\t\t" + median(diffs));
+                    longSerializer.serialize(serializedValue);
+
+                    diffs[pos] = o.longValue() - prev;
+                    pos = (pos + 1) % diffs.length;
+
                     prev = o.longValue();
                 }
             }
