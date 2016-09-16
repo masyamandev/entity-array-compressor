@@ -6,7 +6,7 @@
 
     <groupId>com.masyaman.datapack</groupId>
     <artifactId>entity-array-compressor</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
