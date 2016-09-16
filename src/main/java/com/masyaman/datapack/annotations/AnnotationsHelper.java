@@ -6,12 +6,18 @@ import java.lang.annotation.Annotation;
 
 public class AnnotationsHelper {
 
-    public static int getDecimalPrecision(TypeDescriptor<?> type, int defaultPrecision) {
+    public static final int DEFAULT_PRECISION = 6;
+
+    public static int getDecimalPrecision(TypeDescriptor<?> type) {
         DecimalPrecision annotation = type.getAnnotation(DecimalPrecision.class);
         if (annotation != null) {
             return annotation.value();
         }
-        return defaultPrecision;
+        if (type.getType() == Double.class || type.getType() == double.class || type.getType() == Float.class || type.getType() == float.class) {
+            return DEFAULT_PRECISION;
+        } else {
+            return 0;
+        }
     }
 
     public static int getCacheSize(TypeDescriptor<?> type) {

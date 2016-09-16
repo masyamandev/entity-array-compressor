@@ -41,6 +41,10 @@ public class NumberTypeResolver {
         if (expectedType != null && TYPE_TO_CLASS.containsKey(expectedType.getType())) {
             return expectedType;
         }
-        return new TypeDescriptor(TYPE_TO_CLASS.get(t));
+        Class type = TYPE_TO_CLASS.get(t);
+        if (expectedType != null && !expectedType.getType().isAssignableFrom(type)) {
+            return expectedType;
+        }
+        return new TypeDescriptor(type);
     }
 }

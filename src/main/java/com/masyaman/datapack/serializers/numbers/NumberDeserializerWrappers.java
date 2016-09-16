@@ -3,6 +3,7 @@ package com.masyaman.datapack.serializers.numbers;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
+import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
 
@@ -42,14 +43,12 @@ abstract class NumberDeserializerWrappers<E extends Number> implements Deseriali
         }
     }
 
-    public static Deserializer<Double> scaleBy(DataReader dr, Deserializer<? extends Number> deserializer) throws IOException {
-        double decimalScale = dr.readUnsignedLong().doubleValue();
-        final double scale = Math.pow(10, decimalScale);
-        return new Deserializer<Double>() {
+    public static <E extends Number> Deserializer<E> scaleBy(DataReader dr, Deserializer<E> deserializer) throws IOException {
+        final int decimalScale = -dr.readSignedLong().intValue();
+        return new Deserializer<E>() {
             @Override
-            public Double deserialize() throws IOException {
-                Number val = deserializer.deserialize();
-                return (val == null ? null : (val.doubleValue() / scale));
+            public E deserialize() throws IOException {
+                return MathUtils.scale(deserializer.deserialize(), decimalScale);
             }
         };
     }

@@ -3,9 +3,9 @@ package com.masyaman.datapack.serializers.numbers;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static com.masyaman.datapack.utils.MathUtils.median;
 
@@ -20,13 +20,21 @@ abstract class NumberSerializerWrappers<T extends Number> implements Serializer<
         };
     }
 
-    public static <E extends Number> Serializer<E> scaleBy(DataWriter dw, Serializer<Long> serializer, int decimalScale) throws IOException {
-        dw.writeSignedLong((long) decimalScale);
-        final double scale = Math.pow(10, decimalScale);
+    public static <E extends Number> Serializer<E> round(Serializer<Long> serializer) throws IOException {
         return new Serializer<E>() {
             @Override
             public void serialize(E o) throws IOException {
-                serializer.serialize(o == null ? null : Math.round(o.doubleValue() * scale));
+                serializer.serialize(MathUtils.round(o));
+            }
+        };
+    }
+
+    public static <E extends Number> Serializer<E> scaleBy(DataWriter dw, Serializer<E> serializer, int decimalScale) throws IOException {
+        dw.writeSignedLong((long) decimalScale);
+        return new Serializer<E>() {
+            @Override
+            public void serialize(E o) throws IOException {
+                serializer.serialize((E) MathUtils.scale(o, decimalScale));
             }
         };
     }

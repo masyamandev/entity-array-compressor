@@ -17,7 +17,6 @@ import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers
 public class DoubleFixedDiffNRSerializationFactory extends SerializationFactory<Number> {
 
     public static final DoubleFixedDiffNRSerializationFactory INSTANCE = new DoubleFixedDiffNRSerializationFactory();
-    public static final int DEFAULT_DECIMAL_SCALE = 6;
 
     private DoubleFixedDiffNRSerializationFactory() {
         super("_DFD");
@@ -36,13 +35,13 @@ public class DoubleFixedDiffNRSerializationFactory extends SerializationFactory<
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return scaleByNR(os, diffSerializer(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type, DEFAULT_DECIMAL_SCALE));
+        return scaleByNR(os, diffSerializer(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return convertTo(scaleBy(is, diffDeserializer(new LongDeserializer(is))), type);
+        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type));
     }
 
 
