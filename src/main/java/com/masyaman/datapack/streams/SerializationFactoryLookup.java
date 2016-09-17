@@ -21,14 +21,10 @@ import java.util.Map;
 public class SerializationFactoryLookup {
 
     static List<SerializationFactory> DEFAULT_FACTORIES = Arrays.asList(
-            DoubleFixedDiffSerializationFactory.INSTANCE,
-            DoubleFixedLinearSerializationFactory.INSTANCE,
-            DoubleFixedMedianSerializationFactory.INSTANCE,
-            DoubleFixedSerializationFactory.INSTANCE,
-            SignedLongDiffSerializationFactory.INSTANCE,
-            SignedLongLinearSerializationFactory.INSTANCE,
-            SignedLongMedianSerializationFactory.INSTANCE,
-            SignedLongSerializationFactory.INSTANCE,
+            NumberDiffSerializationFactory.INSTANCE,
+            NumberLinearSerializationFactory.INSTANCE,
+            NumberMedianSerializationFactory.INSTANCE,
+            NumberSerializationFactory.INSTANCE,
             UnsignedLongSerializationFactory.INSTANCE,
             EnumsSerializationFactory.INSTANCE,
             StringSerializationFactory.INSTANCE,
@@ -58,14 +54,11 @@ public class SerializationFactoryLookup {
             case "java.lang.Integer":
             case "long":
             case "java.lang.Long":
-                return SignedLongDiffSerializationFactory.INSTANCE;
-//                return SignedLongLinearSerializationFactory.INSTANCE;
             case "double":
             case "java.lang.Double":
             case "float":
             case "java.lang.Float":
-                return DoubleFixedDiffSerializationFactory.INSTANCE;
-//                return DoubleFixedLinearSerializationFactory.INSTANCE;
+                return NumberDiffSerializationFactory.INSTANCE;
 
             case "boolean":
             case "java.lang.Boolean":

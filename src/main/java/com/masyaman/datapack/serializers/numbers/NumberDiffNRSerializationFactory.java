@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
+import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -9,39 +10,39 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.convertTo;
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.medianDeserializer;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.convertFrom;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.medianSerializer;
+import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-public class SignedLongMedianSerializationFactory extends SerializationFactory<Number> {
+// Can give slightly better compression for the cost of non-precise rounding
+public class NumberDiffNRSerializationFactory extends SerializationFactory<Number> {
 
-    public static final SignedLongMedianSerializationFactory INSTANCE = new SignedLongMedianSerializationFactory();
+    public static final NumberDiffNRSerializationFactory INSTANCE = new NumberDiffNRSerializationFactory();
 
-    private SignedLongMedianSerializationFactory() {
-        super("_SLM");
+    private NumberDiffNRSerializationFactory() {
+        super("_ND");
     }
 
     @Override
     public TypeDescriptor<? extends Number> getDefaultType() {
-        return new TypeDescriptor(Long.class);
+        return new TypeDescriptor(Double.class);
     }
 
     @Override
     public boolean isApplicable(TypeDescriptor type) {
-        return Number.class.isAssignableFrom(type.getType());
+        return Double.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType());
     }
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return convertFrom(medianSerializer(new LongSerializer(os)), type);
+        return scaleByNR(os, diffSerializer(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return convertTo(medianDeserializer(new LongDeserializer(is)), type);
+        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type));
     }
+
 
 }

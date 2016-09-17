@@ -15,9 +15,9 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DoubleFixedSerializationFactoryTest {
+public class NumberSerializationFactoryTest {
 
-    public static final SerializationFactory FACTORY = DoubleFixedSerializationFactory.INSTANCE;
+    public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
     public static final TypeDescriptor DOUBLE_TYPE = new TypeDescriptor(Double.class);
 
     public static final Offset OFFSET = Offset.offset(0.000000000001);

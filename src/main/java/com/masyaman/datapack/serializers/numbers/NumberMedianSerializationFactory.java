@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
+import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -9,39 +10,37 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.convertTo;
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.linearDeserializer;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.convertFrom;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.linearSerializer;
+import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-public class SignedLongLinearSerializationFactory extends SerializationFactory<Number> {
+public class NumberMedianSerializationFactory extends SerializationFactory<Number> {
 
-    public static final SignedLongLinearSerializationFactory INSTANCE = new SignedLongLinearSerializationFactory();
+    public static final NumberMedianSerializationFactory INSTANCE = new NumberMedianSerializationFactory();
 
-    private SignedLongLinearSerializationFactory() {
-        super("_SLL");
+    private NumberMedianSerializationFactory() {
+        super("_NM");
     }
 
     @Override
     public TypeDescriptor<? extends Number> getDefaultType() {
-        return new TypeDescriptor(Long.class);
+        return new TypeDescriptor(Double.class);
     }
 
     @Override
     public boolean isApplicable(TypeDescriptor type) {
-        return Number.class.isAssignableFrom(type.getType());
+        return Double.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType());
     }
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return convertFrom(linearSerializer(new LongSerializer(os)), type);
+        return scaleBy(os, round(medianSerializer(new LongSerializer(os))), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return convertTo(linearDeserializer(new LongDeserializer(is)), type);
+        return scaleBy(is, convertTo(medianDeserializer(new LongDeserializer(is)), type));
     }
 
 

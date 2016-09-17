@@ -8,7 +8,7 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.numbers.DoubleFixedSerializationFactory;
+import com.masyaman.datapack.serializers.numbers.NumberSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
@@ -135,8 +135,8 @@ public class MapSerializationFactoryTest {
         map.put(2.222, 2.222);
 
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(DoubleFixedSerializationFactory.class, Double.class, Precision1.class),
-                new SerializeValueByInstance(DoubleFixedSerializationFactory.class, Double.class, InheritFromParent.class));
+                new SerializeKeyByInstance(NumberSerializationFactory.class, Double.class, Precision1.class),
+                new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, InheritFromParent.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);
@@ -161,8 +161,8 @@ public class MapSerializationFactoryTest {
         map.put(2.222, 2.222);
 
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(DoubleFixedSerializationFactory.class, Double.class, InheritFromParent.class),
-                new SerializeValueByInstance(DoubleFixedSerializationFactory.class, Double.class, Precision1.class));
+                new SerializeKeyByInstance(NumberSerializationFactory.class, Double.class, InheritFromParent.class),
+                new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, Precision1.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);

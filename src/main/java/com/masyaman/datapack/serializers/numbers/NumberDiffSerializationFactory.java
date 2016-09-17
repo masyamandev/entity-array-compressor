@@ -13,12 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-public class DoubleFixedLinearSerializationFactory extends SerializationFactory<Number> {
+public class NumberDiffSerializationFactory extends SerializationFactory<Number> {
 
-    public static final DoubleFixedLinearSerializationFactory INSTANCE = new DoubleFixedLinearSerializationFactory();
+    public static final NumberDiffSerializationFactory INSTANCE = new NumberDiffSerializationFactory();
 
-    private DoubleFixedLinearSerializationFactory() {
-        super("_DFL");
+    private NumberDiffSerializationFactory() {
+        super("_ND");
     }
 
     @Override
@@ -34,13 +34,13 @@ public class DoubleFixedLinearSerializationFactory extends SerializationFactory<
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return scaleBy(os, round(linearSerializer(new LongSerializer(os))), AnnotationsHelper.getDecimalPrecision(type));
+        return scaleBy(os, round(diffSerializer(new LongSerializer(os))), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(linearDeserializer(new LongDeserializer(is)), type));
+        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type));
     }
 
 

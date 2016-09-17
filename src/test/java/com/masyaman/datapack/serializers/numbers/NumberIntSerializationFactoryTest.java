@@ -14,9 +14,9 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SignedIntSerializationFactoryTest {
+public class NumberIntSerializationFactoryTest {
 
-    public static final SerializationFactory FACTORY = SignedLongSerializationFactory.INSTANCE;
+    public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
     public static final TypeDescriptor INTEGER_TYPE = new TypeDescriptor(Integer.class);
 
     @Test

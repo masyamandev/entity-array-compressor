@@ -14,19 +14,21 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DoubleFixedLongLinearSerializationFactoryTest {
+public class NumberLongSerializationFactoryTest {
 
-    public static final SerializationFactory FACTORY = DoubleFixedLinearSerializationFactory.INSTANCE;
+    public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
     public static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
 
     @Test
     public void testLong8Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Long> serializer = FACTORY.createSerializer(new DataWriter(os), LONG_TYPE);
+        byte[] serializerBytes = os.toByteArray();
         for (long l = 63; l >= -63; l--) {
             serializer.serialize(l);
         }
         byte[] bytes = os.toByteArray();
+        assertThat(bytes).hasSize(serializerBytes.length + 63 * 2 + 1);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new DataReader(is), LONG_TYPE);
@@ -44,7 +46,7 @@ public class DoubleFixedLongLinearSerializationFactoryTest {
             serializer.serialize(l);
         }
         byte[] bytes = os.toByteArray();
-        assertThat(bytes.length).isLessThan(serializerBytes.length + 800 * 2);
+        assertThat(bytes).hasSize(serializerBytes.length + 800 * 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new DataReader(is), LONG_TYPE);
@@ -62,7 +64,7 @@ public class DoubleFixedLongLinearSerializationFactoryTest {
             serializer.serialize(l);
         }
         byte[] bytes = os.toByteArray();
-        assertThat(bytes.length).isLessThan(serializerBytes.length + 800 * 2);
+        assertThat(bytes).hasSize(serializerBytes.length + 800 * 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new DataReader(is), LONG_TYPE);
@@ -118,10 +120,12 @@ public class DoubleFixedLongLinearSerializationFactoryTest {
     public void testLongInfinity() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Long> serializer = FACTORY.createSerializer(new DataWriter(os), LONG_TYPE);
+        byte[] serializerBytes = os.toByteArray();
         serializer.serialize(Long.MAX_VALUE);
         serializer.serialize(Long.MIN_VALUE);
 
         byte[] bytes = os.toByteArray();
+        assertThat(bytes).hasSize(serializerBytes.length + 2 * 9);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new DataReader(is), LONG_TYPE);

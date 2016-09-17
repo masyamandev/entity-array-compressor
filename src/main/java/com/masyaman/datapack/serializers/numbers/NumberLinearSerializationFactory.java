@@ -13,12 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-public class DoubleFixedSerializationFactory extends SerializationFactory<Number> {
+public class NumberLinearSerializationFactory extends SerializationFactory<Number> {
 
-    public static final DoubleFixedSerializationFactory INSTANCE = new DoubleFixedSerializationFactory();
+    public static final NumberLinearSerializationFactory INSTANCE = new NumberLinearSerializationFactory();
 
-    private DoubleFixedSerializationFactory() {
-        super("_DF");
+    private NumberLinearSerializationFactory() {
+        super("_NL");
     }
 
     @Override
@@ -34,13 +34,13 @@ public class DoubleFixedSerializationFactory extends SerializationFactory<Number
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return scaleBy(os, round(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
+        return scaleBy(os, round(linearSerializer(new LongSerializer(os))), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(new LongDeserializer(is), type));
+        return scaleBy(is, convertTo(linearDeserializer(new LongDeserializer(is)), type));
     }
 
 

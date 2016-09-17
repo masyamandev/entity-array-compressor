@@ -14,9 +14,9 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SignedLongDiffSerializationFactoryTest {
+public class NumberLongDiffSerializationFactoryTest {
 
-    public static final SerializationFactory FACTORY = SignedLongDiffSerializationFactory.INSTANCE;
+    public static final SerializationFactory FACTORY = NumberDiffSerializationFactory.INSTANCE;
     public static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
 
     @Test

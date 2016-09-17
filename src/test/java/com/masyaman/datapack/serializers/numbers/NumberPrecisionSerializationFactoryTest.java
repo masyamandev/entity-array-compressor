@@ -12,13 +12,12 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DoubleFixedPrecisionSerializationFactoryTest {
+public class NumberPrecisionSerializationFactoryTest {
 
-    public static final SerializationFactory FACTORY = DoubleFixedSerializationFactory.INSTANCE;
+    public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
     public static final TypeDescriptor DOUBLE_TYPE = new TypeDescriptor(Double.class);
     public static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
 

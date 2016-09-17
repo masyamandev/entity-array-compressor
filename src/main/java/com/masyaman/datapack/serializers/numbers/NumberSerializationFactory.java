@@ -13,13 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-// Can give slightly better compression for the cost of non-precise rounding
-public class DoubleFixedDiffNRSerializationFactory extends SerializationFactory<Number> {
+public class NumberSerializationFactory extends SerializationFactory<Number> {
 
-    public static final DoubleFixedDiffNRSerializationFactory INSTANCE = new DoubleFixedDiffNRSerializationFactory();
+    public static final NumberSerializationFactory INSTANCE = new NumberSerializationFactory();
 
-    private DoubleFixedDiffNRSerializationFactory() {
-        super("_DFD");
+    private NumberSerializationFactory() {
+        super("_N");
     }
 
     @Override
@@ -35,13 +34,13 @@ public class DoubleFixedDiffNRSerializationFactory extends SerializationFactory<
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return scaleByNR(os, diffSerializer(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
+        return scaleBy(os, round(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type));
+        return scaleBy(is, convertTo(new LongDeserializer(is), type));
     }
 
 
