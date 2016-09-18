@@ -23,6 +23,7 @@ public class BitSetSerializationFactoryTest {
     public void test1Byte() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
+        byte[] dataWriterBytes = os.toByteArray();
 
         serializer.serialize(null);
         serializer.serialize(bitset());
@@ -30,7 +31,7 @@ public class BitSetSerializationFactoryTest {
         serializer.serialize(bitset(2, 7));
 
         byte[] bytes = os.toByteArray();
-        assertThat(bytes).hasSize(1 + 1 + 2 + 2);
+        assertThat(bytes).hasSize(dataWriterBytes.length + 1 + 1 + 2 + 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
@@ -44,13 +45,14 @@ public class BitSetSerializationFactoryTest {
     public void test2Byte() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
+        byte[] dataWriterBytes = os.toByteArray();
 
         serializer.serialize(bitset(8));
         serializer.serialize(bitset(8, 15));
         serializer.serialize(bitset(1, 8, 15));
 
         byte[] bytes = os.toByteArray();
-        assertThat(bytes).hasSize(3 + 3 + 3);
+        assertThat(bytes).hasSize(dataWriterBytes.length + 3 + 3 + 3);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);
@@ -63,13 +65,14 @@ public class BitSetSerializationFactoryTest {
     public void test2Longs() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<BitSet> serializer = FACTORY.createSerializer(new DataWriter(os), BITSET_TYPE);
+        byte[] dataWriterBytes = os.toByteArray();
 
         serializer.serialize(bitset(63));
         serializer.serialize(bitset(64));
         serializer.serialize(bitset(1, 65));
 
         byte[] bytes = os.toByteArray();
-        assertThat(bytes).hasSize(9 + 10 + 10);
+        assertThat(bytes).hasSize(dataWriterBytes.length + 9 + 10 + 10);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new DataReader(is), BITSET_TYPE);

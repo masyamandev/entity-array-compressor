@@ -15,6 +15,9 @@ import java.io.OutputStream;
 import java.util.*;
 
 public class DataWriter {
+
+    public static final long CURRENT_VERSION = 0;
+
     private OutputStream os;
 
     private SerializationFactoryLookup serializationFactoryLookup;
@@ -39,6 +42,13 @@ public class DataWriter {
         unsignedLongSerializer = new UnsignedLongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
         stringSerializer = new StringSerializer(this);//StringSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
         stringCachedSerializer = new SimpleCachedSerializer(this, stringSerializer);//StringCachedSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
+
+        writeGlobalSettings();
+    }
+
+    private void writeGlobalSettings() throws IOException {
+        unsignedLongSerializer.serialize(CURRENT_VERSION);
+        unsignedLongSerializer.serialize(0L); // there will be number of settings here
     }
 
     public void writeByte(byte b) throws IOException {

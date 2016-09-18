@@ -38,6 +38,19 @@ public class DataReader {
         unsignedLongDeserializer = new UnsignedLongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
         stringDeserializer = new StringDeserializer(this);//StringSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
         stringCachedDeserializer = new SimpleCachedDeserializer(this, stringDeserializer);//StringCachedSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
+
+        readGlobalSettings();
+    }
+
+    private void readGlobalSettings() throws IOException {
+        Long version = unsignedLongDeserializer.deserialize();
+        if (version == null || version.longValue() != DataWriter.CURRENT_VERSION) {
+            throw new IOException("Version " + version + " is not supported!");
+        }
+        Long settingsNumber = unsignedLongDeserializer.deserialize();
+        if (settingsNumber == null || settingsNumber.longValue() != 0) {
+            throw new IOException("Settings are not supported!");
+        }
     }
 
     public byte readByte() throws IOException {
