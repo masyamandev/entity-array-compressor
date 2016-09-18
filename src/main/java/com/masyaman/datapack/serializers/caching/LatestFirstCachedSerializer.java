@@ -9,14 +9,14 @@ import com.masyaman.datapack.streams.DataWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class CachedSerializer<E> implements Serializer<E> {
+public class LatestFirstCachedSerializer<E> implements Serializer<E> {
 
     private DataWriter os;
     private Serializer<E> serializer;
 
     private ObjectIdCache<E> cache;
 
-    public CachedSerializer(DataWriter os, Serializer<E> serializer, int cacheSize) throws IOException {
+    public LatestFirstCachedSerializer(DataWriter os, Serializer<E> serializer, int cacheSize) throws IOException {
         this.os = os;
         this.serializer = serializer;
         this.cache = new ObjectIdCacheRingTree<>(cacheSize);

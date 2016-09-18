@@ -5,8 +5,8 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.caching.CachedDeserializer;
-import com.masyaman.datapack.serializers.caching.CachedSerializer;
+import com.masyaman.datapack.serializers.caching.LatestFirstCachedDeserializer;
+import com.masyaman.datapack.serializers.caching.LatestFirstCachedSerializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
@@ -33,11 +33,11 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        return new CachedSerializer(os, new UnknownTypeSerializer(os, type), AnnotationsHelper.getCacheSize(type));
+        return new LatestFirstCachedSerializer(os, new UnknownTypeSerializer(os, type), AnnotationsHelper.getCacheSize(type));
     }
 
     @Override
     public <E1 extends E> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
-        return new CachedDeserializer(is, new UnknownTypeDeserializer(is, type));
+        return new LatestFirstCachedDeserializer(is, new UnknownTypeDeserializer(is, type));
     }
 }

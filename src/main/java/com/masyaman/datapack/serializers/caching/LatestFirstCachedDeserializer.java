@@ -9,7 +9,7 @@ import com.masyaman.datapack.streams.DataReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class CachedDeserializer<E> implements Deserializer<E> {
+public class LatestFirstCachedDeserializer<E> implements Deserializer<E> {
 
     private DataReader is;
     private Deserializer<E> deserializer;
@@ -17,7 +17,7 @@ public class CachedDeserializer<E> implements Deserializer<E> {
 
     private ObjectIdCache<E> cache;
 
-    public CachedDeserializer(DataReader is, Deserializer<E> deserializer) throws IOException {
+    public LatestFirstCachedDeserializer(DataReader is, Deserializer<E> deserializer) throws IOException {
         this.is = is;
         this.deserializer = deserializer;
         cacheSize = is.readUnsignedLong().intValue();

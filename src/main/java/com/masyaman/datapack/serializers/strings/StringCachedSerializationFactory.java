@@ -32,12 +32,12 @@ public class StringCachedSerializationFactory extends SerializationFactory<Strin
 
     @Override
     public <E extends String> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        return (Serializer<E>) new CachedSerializer(os, new StringSerializer(os), AnnotationsHelper.getCacheSize(type));
+        return (Serializer<E>) new LatestFirstCachedSerializer(os, new StringSerializer(os), AnnotationsHelper.getCacheSize(type));
     }
 
     @Override
     public <E extends String> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return (Deserializer<E>) new CachedDeserializer(is, new StringDeserializer(is));
+        return (Deserializer<E>) new LatestFirstCachedDeserializer(is, new StringDeserializer(is));
     }
 
 
