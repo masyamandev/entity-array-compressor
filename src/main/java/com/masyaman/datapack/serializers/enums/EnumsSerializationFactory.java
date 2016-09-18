@@ -5,7 +5,7 @@ import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
+import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
@@ -32,7 +32,7 @@ public class EnumsSerializationFactory<E extends Enum> extends SerializationFact
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        Serializer serializer = StringCachedSerializationFactory.INSTANCE.createSerializer(os, new TypeDescriptor(String.class));
+        Serializer serializer = StringConstantsSerializationFactory.INSTANCE.createSerializer(os, new TypeDescriptor(String.class));
         return new Serializer<E1>() {
             @Override
             public void serialize(E1 o) throws IOException {
@@ -43,7 +43,7 @@ public class EnumsSerializationFactory<E extends Enum> extends SerializationFact
 
     @Override
     public <E1 extends E> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
-        Deserializer deserializer = StringCachedSerializationFactory.INSTANCE.createDeserializer(is, new TypeDescriptor(String.class));
+        Deserializer deserializer = StringConstantsSerializationFactory.INSTANCE.createDeserializer(is, new TypeDescriptor(String.class));
         return new Deserializer<E1>() {
             @Override
             public E1 deserialize() throws IOException {

@@ -11,6 +11,7 @@ import com.masyaman.datapack.serializers.objects.UnknownTypeCachedSerializationF
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnsupportedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
+import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public class SerializationFactoryLookup {
             EnumsSerializationFactory.INSTANCE,
             StringSerializationFactory.INSTANCE,
             StringCachedSerializationFactory.INSTANCE,
+            StringConstantsSerializationFactory.INSTANCE,
             MapSerializationFactory.INSTANCE,
             BitSetSerializationFactory.INSTANCE,
             ObjectSerializationFactory.INSTANCE,
