@@ -12,6 +12,11 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for any user objects.
+ * Cached version of {@link UnknownTypeSerializationFactory}.
+ * Caution: serializer stores previous values, so objects may be stored incorrectly if they're not immutable.
+ */
 public final class UnknownTypeCachedSerializationFactory<E> extends SerializationFactory<E> {
 
     public static final UnknownTypeCachedSerializationFactory INSTANCE = new UnknownTypeCachedSerializationFactory();

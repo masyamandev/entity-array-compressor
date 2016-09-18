@@ -5,12 +5,18 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.caching.*;
+import com.masyaman.datapack.serializers.caching.LatestFirstCachedDeserializer;
+import com.masyaman.datapack.serializers.caching.LatestFirstCachedSerializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for Strings.
+ * Cached version of {@link StringSerializationFactory}
+ * Could be used for storing big variety of strings, some of which are occurred many times, but most of them occurred only once.
+ */
 public class StringCachedSerializationFactory extends SerializationFactory<String> {
 
     public static final StringCachedSerializationFactory INSTANCE = new StringCachedSerializationFactory();

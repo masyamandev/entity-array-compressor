@@ -13,7 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-// Can give slightly better compression for the cost of non-precise rounding
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * Same as {@link NumberDiffSerializationFactory} with compatible deserializer.
+ * Can give slightly better compression for the cost of non-precise rounding.
+ */
 public class NumberDiffNRSerializationFactory extends SerializationFactory<Number> {
 
     public static final NumberDiffNRSerializationFactory INSTANCE = new NumberDiffNRSerializationFactory();

@@ -11,6 +11,11 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for Strings.
+ * Cached version of {@link StringSerializationFactory}
+ * Could be used for storing small amount of unique strings.
+ */
 public class StringConstantsSerializationFactory extends SerializationFactory<String> {
 
     public static final StringConstantsSerializationFactory INSTANCE = new StringConstantsSerializationFactory();

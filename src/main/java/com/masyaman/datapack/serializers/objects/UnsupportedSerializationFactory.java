@@ -9,6 +9,9 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Temporary stub for unsupported or ignored types.
+ */
 public final class UnsupportedSerializationFactory<E> extends SerializationFactory<E> {
 
     public static final UnsupportedSerializationFactory INSTANCE = new UnsupportedSerializationFactory();

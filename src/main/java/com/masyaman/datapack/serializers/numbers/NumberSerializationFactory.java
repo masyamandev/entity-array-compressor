@@ -14,6 +14,11 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * Very basic serialization using signed variable-length coding.
+ */
 public class NumberSerializationFactory extends SerializationFactory<Number> implements GloballyDefined {
 
     public static final NumberSerializationFactory INSTANCE = new NumberSerializationFactory();

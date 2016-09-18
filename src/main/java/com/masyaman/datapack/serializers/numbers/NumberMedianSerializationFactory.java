@@ -13,6 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * During serialization it saves difference and predicted value.
+ * Prediction is a previous value + median of three previous value changes.
+ */
 public class NumberMedianSerializationFactory extends SerializationFactory<Number> {
 
     public static final NumberMedianSerializationFactory INSTANCE = new NumberMedianSerializationFactory();

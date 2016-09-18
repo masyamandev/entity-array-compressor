@@ -7,6 +7,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Caching wrapper for Serializer.
+ * Data format is:
+ * [IndexInCache][Value, optional]
+ * If value exists in cache, [IndexInCache] is written as index in cache list + 1, [Value] is omit.
+ * If value does not exist in cache, [IndexInCache] is written as 0, then [Value] is written. Value is put to the tail of cache list.
+ * This cache does not support size limits.
+ */
 public class SimpleCachedSerializer<E> implements Serializer<E> {
 
     private DataWriter os;

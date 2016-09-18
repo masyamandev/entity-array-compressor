@@ -9,6 +9,10 @@ import com.masyaman.datapack.streams.DataReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
+/**
+ * Caching wrapper for Deserializer.
+ * For data format see {@link LatestFirstCachedSerializer}
+ */
 public class LatestFirstCachedDeserializer<E> implements Deserializer<E> {
 
     private DataReader is;

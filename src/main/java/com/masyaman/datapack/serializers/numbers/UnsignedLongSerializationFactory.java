@@ -13,6 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.convertTo;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.convertFrom;
 
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * Very basic serialization using unsigned variable-length coding. Negative values could be saves as well, but it'll
+ * require 9 bytes per value in stream.
+ */
 public class UnsignedLongSerializationFactory extends SerializationFactory<Number> implements GloballyDefined {
 
     public static final UnsignedLongSerializationFactory INSTANCE = new UnsignedLongSerializationFactory();

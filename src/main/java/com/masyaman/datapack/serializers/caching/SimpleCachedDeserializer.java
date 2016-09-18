@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Caching wrapper for Deserializer.
+ * For data format see {@link SimpleCachedSerializer}
+ */
 public class SimpleCachedDeserializer<E> implements Deserializer<E> {
 
     private DataReader is;

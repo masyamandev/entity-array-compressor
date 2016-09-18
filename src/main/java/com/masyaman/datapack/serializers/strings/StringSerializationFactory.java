@@ -10,6 +10,9 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for Strings.
+ */
 public class StringSerializationFactory extends SerializationFactory<String> implements GloballyDefined {
 
     public static final StringSerializationFactory INSTANCE = new StringSerializationFactory();

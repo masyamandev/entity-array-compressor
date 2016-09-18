@@ -13,6 +13,12 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * During serialization it saves difference and predicted value. Prediction is made as linear interpolation using 2
+ * previous values.
+ */
 public class NumberLinearSerializationFactory extends SerializationFactory<Number> {
 
     public static final NumberLinearSerializationFactory INSTANCE = new NumberLinearSerializationFactory();

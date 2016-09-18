@@ -9,6 +9,9 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for any user objects. However, object type should be known at the moment of serialization creation.
+ */
 public class ObjectSerializationFactory extends SerializationFactory<Object> {
 
     public static final ObjectSerializationFactory INSTANCE = new ObjectSerializationFactory();

@@ -13,6 +13,13 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
+/**
+ * Serialization factory for Numbers.
+ * Values are stored as fixed-points Longs.
+ * Used by default for all Number serializations.
+ * During serialization it saves difference to previous value. This gives result close to 0 on small value changes, so
+ * it could use less bytes in stream.
+ */
 public class NumberDiffSerializationFactory extends SerializationFactory<Number> {
 
     public static final NumberDiffSerializationFactory INSTANCE = new NumberDiffSerializationFactory();

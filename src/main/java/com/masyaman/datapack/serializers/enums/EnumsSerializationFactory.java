@@ -11,6 +11,10 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+/**
+ * Serialization factory for Enums.
+ * Values are serialized as cached constant strings. See {@link StringConstantsSerializationFactory}
+ */
 public class EnumsSerializationFactory<E extends Enum> extends SerializationFactory<E> implements GloballyDefined {
 
     public static final EnumsSerializationFactory INSTANCE = new EnumsSerializationFactory();

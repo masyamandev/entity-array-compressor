@@ -9,6 +9,14 @@ import com.masyaman.datapack.streams.DataWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 
+/**
+ * Caching wrapper for Serializer.
+ * Data format is:
+ * [IndexInCache][Value, optional]
+ * If value exists in cache, [IndexInCache] is written as index in cache list + 1, [Value] is omit. Value is moved to the head of cache list.
+ * If value does not exist in cache, [IndexInCache] is written as 0, then [Value] is written. Value is put to the head of cache list.
+ * This cache supports size limits.
+ */
 public class LatestFirstCachedSerializer<E> implements Serializer<E> {
 
     private DataWriter os;
