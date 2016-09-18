@@ -2,6 +2,7 @@ package com.masyaman.datapack.serializers.enums;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
@@ -10,7 +11,7 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
-public class EnumsSerializationFactory<E extends Enum> extends SerializationFactory<E> {
+public class EnumsSerializationFactory<E extends Enum> extends SerializationFactory<E> implements GloballyDefined {
 
     public static final EnumsSerializationFactory INSTANCE = new EnumsSerializationFactory();
 

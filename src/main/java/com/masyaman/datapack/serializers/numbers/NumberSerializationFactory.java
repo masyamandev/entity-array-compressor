@@ -3,6 +3,7 @@ package com.masyaman.datapack.serializers.numbers;
 import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
-public class NumberSerializationFactory extends SerializationFactory<Number> {
+public class NumberSerializationFactory extends SerializationFactory<Number> implements GloballyDefined {
 
     public static final NumberSerializationFactory INSTANCE = new NumberSerializationFactory();
 
