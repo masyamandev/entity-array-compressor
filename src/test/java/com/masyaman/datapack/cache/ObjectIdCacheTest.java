@@ -121,6 +121,38 @@ public class ObjectIdCacheTest {
     }
 
     @Test
+    public void testIndexOf() throws Exception {
+        for (int i = 0; i < cache.maxSize(); i++) {
+            String element = "Element" + i;
+            assertThat(cache.indexOf(element)).isEqualTo(-1);
+            Object o = cache.addHead(element);
+            assertThat(cache.indexOf(element)).isEqualTo(0);
+            assertThat(cache.size()).isEqualTo(i + 1);
+            assertThat(o).isNull();
+        }
+        for (int i = 0; i < cache.maxSize(); i++) {
+            String newElement = "NewElement" + i;
+            String oldElement = "Element" + i;
+
+            assertThat(cache.indexOf(oldElement)).isEqualTo(cache.size() - 1);
+            assertThat(cache.indexOf(newElement)).isEqualTo(-1);
+
+            Object o = cache.addHead(newElement);
+            assertThat(cache.size()).isEqualTo(cache.maxSize());
+            assertThat(o).isEqualTo(oldElement);
+
+            assertThat(cache.indexOf(oldElement)).isEqualTo(-1);
+            assertThat(cache.indexOf(newElement)).isEqualTo(0);
+        }
+        for (int i = 0; i < cache.maxSize(); i += 2) {
+            cache.removeElement("NewElement" + i);
+        }
+        for (int i = 0; i < cache.maxSize(); i++) {
+            assertThat(cache.contains("NewElement" + i)).isEqualTo(i % 2 != 0);
+        }
+    }
+
+    @Test
     public void testRemoveNotExistedElements() throws Exception {
         for (int i = 0; i < cache.maxSize(); i++) {
             Object o = cache.addHead("Element" + i);

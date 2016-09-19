@@ -39,6 +39,15 @@ public class ObjectIdCacheRingTree<E> implements ObjectIdCache<E> {
     }
 
     @Override
+    public int indexOf(E element) {
+        ObjectIdCacheRingTreeNode.LookupInfo lookupInfo = lookupInfoMap.get(element);
+        if (lookupInfo == null) {
+            return -1;
+        }
+        return rootNode.indexOf(element, lookupInfo);
+    }
+
+    @Override
     public int removeElement(E element) {
         ObjectIdCacheRingTreeNode.LookupInfo lookupInfo = lookupInfoMap.remove(element);
         if (lookupInfo == null) {

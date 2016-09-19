@@ -30,6 +30,11 @@ class ObjectIdCacheList<E> implements ObjectIdCache<E> {
     }
 
     @Override
+    public int indexOf(E element) {
+        return data.indexOf(element);
+    }
+
+    @Override
     public E get(int position) {
         if (position >= 0 && position < data.size()) {
             return data.get(position);

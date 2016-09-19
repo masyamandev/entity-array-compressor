@@ -68,6 +68,36 @@ public class ObjectIdCacheRingBuffer<E> implements ObjectIdCache<E> {
     }
 
     @Override
+    public int indexOf(E element) {
+        if (size == 0) {
+            return -1;
+        }
+        int tail = (head + size) % data.length;
+        if (tail > head) {
+            for (int i = head; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i - head;
+                    return idx;
+                }
+            }
+        } else {
+            for (int i = head; i < data.length; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i - head;
+                    return idx;
+                }
+            }
+            for (int i = 0; i < tail; i++) {
+                if (data[i].equals(element)) {
+                    int idx = i + data.length - head;
+                    return idx;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Override
     public int removeElement(E element) {
         if (size == 0) {
             return -1;

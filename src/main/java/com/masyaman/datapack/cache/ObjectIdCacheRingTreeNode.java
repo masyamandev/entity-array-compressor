@@ -56,6 +56,23 @@ class ObjectIdCacheRingTreeNode<E> {
         return maxSize;
     }
 
+    public int indexOf(E element, LookupInfo lookupInfo) {
+        if (depth == 0) {
+            return leafElements.indexOf(element);
+        }
+
+        if (lookupInfo.isHead(depth, rotated)) {
+            int pos = getHeadTailNode().indexOf(element, lookupInfo);
+            if (pos < head) {
+                return pos;
+            } else {
+                return pos + getMiddleNode().size();
+            }
+        } else {
+            return getMiddleNode().indexOf(element, lookupInfo) + head;
+        }
+    }
+
     public int removeElement(E element, LookupInfo lookupInfo) {
         if (depth == 0) {
             return leafElements.removeElement(element);

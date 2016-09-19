@@ -7,6 +7,7 @@ public interface ObjectIdCache<E> {
 
     E get(int position);
     boolean contains(E element);
+    int indexOf(E element);
 
     int removeElement(E element);
     E removePosition(int position);
