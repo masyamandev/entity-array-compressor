@@ -38,6 +38,7 @@ class ObjectSerializer<T> implements Serializer<T> {
 
             SerializeBy declared = getter.type().getAnnotation(SerializeBy.class);
             TypeDescriptor declaredType = new TypeDescriptor(serializeAs(declared, getter.type().getType()),
+                    getter.type().getParametrizedType(),
                     annotationsFrom(declared, getter.type().getAnnotations()));
 
             SerializationFactory serializationFactory = declared != null ? getInstance(declared.value()) :
