@@ -4,6 +4,7 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.collections.BitSetSerializationFactory;
 import com.masyaman.datapack.serializers.collections.MapSerializationFactory;
+import com.masyaman.datapack.serializers.enums.EnumsConstantsSerializationFactory;
 import com.masyaman.datapack.serializers.enums.EnumsSerializationFactory;
 import com.masyaman.datapack.serializers.numbers.*;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
@@ -28,6 +29,7 @@ public class SerializationFactoryLookup {
             NumberSerializationFactory.INSTANCE,
             UnsignedLongSerializationFactory.INSTANCE,
             EnumsSerializationFactory.INSTANCE,
+            EnumsConstantsSerializationFactory.INSTANCE,
             StringSerializationFactory.INSTANCE,
             StringCachedSerializationFactory.INSTANCE,
             StringConstantsSerializationFactory.INSTANCE,
