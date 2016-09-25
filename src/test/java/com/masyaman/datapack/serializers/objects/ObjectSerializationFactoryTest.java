@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,6 +152,100 @@ public class ObjectSerializationFactoryTest {
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTzAsObject(null, null));
         assertThat(dr.readObject()).isNull();
     }
+
+    @Test
+    public void testSerializationWithArrays() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new DataWriter(os);
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        dw.writeObject(new ArrayFields(null, new String[] {"A", "B"}));
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, null));
+        dw.writeObject(new ArrayFields(null, null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+        System.out.println(bytes.length);
+        System.out.println(new String(bytes));
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new DataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        assertThat(dr.readObject()).isEqualTo(new ArrayFields(null, new String[] {"A", "B"}));
+        assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, null));
+        assertThat(dr.readObject()).isEqualTo(new ArrayFields(null, null));
+        assertThat(dr.readObject()).isNull();
+    }
+
+    @Test
+    public void testSerializationWithCollections() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new DataWriter(os);
+        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+        dw.writeObject(new CollectionFields(null, Arrays.asList("A", "B")));
+        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
+        dw.writeObject(new CollectionFields(null, null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+        System.out.println(bytes.length);
+        System.out.println(new String(bytes));
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new DataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+        assertThat(dr.readObject()).isEqualTo(new CollectionFields(null, Arrays.asList("A", "B")));
+        assertThat(dr.readObject()).isEqualTo(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
+        assertThat(dr.readObject()).isEqualTo(new CollectionFields(null, null));
+        assertThat(dr.readObject()).isNull();
+    }
+
+
+    @Test
+    public void testSerializationWithSets() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new DataWriter(os);
+        dw.writeObject(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+        dw.writeObject(new CollectionSetFields(null, Arrays.asList("A", "B")));
+        dw.writeObject(new CollectionSetFields(Arrays.asList(1, 1L, 1D), null));
+        dw.writeObject(new CollectionSetFields(null, null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+        System.out.println(bytes.length);
+        System.out.println(new String(bytes));
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new DataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+        assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(null, Arrays.asList("A", "B")));
+        assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), null));
+        assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(null, null));
+        assertThat(dr.readObject()).isNull();
+    }
+
+//    @Test
+//    public void testDeserializationWithAnotherType() throws Exception {
+//        ByteArrayOutputStream os = new ByteArrayOutputStream();
+//        DataWriter dw = new DataWriter(os);
+//        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+//        dw.writeObject(new CollectionFields(null, Arrays.asList("A", "B")));
+//        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
+//        dw.writeObject(new CollectionFields(null, null));
+//        dw.writeObject(null);
+//
+//        byte[] bytes = os.toByteArray();
+//        System.out.println(bytes.length);
+//        System.out.println(new String(bytes));
+//
+//        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+//        DataReader dr = new DataReader(is);
+//        TypeDescriptor td = new TypeDescriptor(CollectionSetFields.class);
+//        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
+//        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(null, Arrays.asList("A", "B")));
+//        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), null));
+//        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(null, null));
+//        assertThat(dr.readObject(td)).isNull();
+//    }
 
 
 }

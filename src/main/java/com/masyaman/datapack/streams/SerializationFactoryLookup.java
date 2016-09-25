@@ -82,6 +82,8 @@ public class SerializationFactoryLookup {
                     return MapSerializationFactory.INSTANCE;
                 } else if (Collection.class.isAssignableFrom(type.getType())) {
                     return CollectionSerializationFactory.INSTANCE;
+                } else if (type.getType().isArray()) {
+                    return CollectionSerializationFactory.INSTANCE;
                 }
         }
         return null;//new ObjectSerializationFactory.INSTANCE;

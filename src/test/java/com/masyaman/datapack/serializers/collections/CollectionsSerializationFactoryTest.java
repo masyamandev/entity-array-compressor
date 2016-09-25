@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CollectionsSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = CollectionSerializationFactory.INSTANCE;
-    // TODO add array
+
     public static final TypeDescriptor COLLECTION_TYPE = new TypeDescriptor(Collection.class);
     public static final TypeDescriptor LIST_TYPE = new TypeDescriptor(List.class);
     public static final TypeDescriptor ARRAY_LIST_TYPE = new TypeDescriptor(ArrayList.class);

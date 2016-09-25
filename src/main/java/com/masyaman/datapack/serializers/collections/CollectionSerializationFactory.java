@@ -32,24 +32,39 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
 
     @Override
     public boolean isApplicable(TypeDescriptor type) {
-        return Collection.class.isAssignableFrom(type.getType());
+        return type.getType().isArray() || Collection.class.isAssignableFrom(type.getType());
     }
 
     @Override
     public <T extends E> Serializer<T> createSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
-        SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
+        if (type.getType().isArray()) {
+            SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
 
-        TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getParametrizedType(0)),
-                annotationsFrom(valueDeclared, type.getAnnotations()));
+            TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getType().getComponentType()),
+                    annotationsFrom(valueDeclared, type.getAnnotations()));
 
-        SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
+            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
 
-        return new CollectionSerializer(os, valueFactory, valueType);
+            return (Serializer<T>) new ArraySerializer(os, valueFactory, valueType);
+        } else {
+            SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
+
+            TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getParametrizedType(0)),
+                    annotationsFrom(valueDeclared, type.getAnnotations()));
+
+            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
+
+            return new CollectionSerializer(os, valueFactory, valueType);
+        }
     }
 
     @Override
     public <T extends E> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
-        return new CollectionDeserializer<>(is, type, new TypeDescriptor(type.getParametrizedType(0)));
+        if (type.getType().isArray()) {
+            return (Deserializer<T>) new ArrayDeserializer(is, new TypeDescriptor(type.getType().getComponentType()));
+        } else {
+            return new CollectionDeserializer<>(is, type, new TypeDescriptor(type.getParametrizedType(0)));
+        }
     }
 
     private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) {
