@@ -199,7 +199,6 @@ public class ObjectSerializationFactoryTest {
         assertThat(dr.readObject()).isNull();
     }
 
-
     @Test
     public void testSerializationWithSets() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -247,5 +246,19 @@ public class ObjectSerializationFactoryTest {
 //        assertThat(dr.readObject(td)).isNull();
 //    }
 
+    @Test
+    public void testSerializationWithIgnoredFields() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new DataWriter(os);
+        dw.writeObject(new IgnoredFields("A", "B"));
+
+        byte[] bytes = os.toByteArray();
+        System.out.println(bytes.length);
+        System.out.println(new String(bytes));
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new DataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new IgnoredFields(null, "B"));
+    }
 
 }

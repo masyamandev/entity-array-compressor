@@ -86,6 +86,10 @@ public class SerializationFactoryLookup {
                     return CollectionSerializationFactory.INSTANCE;
                 }
         }
+
+        if (type.getType() != Object.class && type.getType().getName().startsWith("java")) {
+            return UnsupportedSerializationFactory.INSTANCE;
+        }
         return null;//new ObjectSerializationFactory.INSTANCE;
     }
 
