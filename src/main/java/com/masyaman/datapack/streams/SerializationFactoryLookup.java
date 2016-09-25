@@ -3,6 +3,7 @@ package com.masyaman.datapack.streams;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.collections.BitSetSerializationFactory;
+import com.masyaman.datapack.serializers.collections.CollectionSerializationFactory;
 import com.masyaman.datapack.serializers.collections.MapSerializationFactory;
 import com.masyaman.datapack.serializers.enums.EnumsConstantsSerializationFactory;
 import com.masyaman.datapack.serializers.enums.EnumsSerializationFactory;
@@ -15,10 +16,7 @@ import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactor
 import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SerializationFactoryLookup {
 
@@ -33,6 +31,7 @@ public class SerializationFactoryLookup {
             StringSerializationFactory.INSTANCE,
             StringCachedSerializationFactory.INSTANCE,
             StringConstantsSerializationFactory.INSTANCE,
+            CollectionSerializationFactory.INSTANCE,
             MapSerializationFactory.INSTANCE,
             BitSetSerializationFactory.INSTANCE,
             ObjectSerializationFactory.INSTANCE,
@@ -54,6 +53,7 @@ public class SerializationFactoryLookup {
         switch (type.getType().getName()) {
             case "java.lang.String":
                 return StringSerializationFactory.INSTANCE;
+
             case "int":
             case "java.lang.Integer":
             case "long":
@@ -75,14 +75,13 @@ public class SerializationFactoryLookup {
             case "java.util.BitSet":
                 return BitSetSerializationFactory.INSTANCE;
 
-            case "java.util.List":
-            case "java.util.Set":
-                return UnsupportedSerializationFactory.INSTANCE; // TODO
-            case "java.util.Map":
-                return MapSerializationFactory.INSTANCE;
             default:
                 if (type.getType().isEnum()) {
                     return EnumsSerializationFactory.INSTANCE;
+                } else if (Map.class.isAssignableFrom(type.getType())) {
+                    return MapSerializationFactory.INSTANCE;
+                } else if (Collection.class.isAssignableFrom(type.getType())) {
+                    return CollectionSerializationFactory.INSTANCE;
                 }
         }
         return null;//new ObjectSerializationFactory.INSTANCE;
