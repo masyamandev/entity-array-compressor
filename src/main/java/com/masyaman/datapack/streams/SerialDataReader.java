@@ -24,7 +24,7 @@ public class SerialDataReader extends DataReader {
     }
 
     public SerialDataReader(InputStream is, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(is, null);
+        super(is);
         this.serializationFactoryLookup = serializationFactoryLookup;
         readGlobalSettings();
     }

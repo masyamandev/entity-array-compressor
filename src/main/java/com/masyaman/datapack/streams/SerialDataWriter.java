@@ -31,7 +31,7 @@ public class SerialDataWriter extends DataWriter {
     }
 
     public SerialDataWriter(OutputStream os, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(os, null);
+        super(os);
         this.serializationFactoryLookup = serializationFactoryLookup;
         writeGlobalSettings();
     }

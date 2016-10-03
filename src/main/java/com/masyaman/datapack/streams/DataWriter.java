@@ -17,16 +17,14 @@ import java.util.*;
 public abstract class DataWriter implements ObjectWriter {
 
     protected OutputStream os;
-    private DataWriter parentWriter;
 
     private Serializer<Long> signedLongSerializer;
     private Serializer<Long> unsignedLongSerializer;
     private Serializer<String> stringSerializer;
     private Serializer<String> stringCachedSerializer;
 
-    public DataWriter(OutputStream os, DataWriter parentWriter) throws IOException {
+    public DataWriter(OutputStream os) throws IOException {
         this.os = os;
-        this.parentWriter = parentWriter;
 
         signedLongSerializer = new LongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
         unsignedLongSerializer = new UnsignedLongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
@@ -72,15 +70,9 @@ public abstract class DataWriter implements ObjectWriter {
         writeObject(o, o == null ? null : new TypeDescriptor<T>(o.getClass()));
     }
 
-    public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {
-        parentWriter.writeObject(o, type);
-    }
+    public abstract <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;
 
-    public SerializationFactoryLookup getSerializationFactoryLookup() {
-        return parentWriter.getSerializationFactoryLookup();
-    }
+    public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
-    public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
-        return parentWriter.createAndRegisterSerializer(factory, type);
-    }
+    public abstract <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException;
 }

@@ -16,16 +16,14 @@ import java.util.List;
 public abstract class DataReader implements ObjectReader {
 
     protected InputStream is;
-    private DataReader parentReader;
 
     private Deserializer<Long> signedLongDeserializer;
     private Deserializer<Long> unsignedLongDeserializer;
     private Deserializer<String> stringDeserializer;
     private Deserializer<String> stringCachedDeserializer;
 
-    public DataReader(InputStream is, DataReader parentReader) throws IOException {
+    public DataReader(InputStream is) throws IOException {
         this.is = is;
-        this.parentReader = parentReader;
 
         signedLongDeserializer = new LongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
         unsignedLongDeserializer = new UnsignedLongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
@@ -66,15 +64,9 @@ public abstract class DataReader implements ObjectReader {
         return readObject(null);
     }
 
-    public <T> T readObject(TypeDescriptor<T> type) throws IOException {
-        return parentReader.readObject(type);
-    }
+    public abstract <T> T readObject(TypeDescriptor<T> type) throws IOException;
 
-    public SerializationFactoryLookup getSerializationFactoryLookup() {
-        return parentReader.getSerializationFactoryLookup();
-    }
+    public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
-    public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
-        return parentReader.createAndRegisterDeserializer(type);
-    }
+    public abstract <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException;
 }
