@@ -1,18 +1,15 @@
 package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
-import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
 import com.masyaman.datapack.serializers.numbers.LongSerializer;
 import com.masyaman.datapack.serializers.numbers.UnsignedLongSerializer;
-import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
 
 public abstract class DataWriter implements ObjectWriter {
 
@@ -75,4 +72,29 @@ public abstract class DataWriter implements ObjectWriter {
     public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
     public abstract <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException;
+
+
+    public static class Wrapper extends DataWriter {
+        DataWriter parent;
+
+        public Wrapper(OutputStream os, DataWriter parent) throws IOException {
+            super(os);
+            this.parent = parent;
+        }
+
+        @Override
+        public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {
+            parent.writeObject(o, type);
+        }
+
+        @Override
+        public SerializationFactoryLookup getSerializationFactoryLookup() {
+            return parent.getSerializationFactoryLookup();
+        }
+
+        @Override
+        public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
+            return parent.createAndRegisterSerializer(factory, type);
+        }
+    }
 }

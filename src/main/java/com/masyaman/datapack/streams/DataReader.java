@@ -2,7 +2,6 @@ package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.caching.SimpleCachedDeserializer;
 import com.masyaman.datapack.serializers.numbers.LongDeserializer;
 import com.masyaman.datapack.serializers.numbers.UnsignedLongDeserializer;
@@ -10,8 +9,6 @@ import com.masyaman.datapack.serializers.strings.StringDeserializer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class DataReader implements ObjectReader {
 
@@ -74,4 +71,29 @@ public abstract class DataReader implements ObjectReader {
     public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
     public abstract <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException;
+
+
+    public static class Wrapper extends DataReader {
+        DataReader parent;
+
+        public Wrapper(InputStream is, DataReader parent) throws IOException {
+            super(is);
+            this.parent = parent;
+        }
+
+        @Override
+        public <T> T readObject(TypeDescriptor<T> type) throws IOException {
+            return parent.readObject(type);
+        }
+
+        @Override
+        public SerializationFactoryLookup getSerializationFactoryLookup() {
+            return parent.getSerializationFactoryLookup();
+        }
+
+        @Override
+        public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+            return parent.createAndRegisterDeserializer(type);
+        }
+    }
 }

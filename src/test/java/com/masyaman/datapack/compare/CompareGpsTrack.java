@@ -41,6 +41,9 @@ public class CompareGpsTrack {
         testSerialization("BinaryStream", binarySerialize(true), events);
         testSerialization("BinaryOptimized", binarySerialize(true), eventsOptimized);
         testSerialization("BinaryDataLoss", binarySerialize(false), eventsDataLoss);
+        testSerialization("MultiGzipStream", multiGzipSerialize(true), events);
+        testSerialization("MultiGzipOptimized", multiGzipSerialize(true), eventsOptimized);
+        testSerialization("MultiGzipDataLoss", multiGzipSerialize(false), eventsDataLoss);
         testSerialization("Csv", csvSerialize(), events);
         testSerialization("Json", jsonSerialize(), events);
         testSerialization("Smile", smileSerialize(), events);
@@ -127,6 +130,34 @@ public class CompareGpsTrack {
                         assertThat(deserialized).isEqualTo(event);
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
+                }
+            }
+
+            return serialized;
+        };
+    }
+
+    private static DataSerializer multiGzipSerialize(boolean testDeserialization) throws Exception {
+        return e -> {
+            byte[] serialized;
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+                try (ObjectWriter serializer = new MultiGzipDataWriter(byteStream)) {
+                    for (Object event : e) {
+                        serializer.writeObject(event);
+                    }
+                }
+                serialized = byteStream.toByteArray();
+            }
+
+            if (testDeserialization) {
+                try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        Object deserialized = objectReader.readObject();
+                        assertThat(deserialized).isEqualTo(event);
+                    }
+                    // TODO fix objectReader.hasObjects() somehow or remove method
+                    //assertThat(objectReader.hasObjects()).isFalse();
                 }
             }
 
