@@ -13,44 +13,29 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataReader {
+public abstract class DataReader implements ObjectReader {
 
-    private InputStream is;
-
-    private SerializationFactoryLookup serializationFactoryLookup;
+    protected InputStream is;
+    private DataReader parentReader;
 
     private Deserializer<Long> signedLongDeserializer;
     private Deserializer<Long> unsignedLongDeserializer;
     private Deserializer<String> stringDeserializer;
     private Deserializer<String> stringCachedDeserializer;
 
-    private List<Deserializer> registeredDeserializers = new ArrayList<>();
-
-    public DataReader(InputStream is) throws IOException {
-        this(is, new SerializationFactoryLookup());
-    }
-
-    public DataReader(InputStream is, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+    public DataReader(InputStream is, DataReader parentReader) throws IOException {
         this.is = is;
-        this.serializationFactoryLookup = serializationFactoryLookup;
-        
+        this.parentReader = parentReader;
+
         signedLongDeserializer = new LongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
         unsignedLongDeserializer = new UnsignedLongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
         stringDeserializer = new StringDeserializer(this);//StringSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
         stringCachedDeserializer = new SimpleCachedDeserializer(this, stringDeserializer);//StringCachedSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
-
-        readGlobalSettings();
     }
 
-    private void readGlobalSettings() throws IOException {
-        Long version = unsignedLongDeserializer.deserialize();
-        if (version == null || version.longValue() != DataWriter.CURRENT_VERSION) {
-            throw new IOException("Version " + version + " is not supported!");
-        }
-        Long settingsNumber = unsignedLongDeserializer.deserialize();
-        if (settingsNumber == null || settingsNumber.longValue() != 0) {
-            throw new IOException("Settings are not supported!");
-        }
+    @Override
+    public void close() throws IOException {
+        is.close();
     }
 
     public byte readByte() throws IOException {
@@ -82,35 +67,14 @@ public class DataReader {
     }
 
     public <T> T readObject(TypeDescriptor<T> type) throws IOException {
-        Long id = readUnsignedLong();
-        if (id == null) {
-            return null;
-        }
-        if (registeredDeserializers.size() <= id) {
-//            String name = readCachedString();
-//            SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
-//            if (type == null) {
-//                type = serializationFactory.getDefaultType();
-//            }
-//            Deserializer deserializer = serializationFactory.createDeserializer(this, type);
-            registeredDeserializers.add(createAndRegisterDeserializer(type));
-        }
-        return (T) registeredDeserializers.get(id.intValue()).deserialize();
+        return parentReader.readObject(type);
     }
 
     public SerializationFactoryLookup getSerializationFactoryLookup() {
-        return serializationFactoryLookup;
+        return parentReader.getSerializationFactoryLookup();
     }
 
     public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
-        String name = readCachedString();
-        SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
-        if (serializationFactory == null) {
-            throw new IOException("Unable to find serialization factory '" + name + "'");
-        }
-//        if (type == null) {
-//            type = serializationFactory.getDefaultType();
-//        }
-        return serializationFactory.createDeserializer(this, type);
+        return parentReader.createAndRegisterDeserializer(type);
     }
 }

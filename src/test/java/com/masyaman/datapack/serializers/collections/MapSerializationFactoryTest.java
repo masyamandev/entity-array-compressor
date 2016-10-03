@@ -14,6 +14,8 @@ import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactor
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -139,13 +141,13 @@ public class MapSerializationFactoryTest {
                 new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, InheritFromParent.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);
+        Serializer<Map> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);
 
         serializer.serialize(map);
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new DataReader(is), MAP_TYPE);
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), MAP_TYPE);
         Map deserialized = deserializer.deserialize();
 
         Map expected = new HashMap<>();
@@ -165,13 +167,13 @@ public class MapSerializationFactoryTest {
                 new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, Precision1.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), td);
+        Serializer<Map> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);
 
         serializer.serialize(map);
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new DataReader(is), MAP_TYPE);
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), MAP_TYPE);
         Map deserialized = deserializer.deserialize();
 
         Map expected = new HashMap<>();
@@ -186,7 +188,7 @@ public class MapSerializationFactoryTest {
     }
     private void checkSerialization(Map map, TypeDescriptor tdSer, TypeDescriptor tdDeser, int minSize, int maxSize) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Map> serializer = FACTORY.createSerializer(new DataWriter(os), tdSer);
+        Serializer<Map> serializer = FACTORY.createSerializer(new SerialDataWriter(os), tdSer);
 
         serializer.serialize(map);
 
@@ -194,7 +196,7 @@ public class MapSerializationFactoryTest {
         assertThat(bytes.length).isBetween(minSize, maxSize);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new DataReader(is), tdDeser);
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), tdDeser);
         Map deserialized = deserializer.deserialize();
         assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
         assertThat(deserialized).isEqualTo(map);

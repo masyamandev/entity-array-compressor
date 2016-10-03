@@ -30,13 +30,13 @@ public class SerializationFactoryLookupTest extends TestCase {
                     .isTrue();
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            Serializer serializer = factory.createSerializer(new DataWriter(os), factory.getDefaultType());
+            Serializer serializer = factory.createSerializer(new SerialDataWriter(os), factory.getDefaultType());
             serializer.serialize(null);
 
             byte[] bytes = os.toByteArray();
 
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-            Deserializer deserializer = factory.createDeserializer(new DataReader(is), factory.getDefaultType());
+            Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is), factory.getDefaultType());
             assertThat(deserializer.deserialize());// TODO? .isNull();
         }
     }

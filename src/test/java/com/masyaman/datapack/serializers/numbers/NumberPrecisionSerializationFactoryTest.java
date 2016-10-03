@@ -7,6 +7,8 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import org.assertj.core.data.Offset;
 import org.junit.Test;
 
@@ -27,7 +29,7 @@ public class NumberPrecisionSerializationFactoryTest {
     @Test
     public void testPrecision6() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Double> serializer = FACTORY.createSerializer(new DataWriter(os),
+        Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
                 new TypeDescriptor(Double.class, new DecimalPrecisionInstance(6)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
@@ -36,14 +38,14 @@ public class NumberPrecisionSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream isDouble = new ByteArrayInputStream(bytes);
-        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new DataReader(isDouble), DOUBLE_TYPE);
+        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new SerialDataReader(isDouble), DOUBLE_TYPE);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1234.123457, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1234.987654, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1234.123457, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1234.987654, OFFSET);
 
         ByteArrayInputStream isLong = new ByteArrayInputStream(bytes);
-        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new DataReader(isLong), LONG_TYPE);
+        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new SerialDataReader(isLong), LONG_TYPE);
         assertThat(longDeserializer.deserialize()).isEqualTo(1234);
         assertThat(longDeserializer.deserialize()).isEqualTo(1235);
         assertThat(longDeserializer.deserialize()).isEqualTo(-1234);
@@ -53,7 +55,7 @@ public class NumberPrecisionSerializationFactoryTest {
     @Test
     public void testPrecision2() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Double> serializer = FACTORY.createSerializer(new DataWriter(os),
+        Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
                 new TypeDescriptor(Double.class, new DecimalPrecisionInstance(2)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
@@ -62,14 +64,14 @@ public class NumberPrecisionSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream isDouble = new ByteArrayInputStream(bytes);
-        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new DataReader(isDouble), DOUBLE_TYPE);
+        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new SerialDataReader(isDouble), DOUBLE_TYPE);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1234.12, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1234.99, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1234.12, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1234.99, OFFSET);
 
         ByteArrayInputStream isLong = new ByteArrayInputStream(bytes);
-        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new DataReader(isLong), LONG_TYPE);
+        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new SerialDataReader(isLong), LONG_TYPE);
         assertThat(longDeserializer.deserialize()).isEqualTo(1234);
         assertThat(longDeserializer.deserialize()).isEqualTo(1235);
         assertThat(longDeserializer.deserialize()).isEqualTo(-1234);
@@ -79,7 +81,7 @@ public class NumberPrecisionSerializationFactoryTest {
     @Test
     public void testPrecision0() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Double> serializer = FACTORY.createSerializer(new DataWriter(os),
+        Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
                 new TypeDescriptor(Double.class, new DecimalPrecisionInstance(0)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
@@ -88,14 +90,14 @@ public class NumberPrecisionSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream isDouble = new ByteArrayInputStream(bytes);
-        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new DataReader(isDouble), DOUBLE_TYPE);
+        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new SerialDataReader(isDouble), DOUBLE_TYPE);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1234.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1235.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1234.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1235.0, OFFSET);
 
         ByteArrayInputStream isLong = new ByteArrayInputStream(bytes);
-        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new DataReader(isLong), LONG_TYPE);
+        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new SerialDataReader(isLong), LONG_TYPE);
         assertThat(longDeserializer.deserialize()).isEqualTo(1234);
         assertThat(longDeserializer.deserialize()).isEqualTo(1235);
         assertThat(longDeserializer.deserialize()).isEqualTo(-1234);
@@ -105,7 +107,7 @@ public class NumberPrecisionSerializationFactoryTest {
     @Test
     public void testPrecisionM2() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Double> serializer = FACTORY.createSerializer(new DataWriter(os),
+        Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
                 new TypeDescriptor(Double.class, new DecimalPrecisionInstance(-2)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
@@ -114,14 +116,14 @@ public class NumberPrecisionSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream isDouble = new ByteArrayInputStream(bytes);
-        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new DataReader(isDouble), DOUBLE_TYPE);
+        Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new SerialDataReader(isDouble), DOUBLE_TYPE);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1200.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(1200.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1200.0, OFFSET);
         assertThat(doubleDeserializer.deserialize()).isCloseTo(-1200.0, OFFSET);
 
         ByteArrayInputStream isLong = new ByteArrayInputStream(bytes);
-        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new DataReader(isLong), LONG_TYPE);
+        Deserializer<Long> longDeserializer = FACTORY.createDeserializer(new SerialDataReader(isLong), LONG_TYPE);
         assertThat(longDeserializer.deserialize()).isEqualTo(1200);
         assertThat(longDeserializer.deserialize()).isEqualTo(1200);
         assertThat(longDeserializer.deserialize()).isEqualTo(-1200);

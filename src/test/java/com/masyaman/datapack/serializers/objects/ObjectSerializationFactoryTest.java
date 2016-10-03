@@ -6,6 +6,8 @@ import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.samples.*;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +24,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSimpleSerialization() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<TsTz> serializer = FACTORY.createSerializer(new DataWriter(os), new TypeDescriptor(TsTz.class));
+        Serializer<TsTz> serializer = FACTORY.createSerializer(new SerialDataWriter(os), new TypeDescriptor(TsTz.class));
         serializer.serialize(new TsTz(100000L, 234));
         serializer.serialize(new TsTz(100000L, 234));
         serializer.serialize(new TsTz(100000L, 234));
@@ -32,7 +34,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<TsTz> deserializer = FACTORY.createDeserializer(new DataReader(is), new TypeDescriptor(TsTz.class));
+        Deserializer<TsTz> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), new TypeDescriptor(TsTz.class));
         assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
         assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
         assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
@@ -41,7 +43,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testObjectSerialization() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(null, new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), null));
@@ -53,7 +55,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(null, new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), null));
@@ -64,7 +66,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testComplexObjectSerialization() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new TsTz(100000L, 234));
         dw.writeObject(new TsTz(100000L, 234));
         dw.writeObject(new TsTz(100000L, 234));
@@ -75,7 +77,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new TsTz(100000L, 234));
         assertThat(dr.readObject()).isEqualTo(new TsTz(100000L, 234));
         assertThat(dr.readObject()).isEqualTo(new TsTz(100000L, 234));
@@ -85,7 +87,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testObjectSerializationWithInheritance() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(null, new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
@@ -97,7 +99,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(null, new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
@@ -108,7 +110,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithSpecifiedClass() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new LatLonNoAltTsTz(new LatLonAlt(1.1, 2.2, 3.3), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonNoAltTsTz(null, new TsTz(100000L, 234)));
         dw.writeObject(new LatLonNoAltTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
@@ -120,7 +122,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         // No Alt here because class was set exactly to LatLon, see annotation in LatLonNoAltTsTz.latLon
         assertThat(dr.readObject()).isEqualTo(new LatLonNoAltTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonNoAltTsTz(null, new TsTz(100000L, 234)));
@@ -132,7 +134,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithSpecifiedClassFieldsObjects() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new LatLonTsTzAsObject(new LatLonAlt(1.1, 2.2, 3.3), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTzAsObject(null, new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTzAsObject(new LatLonAlt(1.1, 2.2, 3.3), null));
@@ -144,7 +146,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         // No Alt here because class was set exactly to LatLon, see annotation in LatLonNoAltTsTz.latLon
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTzAsObject(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTzAsObject(null, new TsTz(100000L, 234)));
@@ -156,7 +158,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithArrays() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
         dw.writeObject(new ArrayFields(null, new String[] {"A", "B"}));
         dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, null));
@@ -168,7 +170,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
         assertThat(dr.readObject()).isEqualTo(new ArrayFields(null, new String[] {"A", "B"}));
         assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, null));
@@ -179,7 +181,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithCollections() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
         dw.writeObject(new CollectionFields(null, Arrays.asList("A", "B")));
         dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
@@ -191,7 +193,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
         assertThat(dr.readObject()).isEqualTo(new CollectionFields(null, Arrays.asList("A", "B")));
         assertThat(dr.readObject()).isEqualTo(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
@@ -202,7 +204,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithSets() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
         dw.writeObject(new CollectionSetFields(null, Arrays.asList("A", "B")));
         dw.writeObject(new CollectionSetFields(Arrays.asList(1, 1L, 1D), null));
@@ -214,7 +216,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
         assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(null, Arrays.asList("A", "B")));
         assertThat(dr.readObject()).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), null));
@@ -225,7 +227,7 @@ public class ObjectSerializationFactoryTest {
 //    @Test
 //    public void testDeserializationWithAnotherType() throws Exception {
 //        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//        DataWriter dw = new DataWriter(os);
+//        DataWriter dw = new SerialDataWriter(os);
 //        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
 //        dw.writeObject(new CollectionFields(null, Arrays.asList("A", "B")));
 //        dw.writeObject(new CollectionFields(Arrays.asList(1, 1L, 1D), null));
@@ -237,7 +239,7 @@ public class ObjectSerializationFactoryTest {
 //        System.out.println(new String(bytes));
 //
 //        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-//        DataReader dr = new DataReader(is);
+//        DataReader dr = new SerialDataReader(is);
 //        TypeDescriptor td = new TypeDescriptor(CollectionSetFields.class);
 //        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(Arrays.asList(1, 1L, 1D), Arrays.asList("A", "B")));
 //        assertThat(dr.readObject(td)).isEqualTo(new CollectionSetFields(null, Arrays.asList("A", "B")));
@@ -249,7 +251,7 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSerializationWithIgnoredFields() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new DataWriter(os);
+        DataWriter dw = new SerialDataWriter(os);
         dw.writeObject(new IgnoredFields("A", "B"));
 
         byte[] bytes = os.toByteArray();
@@ -257,7 +259,7 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new DataReader(is);
+        DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new IgnoredFields(null, "B"));
     }
 

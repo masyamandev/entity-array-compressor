@@ -8,6 +8,8 @@ import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.ObjectWriter;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
@@ -107,8 +109,8 @@ public class CompareGpsTrack {
 
     private static DataSerializer binarySerialize() throws Exception {
         return e -> {
-            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-                DataWriter serializer = new DataWriter(byteStream);
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                ObjectWriter serializer = new SerialDataWriter(byteStream)) {
                 for (Object event : e) {
                     serializer.writeObject(event);
                 }

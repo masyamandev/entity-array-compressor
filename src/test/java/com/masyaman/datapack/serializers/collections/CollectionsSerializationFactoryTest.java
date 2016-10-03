@@ -14,6 +14,8 @@ import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactor
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -105,13 +107,13 @@ public class CollectionsSerializationFactoryTest {
                 new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, Precision1.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Collection> serializer = FACTORY.createSerializer(new DataWriter(os), td);
+        Serializer<Collection> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);
 
         serializer.serialize(collection);
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new DataReader(is), LIST_TYPE);
+        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LIST_TYPE);
         Collection deserialized = deserializer.deserialize();
 
         Collection expected = new ArrayList<>();
@@ -129,7 +131,7 @@ public class CollectionsSerializationFactoryTest {
 
     private void checkSerialization(Collection collection, TypeDescriptor tdSer, TypeDescriptor tdDeser, int minSize, int maxSize) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Collection> serializer = FACTORY.createSerializer(new DataWriter(os), tdSer);
+        Serializer<Collection> serializer = FACTORY.createSerializer(new SerialDataWriter(os), tdSer);
 
         serializer.serialize(collection);
 
@@ -137,7 +139,7 @@ public class CollectionsSerializationFactoryTest {
         assertThat(bytes.length).isBetween(minSize, maxSize);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new DataReader(is), tdDeser);
+        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), tdDeser);
         Collection deserialized = deserializer.deserialize();
         assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
         assertThat(deserialized).containsOnlyElementsOf(collection);
