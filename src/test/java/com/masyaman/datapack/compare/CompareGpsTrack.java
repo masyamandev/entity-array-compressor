@@ -7,14 +7,13 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
-import com.masyaman.datapack.streams.DataWriter;
-import com.masyaman.datapack.streams.ObjectWriter;
-import com.masyaman.datapack.streams.SerialDataWriter;
+import com.masyaman.datapack.streams.*;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import static com.masyaman.datapack.compare.objects.CsvResourceParser.parseCsv;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompareGpsTrack {
 
@@ -38,9 +38,9 @@ public class CompareGpsTrack {
 
         System.out.println("Got " + events.size() + " objects of type " + events.get(0).getClass().getSimpleName());
 
-        testSerialization("BinaryStream", binarySerialize(), events);
-        testSerialization("BinaryOptimized", binarySerialize(), eventsOptimized);
-        testSerialization("BinaryDataLoss", binarySerialize(), eventsDataLoss);
+        testSerialization("BinaryStream", binarySerialize(true), events);
+        testSerialization("BinaryOptimized", binarySerialize(true), eventsOptimized);
+        testSerialization("BinaryDataLoss", binarySerialize(false), eventsDataLoss);
         testSerialization("Csv", csvSerialize(), events);
         testSerialization("Json", jsonSerialize(), events);
         testSerialization("Smile", smileSerialize(), events);
@@ -107,15 +107,30 @@ public class CompareGpsTrack {
         };
     }
 
-    private static DataSerializer binarySerialize() throws Exception {
+    private static DataSerializer binarySerialize(boolean testDeserialization) throws Exception {
         return e -> {
-            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-                ObjectWriter serializer = new SerialDataWriter(byteStream)) {
-                for (Object event : e) {
-                    serializer.writeObject(event);
+            byte[] serialized;
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+                try (ObjectWriter serializer = new SerialDataWriter(byteStream)) {
+                    for (Object event : e) {
+                        serializer.writeObject(event);
+                    }
                 }
-                return byteStream.toByteArray();
+                serialized = byteStream.toByteArray();
             }
+
+            if (testDeserialization) {
+                try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        Object deserialized = objectReader.readObject();
+                        assertThat(deserialized).isEqualTo(event);
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
+            }
+
+            return serialized;
         };
     }
 

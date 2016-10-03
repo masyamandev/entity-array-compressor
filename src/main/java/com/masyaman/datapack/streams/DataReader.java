@@ -36,6 +36,11 @@ public abstract class DataReader implements ObjectReader {
         is.close();
     }
 
+    @Override
+    public boolean hasObjects() throws IOException {
+        return is.available() > 0;
+    }
+
     public byte readByte() throws IOException {
         return (byte) is.read();
     }

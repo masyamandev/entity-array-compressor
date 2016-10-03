@@ -8,4 +8,5 @@ import java.io.IOException;
 public interface ObjectReader extends Closeable {
     Object readObject() throws IOException;
     <T> T readObject(TypeDescriptor<T> type) throws IOException;
+    boolean hasObjects() throws IOException;
 }
