@@ -129,9 +129,7 @@ public class MultiGzipDataWriter extends DataWriter {
         }
 
         public byte[] toByteArray() throws IOException {
-            finish();
             close();
-            byteArrayOutputStream.close();
             return byteArrayOutputStream.toByteArray();
         }
     }

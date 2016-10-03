@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface ObjectWriter extends Closeable {
     <T> void writeObject(T o) throws IOException;
-    public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;
+    <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;
 }
