@@ -4,8 +4,8 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.numbers.UnsignedLongSerializer;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
+import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -99,11 +99,10 @@ public class MultiGzipDataWriter extends DataWriter {
             arrays[i++] = ((ByteArrayOutputWrapper) dataWriter.os).toByteArray();
         }
 
-        DataWriter.Wrapper headerWriter = new DataWriter.Wrapper(outputStream, null);
-        UnsignedLongSerializer longSerializer = new UnsignedLongSerializer(headerWriter);
-        longSerializer.serialize((long) arrays.length);
+        UnsignedLongWriter lengthWriter = new UnsignedLongWriter(outputStream);
+        lengthWriter.serialize((long) arrays.length);
         for (byte[] array : arrays) {
-            longSerializer.serialize((long) array.length);
+            lengthWriter.serialize((long) array.length);
         }
 
         for (byte[] array : arrays) {

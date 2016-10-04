@@ -15,22 +15,6 @@ public class UnsignedLongDeserializer implements Deserializer<Long> {
 
     @Override
     public Long deserialize() throws IOException {
-        int b = is.readUnsignedByte();
-        if (b == 0x7F) {
-            return null; // -64 in single byte representation
-        }
-        int bytesToRead = 0;
-        while ((b & (0x80 >> bytesToRead)) != 0) {
-            bytesToRead++;
-        }
-        long result = b & ~(0xFFFFFF80 >> bytesToRead);
-        for (int i = 0; i < bytesToRead; i++) {
-            result = (result << 8) | is.readUnsignedByte();
-        }
-//        if (bytesToRead < 8) {
-//            int shift = 64 - 7 * (bytesToRead + 1);
-//            result = (result << shift) >> shift;
-//        }
-        return result;
+        return is.readUnsignedLong();
     }
 }

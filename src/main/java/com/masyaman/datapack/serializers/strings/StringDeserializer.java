@@ -15,15 +15,6 @@ public class StringDeserializer implements Deserializer<String> {
 
     @Override
     public String deserialize() throws IOException {
-        Long length = is.readUnsignedLong();
-        if (length == null) {
-            return null;
-        }
-        int len = length.intValue();
-        byte[] bytes = new byte[len];
-        for (int i = 0; i < len; i++) {
-            bytes[i] = is.readByte();
-        }
-        return new String(bytes);// TODO encoding
+        return is.readString();
     }
 }

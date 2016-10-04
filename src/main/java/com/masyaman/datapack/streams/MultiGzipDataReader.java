@@ -3,6 +3,7 @@ package com.masyaman.datapack.streams;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
+import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,12 +38,12 @@ public class MultiGzipDataReader extends DataReader {
 
     private static List<InputStream> splitStreams(InputStream is) throws IOException {
         // Unoptimized code
-        DataReader.Wrapper dataReader = new Wrapper(is, null);
+        UnsignedLongReader lengthReader = new UnsignedLongReader(is);
 
-        int streams = dataReader.readUnsignedLong().intValue();
+        int streams = lengthReader.deserialize().intValue();
         int[] lengths = new int[streams];
         for (int i = 0; i < streams; i++) {
-            lengths[i] = dataReader.readUnsignedLong().intValue();
+            lengths[i] = lengthReader.deserialize().intValue();
         }
 
         List<InputStream> dataStreams = new LinkedList<>();

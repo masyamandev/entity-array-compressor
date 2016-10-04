@@ -3,9 +3,9 @@ package com.masyaman.datapack.streams;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.caching.SimpleCachedDeserializer;
-import com.masyaman.datapack.serializers.numbers.LongDeserializer;
-import com.masyaman.datapack.serializers.numbers.UnsignedLongDeserializer;
-import com.masyaman.datapack.serializers.strings.StringDeserializer;
+import com.masyaman.datapack.serializers.primitives.SignedLongReader;
+import com.masyaman.datapack.serializers.primitives.StringReader;
+import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,10 +22,10 @@ public abstract class DataReader implements ObjectReader {
     public DataReader(InputStream is) throws IOException {
         this.is = is;
 
-        signedLongDeserializer = new LongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
-        unsignedLongDeserializer = new UnsignedLongDeserializer(this);//SignedLongSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(Long.class));
-        stringDeserializer = new StringDeserializer(this);//StringSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
-        stringCachedDeserializer = new SimpleCachedDeserializer(this, stringDeserializer);//StringCachedSerializationFactory.INSTANCE.createDeserializer(this, new TypeDescriptor(String.class));
+        signedLongDeserializer = new SignedLongReader(is);
+        unsignedLongDeserializer = new UnsignedLongReader(is);
+        stringDeserializer = new StringReader(is, unsignedLongDeserializer);
+        stringCachedDeserializer = new SimpleCachedDeserializer(this, stringDeserializer);
     }
 
     @Override

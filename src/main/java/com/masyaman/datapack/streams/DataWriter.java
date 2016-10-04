@@ -4,8 +4,9 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
-import com.masyaman.datapack.serializers.numbers.LongSerializer;
-import com.masyaman.datapack.serializers.numbers.UnsignedLongSerializer;
+import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
+import com.masyaman.datapack.serializers.primitives.StringWriter;
+import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
 import com.masyaman.datapack.serializers.strings.StringSerializer;
 
 import java.io.IOException;
@@ -23,10 +24,10 @@ public abstract class DataWriter implements ObjectWriter {
     public DataWriter(OutputStream os) throws IOException {
         this.os = os;
 
-        signedLongSerializer = new LongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
-        unsignedLongSerializer = new UnsignedLongSerializer(this);//SignedLongSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(Long.class));
-        stringSerializer = new StringSerializer(this);//StringSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
-        stringCachedSerializer = new SimpleCachedSerializer(this, stringSerializer);//StringCachedSerializationFactory.INSTANCE.createSerializer(this, new TypeDescriptor(String.class));
+        signedLongSerializer = new SignedLongWriter(os);
+        unsignedLongSerializer = new UnsignedLongWriter(os);
+        stringSerializer = new StringWriter(os, unsignedLongSerializer);
+        stringCachedSerializer = new SimpleCachedSerializer(this, stringSerializer);
     }
 
     @Override
