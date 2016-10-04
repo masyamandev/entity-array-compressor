@@ -1,5 +1,7 @@
 package com.masyaman.datapack.utils;
 
+import java.math.RoundingMode;
+
 public class MathUtils {
 
     // TODO: works for length=3 only
@@ -31,7 +33,7 @@ public class MathUtils {
         }
     }
 
-    public static <E extends Number> E scale(E number, int scale) {
+    public static <E extends Number> E scale(E number, int scale, RoundingMode roundingMode) {
         if (number == null) {
             return null;
         } else if (scale == 0) {
@@ -48,9 +50,9 @@ public class MathUtils {
             }
         } else if (scale < 0) {
             if (number instanceof Integer) {
-                return (E) new Integer((int) scaleLong(number.longValue(), scale));
+                return (E) new Integer((int) scaleLong(number.longValue(), scale, roundingMode));
             } else if (number instanceof Long) {
-                return (E) new Long(scaleLong(number.longValue(), scale));
+                return (E) new Long(scaleLong(number.longValue(), scale, roundingMode));
             } else if (number instanceof Double) {
                 return (E) new Double(number.doubleValue() / longScales[-scale]);
             } else if (number instanceof Float) {
@@ -60,12 +62,27 @@ public class MathUtils {
         return null;
     }
 
-    private static long scaleLong(long value, int scale) {
+    private static long scaleLong(long value, int scale, RoundingMode roundingMode) {
         long sign = value >= 0 ? 1 : -1;
-        return ((value + sign * longScales[-scale] / 2) / longScales[-scale]);
+        switch (roundingMode) {
+            case HALF_UP:
+                return (value + sign * longScales[-scale] / 2) / longScales[-scale];
+            case HALF_DOWN:
+                return (value + sign * (longScales[-scale] / 2 - 1)) / longScales[-scale];
+            case UP:
+                return (value + sign * (longScales[-scale] - 1)) / longScales[-scale];
+            case DOWN:
+                return (value) / longScales[-scale];
+            case FLOOR:
+                return (value - (sign < 0 ? (longScales[-scale] - 1) : 0)) / longScales[-scale];
+            case CEILING:
+                return (value + (sign > 0 ? (longScales[-scale] - 1) : 0)) / longScales[-scale];
+            default:
+                throw new UnsupportedOperationException("Rounding mode " + roundingMode + " is not supported");
+        }
     }
 
-    public static Long round(Number number) {
+    public static Long round(Number number, RoundingMode roundingMode) {
         if (number == null) {
             return null;
         }
@@ -75,10 +92,29 @@ public class MathUtils {
         } else if (number instanceof Long) {
             return number.longValue();
         } else if (number instanceof Double) {
-            return Math.round(number.doubleValue());
+            return roundDouble(number.doubleValue(), roundingMode);
         } else if (number instanceof Float) {
-            return Math.round(number.doubleValue());
+            return roundDouble(number.doubleValue(), roundingMode);
         }
         return null;
+    }
+
+    public static long roundDouble(double number, RoundingMode roundingMode) {
+        switch (roundingMode) {
+            case HALF_UP:
+                return number >= 0.0 ? Math.round(number) : -Math.round(-number);
+            case HALF_DOWN:
+                return number >= 0.0 ? -Math.round(-number) : Math.round(number);
+            case UP:
+                return number >= 0.0 ? Math.round(Math.ceil(number)) : -Math.round(Math.ceil(-number));
+            case DOWN:
+                return (long) number;
+            case FLOOR:
+                return Math.round(Math.floor(number));
+            case CEILING:
+                return Math.round(Math.ceil(number));
+            default:
+                throw new UnsupportedOperationException("Rounding mode " + roundingMode + " is not supported");
+        }
     }
 }

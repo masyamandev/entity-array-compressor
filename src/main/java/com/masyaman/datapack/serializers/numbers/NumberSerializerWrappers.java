@@ -6,6 +6,7 @@ import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 
 import static com.masyaman.datapack.utils.MathUtils.median;
 
@@ -20,21 +21,21 @@ abstract class NumberSerializerWrappers<T extends Number> implements Serializer<
         };
     }
 
-    public static <E extends Number> Serializer<E> round(Serializer<Long> serializer) throws IOException {
+    public static <E extends Number> Serializer<E> round(Serializer<Long> serializer, RoundingMode roundingMode) throws IOException {
         return new Serializer<E>() {
             @Override
             public void serialize(E o) throws IOException {
-                serializer.serialize(MathUtils.round(o));
+                serializer.serialize(MathUtils.round(o, roundingMode));
             }
         };
     }
 
-    public static <E extends Number> Serializer<E> scaleBy(DataWriter dw, Serializer<E> serializer, int decimalScale) throws IOException {
+    public static <E extends Number> Serializer<E> scaleBy(DataWriter dw, Serializer<E> serializer, int decimalScale, RoundingMode roundingMode) throws IOException {
         dw.writeSignedLong((long) decimalScale);
         return new Serializer<E>() {
             @Override
             public void serialize(E o) throws IOException {
-                serializer.serialize((E) MathUtils.scale(o, decimalScale));
+                serializer.serialize((E) MathUtils.scale(o, decimalScale, roundingMode));
             }
         };
     }

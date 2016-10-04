@@ -3,6 +3,7 @@ package com.masyaman.datapack.annotations;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 
 import java.lang.annotation.Annotation;
+import java.math.RoundingMode;
 
 public class AnnotationsHelper {
 
@@ -17,6 +18,15 @@ public class AnnotationsHelper {
             return DEFAULT_PRECISION;
         } else {
             return 0;
+        }
+    }
+
+    public static RoundingMode getRoundingMode(TypeDescriptor<?> type) {
+        DecimalPrecision annotation = type.getAnnotation(DecimalPrecision.class);
+        if (annotation != null) {
+            return annotation.roundingMode();
+        } else {
+            return RoundingMode.HALF_UP;
         }
     }
 

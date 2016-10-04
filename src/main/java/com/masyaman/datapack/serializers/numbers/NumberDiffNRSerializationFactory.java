@@ -9,6 +9,7 @@ import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 
 import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
@@ -46,7 +47,7 @@ public class NumberDiffNRSerializationFactory extends SerializationFactory<Numbe
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type));
+        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type), RoundingMode.HALF_UP);
     }
 
 

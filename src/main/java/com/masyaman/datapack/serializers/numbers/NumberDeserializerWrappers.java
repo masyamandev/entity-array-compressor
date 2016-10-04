@@ -6,6 +6,7 @@ import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 
 import static com.masyaman.datapack.utils.MathUtils.median;
 
@@ -43,12 +44,12 @@ abstract class NumberDeserializerWrappers<E extends Number> implements Deseriali
         }
     }
 
-    public static <E extends Number> Deserializer<E> scaleBy(DataReader dr, Deserializer<E> deserializer) throws IOException {
+    public static <E extends Number> Deserializer<E> scaleBy(DataReader dr, Deserializer<E> deserializer, RoundingMode roundingMode) throws IOException {
         final int decimalScale = -dr.readSignedLong().intValue();
         return new Deserializer<E>() {
             @Override
             public E deserialize() throws IOException {
-                return MathUtils.scale(deserializer.deserialize(), decimalScale);
+                return MathUtils.scale(deserializer.deserialize(), decimalScale, roundingMode);
             }
         };
     }
