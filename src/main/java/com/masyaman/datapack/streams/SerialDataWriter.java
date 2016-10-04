@@ -47,18 +47,20 @@ public class SerialDataWriter extends DataWriter {
     }
 
     private <T> Serializer<T> getOrCreateSerializer(TypeDescriptor<T> type) throws IOException {
-        Integer id = typeToId.getOrDefault(type, registeredSerializers.size());
+        Integer id = typeToId.getOrDefault(type, 0);
         writeUnsignedLong(Long.valueOf(id));
-        if (id >= registeredSerializers.size()) {
+        if (id <= 0) {
             SerializationFactory factory = serializationFactoryLookup.getSerializationFactory(type);
             if (factory == null) {
                 factory = ObjectSerializationFactory.INSTANCE;
             }
             Serializer serializer = createAndRegisterSerializer(factory, type);
-            typeToId.put(type, id);
+            typeToId.put(type, typeToId.size() + 1);
             registeredSerializers.add(serializer);
+            return serializer;
+        } else {
+            return registeredSerializers.get(id - 1);
         }
-        return registeredSerializers.get(id);
     }
 
     public SerializationFactoryLookup getSerializationFactoryLookup() {

@@ -41,16 +41,13 @@ public class SerialDataReader extends DataReader {
         if (id == null) {
             return null;
         }
-        if (registeredDeserializers.size() <= id) {
-//            String name = readCachedString();
-//            SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
-//            if (type == null) {
-//                type = serializationFactory.getDefaultType();
-//            }
-//            Deserializer deserializer = serializationFactory.createDeserializer(this, type);
-            registeredDeserializers.add(createAndRegisterDeserializer(type));
+        if (id <= 0) {
+            Deserializer<T> deserializer = createAndRegisterDeserializer(type);
+            registeredDeserializers.add(deserializer);
+            return deserializer.deserialize();
+        } else {
+            return (T) registeredDeserializers.get(id.intValue() - 1).deserialize();
         }
-        return (T) registeredDeserializers.get(id.intValue()).deserialize();
     }
 
     public SerializationFactoryLookup getSerializationFactoryLookup() {
