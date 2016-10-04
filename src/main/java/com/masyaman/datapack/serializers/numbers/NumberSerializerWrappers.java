@@ -44,7 +44,7 @@ abstract class NumberSerializerWrappers<T extends Number> implements Serializer<
         dw.writeSignedLong((long) decimalScale);
         final double scale = Math.pow(10, decimalScale);
         return new Serializer<E>() {
-            private double prev = 0.0;
+            private long prev = 0;
 
             @Override
             public void serialize(E o) throws IOException {
@@ -52,11 +52,10 @@ abstract class NumberSerializerWrappers<T extends Number> implements Serializer<
                     serializer.serialize(null);
                 } else {
                     double val = o.doubleValue() * scale;
-                    if (Math.abs(val - prev) < 0.5) {
-                        val = prev;
-                    }
-                    prev = val;
-                    serializer.serialize(Math.round(val));
+                    double diff = val - prev;
+                    long diffRounded = (long) diff;
+                    prev += diffRounded;
+                    serializer.serialize(prev);
                 }
             }
         };
