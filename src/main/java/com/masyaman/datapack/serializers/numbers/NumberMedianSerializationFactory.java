@@ -40,16 +40,22 @@ public class NumberMedianSerializationFactory extends SerializationFactory<Numbe
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        NumberTypeResolver.writeType(os, type);
         int decimalPrecision = getDecimalPrecision(type);
         RoundingMode roundingMode = getRoundingMode(type);
-        return scaleBy(os, round(medianSerializer(new LongSerializer(os)), roundingMode), decimalPrecision, roundingMode);
+        int diffLength = 3;
+
+        NumberTypeResolver.writeType(os, type);
+        os.writeSignedLong((long) decimalPrecision);
+        os.writeUnsignedLong((long) diffLength);
+        return scaleBy(round(medianSerializer(new LongSerializer(os), diffLength), roundingMode), decimalPrecision, roundingMode);
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(medianDeserializer(new LongDeserializer(is)), type), RoundingMode.HALF_UP);
+        int decimalScale = -is.readSignedLong().intValue();
+        int diffLength = is.readUnsignedLong().intValue();
+        return scaleBy(convertTo(medianDeserializer(new LongDeserializer(is), diffLength), type), decimalScale, RoundingMode.HALF_UP);
     }
 
 }

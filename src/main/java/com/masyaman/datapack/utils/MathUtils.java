@@ -6,6 +6,9 @@ public class MathUtils {
 
     // TODO: works for length=3 only
     public static long median(long... values) {
+        if (values.length != 3) {
+            throw new IllegalArgumentException("Not implemented");
+        }
         int max = 0, min = 0;
         for (int i = 1; i < values.length; i++) {
             if (values[i] > values[max]) {

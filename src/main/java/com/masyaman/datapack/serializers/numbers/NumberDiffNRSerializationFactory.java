@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -11,6 +10,7 @@ import com.masyaman.datapack.streams.DataWriter;
 import java.io.IOException;
 import java.math.RoundingMode;
 
+import static com.masyaman.datapack.annotations.AnnotationsHelper.getDecimalPrecision;
 import static com.masyaman.datapack.serializers.numbers.DeserializerWrappers.*;
 import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.*;
 
@@ -40,14 +40,18 @@ public class NumberDiffNRSerializationFactory extends SerializationFactory<Numbe
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
+        int decimalPrecision = getDecimalPrecision(type);
+
         NumberTypeResolver.writeType(os, type);
-        return scaleByNR(os, diffSerializer(new LongSerializer(os)), AnnotationsHelper.getDecimalPrecision(type));
+        os.writeSignedLong((long) decimalPrecision);
+        return scaleByNR(diffSerializer(new LongSerializer(os)), decimalPrecision);
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(diffDeserializer(new LongDeserializer(is)), type), RoundingMode.HALF_UP);
+        int decimalScale = -is.readSignedLong().intValue();
+        return scaleBy(convertTo(diffDeserializer(new LongDeserializer(is)), type), decimalScale, RoundingMode.HALF_UP);
     }
 
 }

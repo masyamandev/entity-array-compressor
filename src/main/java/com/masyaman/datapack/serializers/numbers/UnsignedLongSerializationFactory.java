@@ -41,16 +41,19 @@ public class UnsignedLongSerializationFactory extends SerializationFactory<Numbe
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        NumberTypeResolver.writeType(os, type);
         int decimalPrecision = getDecimalPrecision(type);
         RoundingMode roundingMode = getRoundingMode(type);
-        return scaleBy(os, round(new UnsignedLongSerializer(os), roundingMode), decimalPrecision, roundingMode);
+
+        NumberTypeResolver.writeType(os, type);
+        os.writeSignedLong((long) decimalPrecision);
+        return scaleBy(round(new UnsignedLongSerializer(os), roundingMode), decimalPrecision, roundingMode);
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(new UnsignedLongDeserializer(is), type), RoundingMode.HALF_UP);
+        int decimalScale = -is.readSignedLong().intValue();
+        return scaleBy(convertTo(new UnsignedLongDeserializer(is), type), decimalScale, RoundingMode.HALF_UP);
     }
 
 }

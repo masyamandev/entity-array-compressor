@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.numbers;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
@@ -46,8 +45,7 @@ final class DeserializerWrappers {
         }
     }
 
-    public static <E extends Number> Deserializer<E> scaleBy(DataReader dr, Deserializer<E> deserializer, RoundingMode roundingMode) throws IOException {
-        final int decimalScale = -dr.readSignedLong().intValue();
+    public static <E extends Number> Deserializer<E> scaleBy(Deserializer<E> deserializer, int decimalScale, RoundingMode roundingMode) throws IOException {
         return new Deserializer<E>() {
             @Override
             public E deserialize() throws IOException {
@@ -76,6 +74,7 @@ final class DeserializerWrappers {
         return new Deserializer<Long>() {
             private long prev = 0L;
             private long prev2 = 0L;
+            private boolean isFirst = true;
             @Override
             public Long deserialize() throws IOException {
                 Long val = deserializer.deserialize();
@@ -85,16 +84,21 @@ final class DeserializerWrappers {
                 val += prev * 2 - prev2;
                 prev2 = prev;
                 prev = val;
+                if (isFirst) {
+                    isFirst = false;
+                    prev2 = prev;
+                }
                 return val;
             }
         };
     }
 
-    public static Deserializer<Long> medianDeserializer(Deserializer<Long> deserializer) {
+    public static Deserializer<Long> medianDeserializer(Deserializer<Long> deserializer, int diffLength) {
         return new Deserializer<Long>() {
-            long prev = 0L;
-            long[] diffs = new long[3];
-            int pos = 0;
+            private long prev = 0L;
+            private long[] diffs = new long[diffLength];
+            private int pos = 0;
+            private boolean isFirst = true;
             @Override
             public Long deserialize() throws IOException {
                 Long val = deserializer.deserialize();
@@ -103,8 +107,12 @@ final class DeserializerWrappers {
                 }
                 val += prev + median(diffs);
 
-                diffs[pos] = val.longValue() - prev;
-                pos = (pos + 1) % diffs.length;
+                if (isFirst) {
+                    isFirst = false;
+                } else {
+                    diffs[pos] = val.longValue() - prev;
+                    pos = (pos + 1) % diffs.length;
+                }
 
                 prev = val;
                 return val;

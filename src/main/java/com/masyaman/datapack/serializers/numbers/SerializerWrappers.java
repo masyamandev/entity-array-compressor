@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.numbers;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
@@ -32,8 +31,7 @@ final class SerializerWrappers {
         };
     }
 
-    public static <E extends Number> Serializer<E> scaleBy(DataWriter dw, Serializer<E> serializer, int decimalScale, RoundingMode roundingMode) throws IOException {
-        dw.writeSignedLong((long) decimalScale);
+    public static <E extends Number> Serializer<E> scaleBy(Serializer<E> serializer, int decimalScale, RoundingMode roundingMode) throws IOException {
         return new Serializer<E>() {
             @Override
             public void serialize(E o) throws IOException {
@@ -42,8 +40,7 @@ final class SerializerWrappers {
         };
     }
 
-    public static <E extends Number> Serializer<E> scaleByNR(DataWriter dw, Serializer<Long> serializer, int decimalScale) throws IOException {
-        dw.writeSignedLong((long) decimalScale);
+    public static <E extends Number> Serializer<E> scaleByNR(Serializer<Long> serializer, int decimalScale) throws IOException {
         final double scale = Math.pow(10, decimalScale);
         return new Serializer<E>() {
             private long prev = 0;
@@ -80,8 +77,9 @@ final class SerializerWrappers {
 
     public static Serializer<Long> linearSerializer(Serializer<Long> longSerializer) {
         return new Serializer<Long>() {
-            long prev = 0L;
-            long prev2 = 0L;
+            private long prev = 0L;
+            private long prev2 = 0L;
+            private boolean isFirst = true;
             @Override
             public void serialize(Long o) throws IOException {
                 if (o == null) {
@@ -90,28 +88,36 @@ final class SerializerWrappers {
                     longSerializer.serialize(o.longValue() - (prev * 2 - prev2));
                     prev2 = prev;
                     prev = o.longValue();
+                    if (isFirst) {
+                        isFirst = false;
+                        prev2 = prev;
+                    }
                 }
             }
         };
     }
 
-    public static Serializer<Long> medianSerializer(Serializer<Long> longSerializer) {
+    public static Serializer<Long> medianSerializer(Serializer<Long> longSerializer, int diffLength) {
         return new Serializer<Long>() {
-            long prev = 0L;
-            long[] diffs = new long[3];
-            int pos = 0;
+            private long prev = 0L;
+            private long[] diffs = new long[diffLength];
+            private int pos = 0;
+            private boolean isFirst = true;
             @Override
             public void serialize(Long o) throws IOException {
                 if (o == null) {
                     longSerializer.serialize(null);
                 } else {
                     long serializedValue = o.longValue() - (prev + median(diffs));
-//                    System.out.println("" + (o.longValue() - prev) + "\t\t" + serializedValue + "\t\t" +
-//                            Arrays.asList(diffs[0], diffs[1], diffs[2]) + "\t\t" + median(diffs));
+
                     longSerializer.serialize(serializedValue);
 
-                    diffs[pos] = o.longValue() - prev;
-                    pos = (pos + 1) % diffs.length;
+                    if (isFirst) {
+                        isFirst = false;
+                    } else {
+                        diffs[pos] = o.longValue() - prev;
+                        pos = (pos + 1) % diffs.length;
+                    }
 
                     prev = o.longValue();
                 }

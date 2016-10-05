@@ -7,7 +7,6 @@ import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
 import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
 import com.masyaman.datapack.serializers.primitives.StringWriter;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
-import com.masyaman.datapack.serializers.strings.StringSerializer;
 
 import java.io.IOException;
 import java.io.OutputStream;

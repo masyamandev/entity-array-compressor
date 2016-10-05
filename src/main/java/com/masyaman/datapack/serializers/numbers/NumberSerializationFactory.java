@@ -40,16 +40,19 @@ public class NumberSerializationFactory extends SerializationFactory<Number> imp
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        NumberTypeResolver.writeType(os, type);
         int decimalPrecision = getDecimalPrecision(type);
         RoundingMode roundingMode = getRoundingMode(type);
-        return scaleBy(os, round(new LongSerializer(os), roundingMode), decimalPrecision, roundingMode);
+
+        NumberTypeResolver.writeType(os, type);
+        os.writeSignedLong((long) decimalPrecision);
+        return scaleBy(round(new LongSerializer(os), roundingMode), decimalPrecision, roundingMode);
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return scaleBy(is, convertTo(new LongDeserializer(is), type), RoundingMode.HALF_UP);
+        int decimalScale = -is.readSignedLong().intValue();
+        return scaleBy(convertTo(new LongDeserializer(is), type), decimalScale, RoundingMode.HALF_UP);
     }
 
 }
