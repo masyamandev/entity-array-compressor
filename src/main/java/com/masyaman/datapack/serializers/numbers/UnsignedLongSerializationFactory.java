@@ -9,9 +9,11 @@ import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.convertTo;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.convertFrom;
+import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
+import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
 
 /**
  * Serialization factory for Numbers.
@@ -40,14 +42,15 @@ public class UnsignedLongSerializationFactory extends SerializationFactory<Numbe
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
         NumberTypeResolver.writeType(os, type);
-        return convertFrom(new UnsignedLongSerializer(os), type);
+        int decimalPrecision = getDecimalPrecision(type);
+        RoundingMode roundingMode = getRoundingMode(type);
+        return scaleBy(os, round(new UnsignedLongSerializer(os), roundingMode), decimalPrecision, roundingMode);
     }
 
     @Override
     public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
         type = NumberTypeResolver.readType(is, type);
-        return convertTo(new UnsignedLongDeserializer(is), type);
+        return scaleBy(is, convertTo(new UnsignedLongDeserializer(is), type), RoundingMode.HALF_UP);
     }
-
 
 }

@@ -18,7 +18,7 @@ public abstract class SerializationFactory<T> {
         return name;
     }
 
-    public abstract TypeDescriptor<? extends T> getDefaultType(); // TODO: remove?
+    public abstract TypeDescriptor<? extends T> getDefaultType();
 
     public abstract boolean isApplicable(TypeDescriptor type);
 

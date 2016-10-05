@@ -35,7 +35,7 @@ public class NumberSerializationFactory extends SerializationFactory<Number> imp
 
     @Override
     public boolean isApplicable(TypeDescriptor type) {
-        return Double.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType());
+        return Number.class.isAssignableFrom(type.getType());
     }
 
     @Override
@@ -51,6 +51,5 @@ public class NumberSerializationFactory extends SerializationFactory<Number> imp
         type = NumberTypeResolver.readType(is, type);
         return scaleBy(is, convertTo(new LongDeserializer(is), type), RoundingMode.HALF_UP);
     }
-
 
 }

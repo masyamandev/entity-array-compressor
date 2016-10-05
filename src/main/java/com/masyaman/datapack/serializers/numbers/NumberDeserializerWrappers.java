@@ -10,7 +10,9 @@ import java.math.RoundingMode;
 
 import static com.masyaman.datapack.utils.MathUtils.median;
 
-abstract class NumberDeserializerWrappers<E extends Number> implements Deserializer<E> {
+final class NumberDeserializerWrappers {
+
+    private NumberDeserializerWrappers() {}
 
     public static <E extends Number> Deserializer<E> convertTo(Deserializer<? extends Number> deserializer, TypeDescriptor<E> type) {
         if (type.getType().isAssignableFrom(Long.class) || long.class.isAssignableFrom(type.getType()) || Long.class.isAssignableFrom(type.getType())) {

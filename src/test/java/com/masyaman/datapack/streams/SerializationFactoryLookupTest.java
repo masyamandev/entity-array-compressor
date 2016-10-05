@@ -37,7 +37,7 @@ public class SerializationFactoryLookupTest extends TestCase {
 
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
             Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is), factory.getDefaultType());
-            assertThat(deserializer.deserialize());// TODO? .isNull();
+            assertThat(deserializer.deserialize()).isNull();
         }
     }
 }
