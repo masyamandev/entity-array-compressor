@@ -10,9 +10,9 @@ import java.math.RoundingMode;
 
 import static com.masyaman.datapack.utils.MathUtils.median;
 
-final class NumberSerializerWrappers {
+final class SerializerWrappers {
 
-    private NumberSerializerWrappers() {}
+    private SerializerWrappers() {}
 
     public static <E extends Number> Serializer<E> convertFrom(Serializer<Long> longSerializer, TypeDescriptor<E> type) {
         return new Serializer<E>() {

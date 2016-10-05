@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.math.RoundingMode;
 
 import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
-import static com.masyaman.datapack.serializers.numbers.NumberDeserializerWrappers.*;
-import static com.masyaman.datapack.serializers.numbers.NumberSerializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.DeserializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.*;
 
 /**
  * Serialization factory for Numbers.
