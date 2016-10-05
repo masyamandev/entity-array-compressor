@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -261,6 +262,27 @@ public class ObjectSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
         assertThat(dr.readObject()).isEqualTo(new IgnoredFields(null, "B"));
+    }
+
+    @Test
+    public void testSerializationWithDates() throws Exception {
+        Date today = new Date();
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new ObjectWithDate(today));
+        dw.writeObject(null);
+        dw.writeObject(new ObjectWithDate(null));
+
+        byte[] bytes = os.toByteArray();
+        System.out.println(bytes.length);
+        System.out.println(new String(bytes));
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new ObjectWithDate(today));
+        assertThat(dr.readObject()).isNull();
+        assertThat(dr.readObject()).isEqualTo(new ObjectWithDate(null));
     }
 
 }
