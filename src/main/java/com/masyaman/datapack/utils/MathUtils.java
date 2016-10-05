@@ -50,9 +50,9 @@ public class MathUtils {
             }
         } else if (scale < 0) {
             if (number instanceof Integer) {
-                return (E) new Integer((int) scaleLong(number.longValue(), scale, roundingMode));
+                return (E) new Integer((int) divLongs(number.longValue(), longScales[-scale], roundingMode));
             } else if (number instanceof Long) {
-                return (E) new Long(scaleLong(number.longValue(), scale, roundingMode));
+                return (E) new Long(divLongs(number.longValue(), longScales[-scale], roundingMode));
             } else if (number instanceof Double) {
                 return (E) new Double(number.doubleValue() / longScales[-scale]);
             } else if (number instanceof Float) {
@@ -62,21 +62,21 @@ public class MathUtils {
         return null;
     }
 
-    private static long scaleLong(long value, int scale, RoundingMode roundingMode) {
-        long sign = value >= 0 ? 1 : -1;
+    public static long divLongs(long dividend, long divisor, RoundingMode roundingMode) {
+        long sign = dividend >= 0 ? 1 : -1;
         switch (roundingMode) {
             case HALF_UP:
-                return (value + sign * longScales[-scale] / 2) / longScales[-scale];
+                return (dividend + sign * divisor / 2) / divisor;
             case HALF_DOWN:
-                return (value + sign * (longScales[-scale] / 2 - 1)) / longScales[-scale];
+                return (dividend + sign * ((divisor + 1) / 2 - 1)) / divisor;
             case UP:
-                return (value + sign * (longScales[-scale] - 1)) / longScales[-scale];
+                return (dividend + sign * (divisor - 1)) / divisor;
             case DOWN:
-                return (value) / longScales[-scale];
+                return (dividend) / divisor;
             case FLOOR:
-                return (value - (sign < 0 ? (longScales[-scale] - 1) : 0)) / longScales[-scale];
+                return (dividend - (sign < 0 ? (divisor - 1) : 0)) / divisor;
             case CEILING:
-                return (value + (sign > 0 ? (longScales[-scale] - 1) : 0)) / longScales[-scale];
+                return (dividend + (sign > 0 ? (divisor - 1) : 0)) / divisor;
             default:
                 throw new UnsupportedOperationException("Rounding mode " + roundingMode + " is not supported");
         }

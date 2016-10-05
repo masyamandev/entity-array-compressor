@@ -230,4 +230,155 @@ public class MathUtilsTest {
         assertThat(scale(-55L, -1, mode)).isEqualTo(-5);
     }
 
+
+    @Test
+    public void testDivLongsRoundingHalfUp() throws Exception {
+        RoundingMode mode = RoundingMode.HALF_UP;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
+    @Test
+    public void testDivLongsRoundingHalfDown() throws Exception {
+        RoundingMode mode = RoundingMode.HALF_DOWN;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
+    @Test
+    public void testDivLongsRoundingUp() throws Exception {
+        RoundingMode mode = RoundingMode.UP;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
+    @Test
+    public void testDivLongsRoundingDown() throws Exception {
+        RoundingMode mode = RoundingMode.DOWN;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
+    @Test
+    public void testDivLongsRoundingFloor() throws Exception {
+        RoundingMode mode = RoundingMode.FLOOR;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-2);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-2);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
+    @Test
+    public void testDivLongsRoundingCeiling() throws Exception {
+        RoundingMode mode = RoundingMode.CEILING;
+
+        assertThat(divLongs(4, 4, mode)).isEqualTo(1);
+        assertThat(divLongs(5, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(7, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(8, 4, mode)).isEqualTo(2);
+        assertThat(divLongs(-4, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-7, 4, mode)).isEqualTo(-1);
+        assertThat(divLongs(-8, 4, mode)).isEqualTo(-2);
+
+        assertThat(divLongs(3, 3, mode)).isEqualTo(1);
+        assertThat(divLongs(4, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(5, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(6, 3, mode)).isEqualTo(2);
+        assertThat(divLongs(-3, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-4, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-5, 3, mode)).isEqualTo(-1);
+        assertThat(divLongs(-6, 3, mode)).isEqualTo(-2);
+    }
+
 }
