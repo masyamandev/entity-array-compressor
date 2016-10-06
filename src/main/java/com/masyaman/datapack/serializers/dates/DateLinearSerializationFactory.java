@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
-import com.masyaman.datapack.serializers.SerializationFactory;
+import com.masyaman.datapack.serializers.numbers.AbstractNumberSerializationFactory;
 import com.masyaman.datapack.serializers.numbers.NumberLinearSerializationFactory;
 
 /**
@@ -18,7 +18,7 @@ public class DateLinearSerializationFactory extends AbstractDateSerializationFac
     }
 
     @Override
-    protected SerializationFactory<? extends Number> getNumberSerializationFactory() {
+    protected AbstractNumberSerializationFactory getNumberSerializationFactory() {
         return NumberLinearSerializationFactory.INSTANCE;
     }
 }

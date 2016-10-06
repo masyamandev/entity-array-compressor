@@ -4,12 +4,15 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
+import com.masyaman.datapack.serializers.numbers.AbstractNumberSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.util.Date;
 
+import static com.masyaman.datapack.annotations.AnnotationsHelper.getRoundingMode;
 import static com.masyaman.datapack.serializers.dates.SerializerWrappers.convertFrom;
 
 /**
@@ -25,7 +28,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
         super(name);
     }
 
-    protected abstract SerializationFactory<? extends Number> getNumberSerializationFactory();
+    protected abstract AbstractNumberSerializationFactory getNumberSerializationFactory();
 
     @Override
     public TypeDescriptor getDefaultType() {
@@ -39,12 +42,18 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
     @Override
     public Serializer createSerializer(DataWriter os, TypeDescriptor type) throws IOException {
-        return convertFrom(getNumberSerializationFactory().createSerializer(os, LONG_TYPE), type);
+        RoundingMode roundingMode = getRoundingMode(type);
+
+        os.writeSignedLong(0L); // Date precision
+
+        return convertFrom(getNumberSerializationFactory().createSerializer(os, LONG_TYPE, 0, roundingMode), type);
     }
 
     @Override
     public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
-        return DeserializerWrappers.convertTo(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE), type);
+        is.readUnsignedLong(); // 0L, Date precision
+
+        return DeserializerWrappers.convertTo(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), type);
     }
 
 }

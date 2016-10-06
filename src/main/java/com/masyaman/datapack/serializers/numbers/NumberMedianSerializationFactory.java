@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.numbers;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
@@ -10,9 +9,10 @@ import com.masyaman.datapack.streams.DataWriter;
 import java.io.IOException;
 import java.math.RoundingMode;
 
-import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
 import static com.masyaman.datapack.serializers.numbers.DeserializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.DeserializerWrappers.scaleBy;
 import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.*;
+import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.scaleBy;
 
 /**
  * Serialization factory for Numbers.
@@ -20,42 +20,26 @@ import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.*;
  * During serialization it saves difference and predicted value.
  * Prediction is a previous value + median of three previous value changes.
  */
-public class NumberMedianSerializationFactory extends SerializationFactory<Number> {
+public class NumberMedianSerializationFactory extends AbstractNumberSerializationFactory {
 
     public static final NumberMedianSerializationFactory INSTANCE = new NumberMedianSerializationFactory();
+    public static final int DIFF_LEN = 3;
 
     private NumberMedianSerializationFactory() {
         super("_NM");
     }
 
     @Override
-    public TypeDescriptor<? extends Number> getDefaultType() {
-        return new TypeDescriptor(Double.class);
-    }
-
-    @Override
-    public boolean isApplicable(TypeDescriptor type) {
-        return Number.class.isAssignableFrom(type.getType());
-    }
-
-    @Override
-    public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        int decimalPrecision = getDecimalPrecision(type);
-        RoundingMode roundingMode = getRoundingMode(type);
-        int diffLength = 3;
-
-        NumberTypeResolver.writeType(os, type);
-        os.writeSignedLong((long) decimalPrecision);
+    public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type, int decimalPrecision, RoundingMode roundingMode) throws IOException {
+        int diffLength = DIFF_LEN;
         os.writeUnsignedLong((long) diffLength);
         return scaleBy(round(medianSerializer(new LongSerializer(os), diffLength), roundingMode), decimalPrecision, roundingMode);
     }
 
     @Override
-    public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        type = NumberTypeResolver.readType(is, type);
-        int decimalScale = -is.readSignedLong().intValue();
+    public <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type, int decimalPrecision) throws IOException {
         int diffLength = is.readUnsignedLong().intValue();
-        return scaleBy(convertTo(medianDeserializer(new LongDeserializer(is), diffLength), type), decimalScale, RoundingMode.HALF_UP);
+        return scaleBy(convertTo(medianDeserializer(new LongDeserializer(is), diffLength), type), decimalPrecision, RoundingMode.HALF_UP);
     }
 
 }
