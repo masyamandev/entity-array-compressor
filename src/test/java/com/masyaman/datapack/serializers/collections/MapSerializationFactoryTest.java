@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.annotations.DecimalPrecision;
+import com.masyaman.datapack.annotations.Precision;
 import com.masyaman.datapack.annotations.InheritFromParent;
 import com.masyaman.datapack.annotations.instances.SerializeKeyByInstance;
 import com.masyaman.datapack.annotations.instances.SerializeValueByInstance;
@@ -12,8 +12,6 @@ import com.masyaman.datapack.serializers.numbers.NumberSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
@@ -202,7 +200,7 @@ public class MapSerializationFactoryTest {
         assertThat(deserialized).isEqualTo(map);
     }
 
-    @DecimalPrecision(1)
+    @Precision(1)
     private static class Precision1 {}
 
 }

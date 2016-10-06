@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.annotations.instances.DecimalPrecisionInstance;
+import com.masyaman.datapack.annotations.instances.PrecisionInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -26,7 +26,7 @@ public class NumberDiffNRSerializationFactoryTest {
     public void testSerializationCloseToPreviousValue() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new DecimalPrecisionInstance(0)));
+                new TypeDescriptor(Double.class, new PrecisionInstance(0)));
 
         // 5 values closed to 1.0
         serializer.serialize(1.2);

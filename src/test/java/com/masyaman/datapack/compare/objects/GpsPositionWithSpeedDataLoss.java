@@ -1,30 +1,27 @@
 package com.masyaman.datapack.compare.objects;
 
-import com.masyaman.datapack.annotations.DecimalPrecision;
-import com.masyaman.datapack.annotations.IgnoredField;
-import com.masyaman.datapack.annotations.SerializeBy;
-import com.masyaman.datapack.serializers.numbers.NumberDiffNRSerializationFactory;
+import com.masyaman.datapack.annotations.Precision;
 import com.univocity.parsers.annotations.Parsed;
 
 public class GpsPositionWithSpeedDataLoss {
 
     @Parsed // Parse value from CSV
-    @DecimalPrecision(4)
+    @Precision(4)
 //    @SerializeBy(NumberDiffNRSerializationFactory.class)
     private double lat;
 
     @Parsed // Parse value from CSV
-    @DecimalPrecision(4)
+    @Precision(4)
 //    @SerializeBy(NumberDiffNRSerializationFactory.class)
     private double lon;
 
     @Parsed // Parse value from CSV
     //@IgnoredField
-    @DecimalPrecision(1)
+    @Precision(1)
     private double speed;
 
     @Parsed // Parse value from CSV
-    @DecimalPrecision(-3)
+    @Precision(-3)
     private long timestamp;
 
 

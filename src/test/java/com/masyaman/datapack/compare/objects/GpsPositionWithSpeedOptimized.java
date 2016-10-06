@@ -1,6 +1,6 @@
 package com.masyaman.datapack.compare.objects;
 
-import com.masyaman.datapack.annotations.DecimalPrecision;
+import com.masyaman.datapack.annotations.Precision;
 import com.masyaman.datapack.annotations.SerializeBy;
 import com.masyaman.datapack.serializers.numbers.NumberLinearSerializationFactory;
 import com.univocity.parsers.annotations.Parsed;
@@ -16,7 +16,7 @@ public class GpsPositionWithSpeedOptimized {
     private double lon;
 
     @Parsed // Parse value from CSV
-    @DecimalPrecision(1)
+    @Precision(1)
     private double speed;
 
     @Parsed // Parse value from CSV

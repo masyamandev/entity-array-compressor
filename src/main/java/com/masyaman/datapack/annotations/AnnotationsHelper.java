@@ -10,7 +10,7 @@ public class AnnotationsHelper {
     public static final int DEFAULT_PRECISION = 6;
 
     public static int getDecimalPrecision(TypeDescriptor<?> type) {
-        DecimalPrecision annotation = type.getAnnotation(DecimalPrecision.class);
+        Precision annotation = type.getAnnotation(Precision.class);
         if (annotation != null) {
             return annotation.value();
         }
@@ -22,7 +22,7 @@ public class AnnotationsHelper {
     }
 
     public static RoundingMode getRoundingMode(TypeDescriptor<?> type) {
-        DecimalPrecision annotation = type.getAnnotation(DecimalPrecision.class);
+        Precision annotation = type.getAnnotation(Precision.class);
         if (annotation != null) {
             return annotation.roundingMode();
         } else {
