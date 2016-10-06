@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.numbers;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
@@ -21,7 +20,7 @@ import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.*;
  * Very basic serialization using unsigned variable-length coding. Negative values could be saves as well, but it'll
  * require 9 bytes per value in stream.
  */
-public class UnsignedLongSerializationFactory extends SerializationFactory<Number> implements GloballyDefined {
+public class UnsignedLongSerializationFactory extends SerializationFactory<Number> {
 
     public static final UnsignedLongSerializationFactory INSTANCE = new UnsignedLongSerializationFactory();
 

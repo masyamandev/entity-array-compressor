@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.enums;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
@@ -15,7 +14,7 @@ import java.io.IOException;
  * Serialization factory for Enums.
  * Values are serialized as cached constant strings. See {@link StringConstantsSerializationFactory}
  */
-public class EnumsConstantsSerializationFactory<E extends Enum> extends SerializationFactory<E> implements GloballyDefined {
+public class EnumsConstantsSerializationFactory<E extends Enum> extends SerializationFactory<E> {
 
     public static final EnumsConstantsSerializationFactory INSTANCE = new EnumsConstantsSerializationFactory();
 

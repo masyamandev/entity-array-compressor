@@ -1,7 +1,6 @@
 package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
-import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
@@ -75,9 +74,6 @@ public class MultiGzipDataWriter extends DataWriter {
     }
 
     public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
-        if (factory instanceof GloballyDefined && typeToId.containsKey(type)) {
-            return registeredSerializers.get(typeToId.get(type));
-        }
         writeCachedString(factory.getName());
         DataWriter.Wrapper dataWriter = new DataWriter.Wrapper(new ByteArrayOutputWrapper(), this);
         dataWriters.add(dataWriter);

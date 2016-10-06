@@ -2,7 +2,6 @@ package com.masyaman.datapack.serializers.enums;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
