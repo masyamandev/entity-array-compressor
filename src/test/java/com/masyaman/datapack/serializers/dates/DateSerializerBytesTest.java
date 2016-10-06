@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
+import com.masyaman.datapack.annotations.instances.PrecisionInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -161,6 +162,44 @@ public class DateSerializerBytesTest {
         assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
         assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 3));
         assertThat(deserializer.deserialize()).isNull();
+    }
+
+    @Test
+    public void testDatePrecision() throws Exception {
+        ByteStream stream = new ByteStream();
+        DataWriter dataWriter = new SerialDataWriter(stream);
+        stream.getNewBytes();
+
+        SerializationFactory serializationFactory = DateSerializationFactory.INSTANCE;
+        Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory,
+                new TypeDescriptor<Date>(Date.class, new PrecisionInstance(DatePrecisions.DAY)));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(
+                // registering serializer, no Id here
+                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                // serializer properties
+                4 // scale 4, days
+        ));
+
+        serializer.serialize(new Date (SOME_TIMESTAMP));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xC0, 0x2B, 0x86));
+        serializer.serialize(new Date (SOME_TIMESTAMP + SECOND));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xC0, 0x2B, 0x86));
+        serializer.serialize(new Date (SOME_TIMESTAMP + HOUR * 2));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xC0, 0x2B, 0x86));
+        serializer.serialize(new Date (SOME_TIMESTAMP + HOUR * 12 - 1));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xC0, 0x2B, 0x86));
+        serializer.serialize(new Date (SOME_TIMESTAMP + HOUR * 12));
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xC0, 0x2B, 0x87)); // next day
+
+
+        // Read objects
+        DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
+        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + HOUR * 24));
     }
 
 }

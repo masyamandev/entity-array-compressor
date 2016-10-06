@@ -25,4 +25,14 @@ final class DeserializerWrappers {
             throw new IllegalArgumentException("Class " + type.getType().getName() + " is not supported");
         }
     }
+
+    public static Deserializer<Long> scale(Deserializer<Long> deserializer, long scale) {
+        return new Deserializer<Long>() {
+            @Override
+            public Long deserialize() throws IOException {
+                Long val = deserializer.deserialize();
+                return (val == null ? null : val * scale);
+            }
+        };
+    }
 }

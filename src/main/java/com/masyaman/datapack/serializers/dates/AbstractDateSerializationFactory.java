@@ -12,8 +12,9 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.Date;
 
-import static com.masyaman.datapack.annotations.AnnotationsHelper.getRoundingMode;
-import static com.masyaman.datapack.serializers.dates.SerializerWrappers.convertFrom;
+import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
+import static com.masyaman.datapack.serializers.dates.SerializerWrappers.*;
+import static com.masyaman.datapack.serializers.dates.DeserializerWrappers.*;
 
 /**
  * Abstract Serialization factory for Dates.
@@ -43,17 +44,28 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
     @Override
     public Serializer createSerializer(DataWriter os, TypeDescriptor type) throws IOException {
         RoundingMode roundingMode = getRoundingMode(type);
+        int datePrecision = getDecimalPrecision(type);
+        if (datePrecision < 0 || datePrecision >= DatePrecisions.SCALES.length) {
+            throw new IOException("Incorrect precision " + datePrecision + " for Date");
+        }
 
-        os.writeSignedLong(0L); // Date precision
+        long scale = DatePrecisions.SCALES[datePrecision];
 
-        return convertFrom(getNumberSerializationFactory().createSerializer(os, LONG_TYPE, 0, roundingMode), type);
+        os.writeSignedLong((long) datePrecision); // Date precision
+
+        return convertFrom(scale(getNumberSerializationFactory().createSerializer(os, LONG_TYPE, 0, roundingMode), scale, roundingMode), type);
     }
 
     @Override
     public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
-        is.readUnsignedLong(); // 0L, Date precision
+        int datePrecision = is.readUnsignedLong().intValue();
+        if (datePrecision < 0 || datePrecision >= DatePrecisions.SCALES.length) {
+            throw new IOException("Incorrect precision " + datePrecision + " for Date");
+        }
 
-        return DeserializerWrappers.convertTo(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), type);
+        long scale = DatePrecisions.SCALES[datePrecision];
+
+        return convertTo(scale(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), scale), type);
     }
 
 }
