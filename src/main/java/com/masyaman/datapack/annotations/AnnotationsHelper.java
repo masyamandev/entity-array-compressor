@@ -38,6 +38,14 @@ public class AnnotationsHelper {
         return 0;
     }
 
+    public static boolean allowReordering(TypeDescriptor<?> type, boolean defaultValue) {
+        AllowReordering annotation = type.getAnnotation(AllowReordering.class);
+        if (annotation != null) {
+            return annotation.value();
+        }
+        return defaultValue;
+    }
+
     public static Class serializeAs(SerializeBy serializeBy, Class inherited) {
         return (serializeBy != null) ? getOrDefault(serializeBy.serializeAs(), inherited) : inherited;
     }

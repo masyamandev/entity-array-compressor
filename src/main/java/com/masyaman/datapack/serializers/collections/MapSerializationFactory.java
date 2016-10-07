@@ -12,10 +12,10 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
-import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
+import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
 
 public class MapSerializationFactory<E> extends SerializationFactory<E> {
 
@@ -50,7 +50,10 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
         SerializationFactory keyFactory = keyDeclared != null ? getInstance(keyDeclared.value()) : getSerializer(os, keyType);
         SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
 
-        return new MapSerializer(os, keyFactory, keyType, valueFactory, valueType);
+        boolean isOrderedMap = LinkedHashMap.class.isAssignableFrom(type.getType());
+        boolean allowReordering = allowReordering(type, !isOrderedMap);
+
+        return new MapSerializer(os, keyFactory, keyType, valueFactory, valueType, allowReordering);
     }
 
     @Override

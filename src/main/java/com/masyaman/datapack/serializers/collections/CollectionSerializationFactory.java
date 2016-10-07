@@ -10,9 +10,9 @@ import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
+import static com.masyaman.datapack.annotations.AnnotationsHelper.allowReordering;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
 
@@ -45,7 +45,7 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
 
             SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
 
-            return (Serializer<T>) new ArraySerializer(os, valueFactory, valueType);
+            return (Serializer<T>) new ArraySerializer(os, valueFactory, valueType, allowReordering(type, false));
         } else {
             SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
 
@@ -54,7 +54,10 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
 
             SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
 
-            return new CollectionSerializer(os, valueFactory, valueType);
+            boolean isOrdered = !Set.class.isAssignableFrom(type.getType()) || LinkedHashSet.class.isAssignableFrom(type.getType());
+            boolean allowReordering = allowReordering(type, !isOrdered);
+
+            return new CollectionSerializer(os, valueFactory, valueType, allowReordering);
         }
     }
 

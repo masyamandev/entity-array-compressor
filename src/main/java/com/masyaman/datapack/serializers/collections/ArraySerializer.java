@@ -4,19 +4,28 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.utils.CollectionReorderer;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
+
+import static com.masyaman.datapack.utils.Constants.COLLECTION_REORDERING_CACHE_SIZE;
 
 class ArraySerializer implements Serializer<Object[]> {
 
     private DataWriter os;
     private Serializer valueSerializer;
 
-    public ArraySerializer(DataWriter os, SerializationFactory valueSerializationFactory, TypeDescriptor valueType) throws IOException {
+    private CollectionReorderer collectionReorderer;
+
+    public ArraySerializer(DataWriter os, SerializationFactory valueSerializationFactory, TypeDescriptor valueType, boolean allowReordering) throws IOException {
         this.os = os;
         this.valueSerializer = os.createAndRegisterSerializer(valueSerializationFactory, valueType);
+
+        if (allowReordering && COLLECTION_REORDERING_CACHE_SIZE >= 0) {
+            this.collectionReorderer = new CollectionReorderer<>(COLLECTION_REORDERING_CACHE_SIZE);
+        }
     }
 
     @Override
@@ -27,7 +36,12 @@ class ArraySerializer implements Serializer<Object[]> {
         }
         os.writeUnsignedLong((long) array.length);
 
-        for (Object val : array) {
+        Collection collection = Arrays.asList(array);
+        if (collectionReorderer != null) {
+            collection = collectionReorderer.reorderByUsage(collection);
+        }
+
+        for (Object val : collection) {
             valueSerializer.serialize(val);
         }
     }
