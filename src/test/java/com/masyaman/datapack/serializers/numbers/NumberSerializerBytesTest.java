@@ -29,7 +29,7 @@ public class NumberSerializerBytesTest {
         SerializationFactory serializationFactory = NumberSerializationFactory.INSTANCE;
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
-                // registering serializer, no Id here
+                0x7F, // serializer id, null means id-less serializer
                 0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
                 // serializer properties
                 0, 2, "64", // type of signed 64-bits value (cached)
@@ -65,7 +65,7 @@ public class NumberSerializerBytesTest {
         SerializationFactory serializationFactory = NumberDiffSerializationFactory.INSTANCE;
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
-                // registering serializer, no Id here
+                0x7F, // serializer id, null means id-less serializer
                 0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
                 // serializer properties
                 0, 2, "64", // type of signed 64-bits value (cached)
@@ -103,7 +103,7 @@ public class NumberSerializerBytesTest {
         SerializationFactory serializationFactory = NumberLinearSerializationFactory.INSTANCE;
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
-                // registering serializer, no Id here
+                0x7F, // serializer id, null means id-less serializer
                 0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
                 // serializer properties
                 0, 2, "64", // type of signed 64-bits value (cached)
@@ -141,7 +141,7 @@ public class NumberSerializerBytesTest {
         SerializationFactory serializationFactory = NumberMedianSerializationFactory.INSTANCE;
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
-                // registering serializer, no Id here
+                0x7F, // serializer id, null means id-less serializer
                 0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
                 // serializer properties
                 0, 2, "64", // type of signed 64-bits value (cached)

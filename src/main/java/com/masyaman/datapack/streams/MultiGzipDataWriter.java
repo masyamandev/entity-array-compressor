@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+// Experimental version of column-based gzipped storage
 public class MultiGzipDataWriter extends DataWriter {
 
     public static final long CURRENT_VERSION = 0;
@@ -60,7 +61,7 @@ public class MultiGzipDataWriter extends DataWriter {
             if (factory == null) {
                 factory = ObjectSerializationFactory.INSTANCE;
             }
-            Serializer serializer = createAndRegisterSerializer(factory, type);
+            Serializer serializer = writeSerializer(factory, type);
             typeToId.put(type, typeToId.size() + 1);
             registeredSerializers.add(serializer);
             return serializer;
@@ -74,6 +75,11 @@ public class MultiGzipDataWriter extends DataWriter {
     }
 
     public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
+        writeUnsignedLong(null);
+        return writeSerializer(factory, type);
+    }
+
+    private <E> Serializer<E> writeSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
         writeCachedString(factory.getName());
         DataWriter.Wrapper dataWriter = new DataWriter.Wrapper(new ByteArrayOutputWrapper(), this);
         dataWriters.add(dataWriter);

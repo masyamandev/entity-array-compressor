@@ -53,7 +53,7 @@ public class SerialDataWriter extends DataWriter {
             if (factory == null) {
                 factory = ObjectSerializationFactory.INSTANCE;
             }
-            Serializer serializer = createAndRegisterSerializer(factory, type);
+            Serializer serializer = writeSerializer(factory, type);
             typeToId.put(type, typeToId.size() + 1);
             registeredSerializers.add(serializer);
             return serializer;
@@ -67,6 +67,11 @@ public class SerialDataWriter extends DataWriter {
     }
 
     public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
+        writeUnsignedLong(null);
+        return writeSerializer(factory, type);
+    }
+
+    private <E> Serializer<E> writeSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
         writeCachedString(factory.getName());
         Serializer serializer = factory.createSerializer(this, type);
         return serializer;

@@ -42,7 +42,7 @@ public class SerialDataReader extends DataReader {
             return null;
         }
         if (id <= 0) {
-            Deserializer<T> deserializer = createAndRegisterDeserializer(type);
+            Deserializer<T> deserializer = readDeserializer(type);
             registeredDeserializers.add(deserializer);
             return deserializer.deserialize();
         } else {
@@ -55,14 +55,24 @@ public class SerialDataReader extends DataReader {
     }
 
     public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+        Long id = readUnsignedLong();
+        if (id == null) {
+            return readDeserializer(type);
+        } else if (id <= 0) {
+            Deserializer deserializer = readDeserializer(type);
+            registeredDeserializers.add(deserializer);
+            return deserializer;
+        } else {
+            return registeredDeserializers.get(id.intValue() - 1);
+        }
+    }
+
+    private <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
         String name = readCachedString();
         SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
         if (serializationFactory == null) {
             throw new IOException("Unable to find serialization factory '" + name + "'");
         }
-//        if (type == null) {
-//            type = serializationFactory.getDefaultType();
-//        }
         return serializationFactory.createDeserializer(this, type);
     }
 }
