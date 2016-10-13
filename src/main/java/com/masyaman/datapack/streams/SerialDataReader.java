@@ -6,14 +6,8 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-public class SerialDataReader extends DataReader {
-
-    private SerializationFactoryLookup serializationFactoryLookup;
-    
-    private List<Deserializer> registeredDeserializers = new ArrayList<>();
+public class SerialDataReader extends DataReader.Abstract {
 
     public SerialDataReader(InputStream is) throws IOException {
         this(is, new SerializationFactoryLookup());
@@ -36,38 +30,8 @@ public class SerialDataReader extends DataReader {
         }
     }
 
-    public <T> T readObject(TypeDescriptor<T> type) throws IOException {
-        Long id = readUnsignedLong();
-        if (id == null) {
-            return null;
-        }
-        if (id <= 0) {
-            Deserializer<T> deserializer = readDeserializer(type);
-            registeredDeserializers.add(deserializer);
-            return deserializer.deserialize();
-        } else {
-            return (T) registeredDeserializers.get(id.intValue() - 1).deserialize();
-        }
-    }
-
-    public SerializationFactoryLookup getSerializationFactoryLookup() {
-        return serializationFactoryLookup;
-    }
-
-    public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
-        Long id = readUnsignedLong();
-        if (id == null) {
-            return readDeserializer(type);
-        } else if (id <= 0) {
-            Deserializer deserializer = readDeserializer(type);
-            registeredDeserializers.add(deserializer);
-            return deserializer;
-        } else {
-            return registeredDeserializers.get(id.intValue() - 1);
-        }
-    }
-
-    private <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
+    @Override
+    protected <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
         String name = readCachedString();
         SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
         if (serializationFactory == null) {

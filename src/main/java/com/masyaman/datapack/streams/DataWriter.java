@@ -1,15 +1,21 @@
 package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
+import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
+import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
 import com.masyaman.datapack.serializers.primitives.StringWriter;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class DataWriter implements ObjectWriter {
 
@@ -96,5 +102,72 @@ public abstract class DataWriter implements ObjectWriter {
         public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
             return parent.createAndRegisterSerializer(factory, type);
         }
+    }
+
+
+    public static abstract class Abstract extends DataWriter {
+
+        protected SerializationFactoryLookup serializationFactoryLookup;
+
+        protected Map<TypeDescriptor, Integer> typeToId = new HashMap<>();
+        protected List<Serializer> registeredSerializers = new ArrayList<>();
+
+        public Abstract(OutputStream os) throws IOException {
+            super(os);
+        }
+
+        public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {
+            if (o == null) {
+                writeUnsignedLong(null);
+                return;
+            }
+            Serializer<T> serializer = getOrCreateSerializer(type);
+            serializer.serialize(o);
+        }
+
+        private <T> Serializer<T> getOrCreateSerializer(TypeDescriptor<T> type) throws IOException {
+            Integer id = typeToId.getOrDefault(type, 0);
+            writeUnsignedLong(Long.valueOf(id));
+            if (id <= 0) {
+                SerializationFactory factory = serializationFactoryLookup.getSerializationFactory(type);
+                if (factory == null) {
+                    factory = ObjectSerializationFactory.INSTANCE;
+                }
+                return writeAndRegisterSerializer(factory, type);
+            } else {
+                return registeredSerializers.get(id - 1);
+            }
+        }
+
+        public SerializationFactoryLookup getSerializationFactoryLookup() {
+            return serializationFactoryLookup;
+        }
+
+        public <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
+            if (factory instanceof GloballyDefined) {
+                Integer id = typeToId.get(type);
+                if (id != null) {
+                    writeUnsignedLong(id.longValue());
+                    return registeredSerializers.get(id - 1);
+                } else {
+                    writeUnsignedLong(0L);
+                    return writeAndRegisterSerializer(factory, type);
+                }
+            } else {
+                writeUnsignedLong(null);
+                return writeSerializer(factory, type);
+            }
+        }
+
+        private <E> Serializer<E> writeAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
+            int id = typeToId.size();
+            typeToId.put(type, id + 1);
+            registeredSerializers.add(null);
+            Serializer<E> serializer = writeSerializer(factory, type);
+            registeredSerializers.set(id, serializer);
+            return serializer;
+        }
+
+        protected abstract <E> Serializer<E> writeSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException;
     }
 }

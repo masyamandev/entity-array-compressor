@@ -2,6 +2,7 @@ package com.masyaman.datapack.serializers.numbers;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
@@ -19,7 +20,7 @@ import static com.masyaman.datapack.serializers.numbers.SerializerWrappers.scale
  * Values are stored as fixed-points Longs.
  * Very basic serialization using signed variable-length coding.
  */
-public class NumberSerializationFactory extends AbstractNumberSerializationFactory {
+public class NumberSerializationFactory extends AbstractNumberSerializationFactory implements GloballyDefined {
 
     public static final NumberSerializationFactory INSTANCE = new NumberSerializationFactory();
 

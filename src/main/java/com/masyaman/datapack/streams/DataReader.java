@@ -9,6 +9,8 @@ import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class DataReader implements ObjectReader {
 
@@ -95,5 +97,54 @@ public abstract class DataReader implements ObjectReader {
         public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
             return parent.createAndRegisterDeserializer(type);
         }
+    }
+
+
+    public static abstract class Abstract extends DataReader {
+
+        protected SerializationFactoryLookup serializationFactoryLookup;
+
+        protected List<Deserializer> registeredDeserializers = new ArrayList<>();
+
+        public Abstract(InputStream is) throws IOException {
+            super(is);
+        }
+
+        public <T> T readObject(TypeDescriptor<T> type) throws IOException {
+            Long id = readUnsignedLong();
+            if (id == null) {
+                return null;
+            }
+            if (id <= 0) {
+                return readAndRegisterDeserializer(type).deserialize();
+            } else {
+                return (T) registeredDeserializers.get(id.intValue() - 1).deserialize();
+            }
+        }
+
+        public SerializationFactoryLookup getSerializationFactoryLookup() {
+            return serializationFactoryLookup;
+        }
+
+        public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+            Long id = readUnsignedLong();
+            if (id == null) {
+                return readDeserializer(type);
+            } else if (id <= 0) {
+                return readAndRegisterDeserializer(type);
+            } else {
+                return registeredDeserializers.get(id.intValue() - 1);
+            }
+        }
+
+        private <E> Deserializer<E> readAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+            int index = registeredDeserializers.size();
+            registeredDeserializers.add(null);
+            Deserializer<E> deserializer = readDeserializer(type);
+            registeredDeserializers.set(index, deserializer);
+            return deserializer;
+        }
+
+        protected abstract <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException;
     }
 }
