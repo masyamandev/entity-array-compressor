@@ -33,7 +33,7 @@ public class ObjectIdCachePerformanceTest {
     }
 
     @Parameterized.Parameters(name = "{0} {1}")
-    public static Collection primeNumbers() {
+    public static Collection parameters() {
         return Arrays.asList(new Object[][] {
                 {ObjectIdCacheRingTree.class, Arrays.asList(2)},
                 {ObjectIdCacheRingTree.class, Arrays.asList(4)},
