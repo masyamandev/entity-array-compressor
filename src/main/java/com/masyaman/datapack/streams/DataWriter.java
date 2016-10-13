@@ -4,7 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.caching.SimpleCachedSerializer;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
 import com.masyaman.datapack.serializers.primitives.StringWriter;
@@ -24,7 +23,6 @@ public abstract class DataWriter implements ObjectWriter {
     private Serializer<Long> signedLongSerializer;
     private Serializer<Long> unsignedLongSerializer;
     private Serializer<String> stringSerializer;
-    private Serializer<String> stringCachedSerializer;
 
     public DataWriter(OutputStream os) throws IOException {
         this.os = os;
@@ -32,7 +30,6 @@ public abstract class DataWriter implements ObjectWriter {
         signedLongSerializer = new SignedLongWriter(os);
         unsignedLongSerializer = new UnsignedLongWriter(os);
         stringSerializer = new StringWriter(os, unsignedLongSerializer);
-        stringCachedSerializer = new SimpleCachedSerializer(this, stringSerializer);
     }
 
     @Override
@@ -63,11 +60,6 @@ public abstract class DataWriter implements ObjectWriter {
     public void writeString(String s) throws IOException {
         stringSerializer.serialize(s);
     }
-
-    public void writeCachedString(String s) throws IOException {
-        stringCachedSerializer.serialize(s);
-    }
-
 
     public <T> void writeObject(T o) throws IOException {
         writeObject(o, o == null ? null : new TypeDescriptor<T>(o.getClass()));

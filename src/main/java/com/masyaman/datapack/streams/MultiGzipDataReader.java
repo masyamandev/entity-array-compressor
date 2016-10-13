@@ -65,7 +65,7 @@ public class MultiGzipDataReader extends DataReader.Abstract {
 
     @Override
     protected <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
-        String name = readCachedString();
+        String name = readString();
         SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
         if (serializationFactory == null) {
             throw new IOException("Unable to find serialization factory '" + name + "'");

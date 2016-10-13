@@ -37,7 +37,7 @@ public class DateSerializerBytesTest {
         Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, DATE_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 0 // scale 0, millis
         ));
@@ -68,7 +68,7 @@ public class DateSerializerBytesTest {
         Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, DATE_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 0 // scale 0, millis
         ));
@@ -102,7 +102,7 @@ public class DateSerializerBytesTest {
         Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, DATE_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 0 // scale 0, millis
         ));
@@ -136,7 +136,7 @@ public class DateSerializerBytesTest {
         Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, DATE_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 0, // scale 0, millis
                 3 // diff history size
@@ -175,7 +175,7 @@ public class DateSerializerBytesTest {
                 new TypeDescriptor<Date>(Date.class, new PrecisionInstance(DatePrecisions.DAY)));
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 4 // scale 4, days
         ));

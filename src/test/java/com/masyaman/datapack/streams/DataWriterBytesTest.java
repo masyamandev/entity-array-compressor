@@ -111,34 +111,6 @@ public class DataWriterBytesTest {
     }
 
     @Test
-    public void testWriteCachedStrings() throws Exception {
-        ByteStream stream = new ByteStream();
-        DataWriter dataWriter = new SerialDataWriter(stream);
-        stream.getNewBytes();
-
-        dataWriter.writeCachedString(null);
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0x7F));
-
-        dataWriter.writeCachedString("AA");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0, 2, 'A', 'A'));
-
-        dataWriter.writeCachedString("AA");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(1));
-
-        dataWriter.writeCachedString("BBB");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0, 3, "BBB"));
-
-        dataWriter.writeCachedString("AA");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(1));
-
-        dataWriter.writeCachedString("BBB");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(2));
-
-        dataWriter.writeCachedString("C");
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0, 1, "C"));
-    }
-
-    @Test
     public void testWriteLongsAsObjects() throws Exception {
         ByteStream stream = new ByteStream();
         DataWriter dataWriter = new SerialDataWriter(stream);
@@ -150,8 +122,8 @@ public class DataWriterBytesTest {
         dataWriter.writeObject(0L);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                0, DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer (cached)
-                0, 2, "64", // serializer properties: type of signed 64-bits value (cached)
+                DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer
+                2, "64", // serializer properties: type of signed 64-bits value
                 0, // serializer properties: scale 0
                 0 // value itself
         ));
@@ -189,7 +161,7 @@ public class DataWriterBytesTest {
         dataWriter.writeObject("AAA");
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                0, DEFAULT_STRING_SERIALIZER.length(), DEFAULT_STRING_SERIALIZER, // save serializer (cached)
+                DEFAULT_STRING_SERIALIZER.length(), DEFAULT_STRING_SERIALIZER, // save serializer
                 3, "AAA" // value itself
         ));
 
@@ -229,8 +201,8 @@ public class DataWriterBytesTest {
         dataWriter.writeObject(0L);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                0, DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer (cached)
-                0, 2, "64", // serializer properties: type of signed 64-bits value (cached)
+                DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer
+                2, "64", // serializer properties: type of signed 64-bits value
                 0, // serializer properties: scale 0
                 0 // value itself
         ));
@@ -246,7 +218,7 @@ public class DataWriterBytesTest {
         dataWriter.writeObject("AAA");
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                0, DEFAULT_STRING_SERIALIZER.length(), DEFAULT_STRING_SERIALIZER, // save serializer (cached)
+                DEFAULT_STRING_SERIALIZER.length(), DEFAULT_STRING_SERIALIZER, // save serializer
                 3, "AAA" // value itself
         ));
 
@@ -269,8 +241,8 @@ public class DataWriterBytesTest {
         dataWriter.writeObject(0);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                1, // save serializer, it's already cached
-                0, 2, "32", // serializer properties: type of signed 32-bits value (cached)
+                DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer
+                2, "32", // serializer properties: type of signed 32-bits value (cached)
                 0, // serializer properties: scale 0
                 0 // value itself
         ));
@@ -292,8 +264,8 @@ public class DataWriterBytesTest {
         dataWriter.writeObject(0.0);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, new
-                1, // save serializer, it's already cached
-                0, 3, "64f", // serializer properties: type of floating point 64-bits value (cached)
+                DEFAULT_LONG_SERIALIZER.length(), DEFAULT_LONG_SERIALIZER, // save serializer
+                3, "64f", // serializer properties: type of floating point 64-bits value (cached)
                 6, // serializer properties: scale 6 is default for Doubles
                 0 // value itself
         ));

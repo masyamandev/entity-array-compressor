@@ -28,7 +28,7 @@ public class SerialDataWriter extends DataWriter.Abstract {
 
     @Override
     protected <E> Serializer<E> writeSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
-        writeCachedString(factory.getName());
+        writeString(factory.getName());
         Serializer serializer = factory.createSerializer(this, type);
         return serializer;
     }

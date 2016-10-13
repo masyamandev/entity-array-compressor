@@ -4,7 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.numbers.NumberSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
@@ -31,7 +30,7 @@ public class EnumsSerializerBytesTest {
         Serializer<Digits> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, ENUM_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
                 0 // Cache size
         ));
@@ -95,7 +94,7 @@ public class EnumsSerializerBytesTest {
         Serializer<Digits> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, ENUM_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, 0 is required for globally-defined
-                0, serializationFactory.getName().length(), serializationFactory.getName() // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName() // save serializer
                 // serializer properties
         ));
 

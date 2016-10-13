@@ -30,9 +30,9 @@ public class NumberSerializerBytesTest {
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, 0 means new serializer, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
-                0, 2, "64", // type of signed 64-bits value (cached)
+                2, "64", // type of signed 64-bits value
                 0 // scale 0
         ));
 
@@ -66,9 +66,9 @@ public class NumberSerializerBytesTest {
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
-                0, 2, "64", // type of signed 64-bits value (cached)
+                2, "64", // type of signed 64-bits value
                 0 // scale 0
         ));
 
@@ -104,9 +104,9 @@ public class NumberSerializerBytesTest {
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
-                0, 2, "64", // type of signed 64-bits value (cached)
+                2, "64", // type of signed 64-bits value
                 0 // scale 0
         ));
 
@@ -142,9 +142,9 @@ public class NumberSerializerBytesTest {
         Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                0, serializationFactory.getName().length(), serializationFactory.getName(), // save serializer (cached)
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
                 // serializer properties
-                0, 2, "64", // type of signed 64-bits value (cached)
+                2, "64", // type of signed 64-bits value
                 0, // scale 0
                 3 // number of diffs in median
         ));

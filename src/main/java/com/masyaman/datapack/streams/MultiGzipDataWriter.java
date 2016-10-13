@@ -38,7 +38,7 @@ public class MultiGzipDataWriter extends DataWriter.Abstract {
 
     @Override
     protected  <E> Serializer<E> writeSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException {
-        writeCachedString(factory.getName());
+        writeString(factory.getName());
         DataWriter.Wrapper dataWriter = new DataWriter.Wrapper(new ByteArrayOutputWrapper(), this);
         dataWriters.add(dataWriter);
         Serializer serializer = factory.createSerializer(dataWriter, type);

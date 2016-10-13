@@ -88,7 +88,7 @@ public class SerializationFactoryLookup {
 
             default:
                 if (type.getType().isEnum()) {
-                    return EnumsSerializationFactory.INSTANCE;
+                    return EnumsConstantsSerializationFactory.INSTANCE;
                 } else if (Map.class.isAssignableFrom(type.getType())) {
                     return MapSerializationFactory.INSTANCE;
                 } else if (Collection.class.isAssignableFrom(type.getType())) {

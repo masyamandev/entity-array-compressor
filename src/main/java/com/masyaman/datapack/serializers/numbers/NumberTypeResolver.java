@@ -33,11 +33,11 @@ public class NumberTypeResolver {
         if (typeString == null) {
             throw new IOException("Unable to serialize type " + type.getType().getCanonicalName() + " as number.");
         }
-        dw.writeCachedString(typeString);
+        dw.writeString(typeString);
     }
 
     public static TypeDescriptor readType(DataReader dr, TypeDescriptor expectedType) throws IOException {
-        String t = dr.readCachedString();
+        String t = dr.readString();
         if (expectedType != null && TYPE_TO_CLASS.containsKey(expectedType.getType())) {
             return expectedType;
         }

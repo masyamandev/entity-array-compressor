@@ -2,7 +2,6 @@ package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
-import com.masyaman.datapack.serializers.caching.SimpleCachedDeserializer;
 import com.masyaman.datapack.serializers.primitives.SignedLongReader;
 import com.masyaman.datapack.serializers.primitives.StringReader;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
@@ -19,7 +18,6 @@ public abstract class DataReader implements ObjectReader {
     private Deserializer<Long> signedLongDeserializer;
     private Deserializer<Long> unsignedLongDeserializer;
     private Deserializer<String> stringDeserializer;
-    private Deserializer<String> stringCachedDeserializer;
 
     public DataReader(InputStream is) throws IOException {
         this.is = is;
@@ -27,7 +25,6 @@ public abstract class DataReader implements ObjectReader {
         signedLongDeserializer = new SignedLongReader(is);
         unsignedLongDeserializer = new UnsignedLongReader(is);
         stringDeserializer = new StringReader(is, unsignedLongDeserializer);
-        stringCachedDeserializer = new SimpleCachedDeserializer(this, stringDeserializer);
     }
 
     @Override
@@ -58,10 +55,6 @@ public abstract class DataReader implements ObjectReader {
 
     public String readString() throws IOException {
         return stringDeserializer.deserialize();
-    }
-
-    public String readCachedString() throws IOException {
-        return stringCachedDeserializer.deserialize();
     }
 
     public Object readObject() throws IOException {
