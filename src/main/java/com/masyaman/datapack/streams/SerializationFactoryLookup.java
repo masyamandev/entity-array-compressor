@@ -44,8 +44,8 @@ public class SerializationFactoryLookup {
             BitSetSerializationFactory.INSTANCE,
             ObjectSerializationFactory.INSTANCE,
             UnknownTypeSerializationFactory.INSTANCE,
-            UnknownTypeCachedSerializationFactory.INSTANCE,
-            UnsupportedSerializationFactory.INSTANCE
+            UnknownTypeCachedSerializationFactory.INSTANCE
+            //UnsupportedSerializationFactory.INSTANCE
     );
 
     private Map<String, SerializationFactory> factories = new HashMap<>();
