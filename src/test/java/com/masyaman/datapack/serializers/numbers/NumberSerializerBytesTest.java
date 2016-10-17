@@ -185,4 +185,52 @@ public class NumberSerializerBytesTest {
         assertThat(deserializer.deserialize()).isEqualTo(100L);
         assertThat(deserializer.deserialize()).isEqualTo(100L);
     }
+
+    @Test
+    public void testNumberIncrementalSerializer() throws Exception {
+        ByteStream stream = new ByteStream();
+        DataWriter dataWriter = new SerialDataWriter(stream);
+        stream.getNewBytes();
+
+        SerializationFactory serializationFactory = NumberIncrementalSerializationFactory.INSTANCE;
+        Serializer<Long> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, LONG_TYPE);
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(
+                0x7F, // serializer id, null means id-less serializer
+                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
+                // serializer properties
+                2, "64", // type of signed 64-bits value
+                0 // scale 0
+        ));
+
+        serializer.serialize(10L);
+        serializer.serialize(30L);
+        serializer.serialize(60L);
+        serializer.serialize(100L);
+        serializer.serialize(220L);
+        serializer.serialize(null);
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(10, 20, 30, 40, 120, 0x7F));
+
+        serializer.serialize(220L + 16383L);
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0xBF, 0xFF));
+
+        serializer.serialize(-100010L);
+        assertThat(stream.getNewBytes()).isNotEmpty();
+        serializer.serialize(-100009L);
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0x1));
+
+
+        // Read objects
+        DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
+        assertThat(deserializer.deserialize()).isEqualTo(10L);
+        assertThat(deserializer.deserialize()).isEqualTo(30L);
+        assertThat(deserializer.deserialize()).isEqualTo(60L);
+        assertThat(deserializer.deserialize()).isEqualTo(100L);
+        assertThat(deserializer.deserialize()).isEqualTo(220L);
+        assertThat(deserializer.deserialize()).isNull();
+        assertThat(deserializer.deserialize()).isEqualTo(220L + 16383L);
+        assertThat(deserializer.deserialize()).isEqualTo(-100010L);
+        assertThat(deserializer.deserialize()).isEqualTo(-100009L);
+    }
+
 }
