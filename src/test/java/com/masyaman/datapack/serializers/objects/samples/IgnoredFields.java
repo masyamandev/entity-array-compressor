@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.objects.samples;
 
-import com.masyaman.datapack.annotations.IgnoredField;
+import com.masyaman.datapack.annotations.serialization.IgnoredField;
 
 public class IgnoredFields {
 

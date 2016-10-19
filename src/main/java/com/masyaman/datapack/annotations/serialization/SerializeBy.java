@@ -1,5 +1,6 @@
-package com.masyaman.datapack.annotations;
+package com.masyaman.datapack.annotations.serialization;
 
+import com.masyaman.datapack.annotations.InheritFromParent;
 import com.masyaman.datapack.serializers.SerializationFactory;
 
 import java.lang.annotation.Retention;

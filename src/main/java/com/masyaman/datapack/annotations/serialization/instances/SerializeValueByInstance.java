@@ -1,21 +1,21 @@
-package com.masyaman.datapack.annotations.instances;
+package com.masyaman.datapack.annotations.serialization.instances;
 
 import com.masyaman.datapack.annotations.InheritFromParent;
-import com.masyaman.datapack.annotations.SerializeKeyBy;
+import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.serializers.SerializationFactory;
 
-@SerializeKeyBy(SerializationFactory.class)
-public class SerializeKeyByInstance extends AbstractAnnotationInstance implements SerializeKeyBy {
+@SerializeValueBy(SerializationFactory.class)
+public class SerializeValueByInstance extends AbstractAnnotationInstance implements SerializeValueBy {
 
     private final Class<? extends SerializationFactory> value;
     private final Class serializeAs;
     private final Class annotationsFrom;
 
-    public SerializeKeyByInstance(Class<? extends SerializationFactory> value) {
+    public SerializeValueByInstance(Class<? extends SerializationFactory> value) {
         this(value, InheritFromParent.class, InheritFromParent.class);
     }
 
-    public SerializeKeyByInstance(Class<? extends SerializationFactory> value, Class serializeAs, Class annotationsFrom) {
+    public SerializeValueByInstance(Class<? extends SerializationFactory> value, Class serializeAs, Class annotationsFrom) {
         this.value = value;
         this.serializeAs = serializeAs;
         this.annotationsFrom = annotationsFrom;

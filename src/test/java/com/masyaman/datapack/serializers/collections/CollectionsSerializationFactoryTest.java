@@ -1,7 +1,7 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.annotations.Precision;
-import com.masyaman.datapack.annotations.instances.SerializeValueByInstance;
+import com.masyaman.datapack.annotations.serialization.Precision;
+import com.masyaman.datapack.annotations.serialization.instances.SerializeValueByInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;

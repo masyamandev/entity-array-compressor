@@ -1,7 +1,7 @@
 package com.masyaman.datapack.serializers.objects;
 
-import com.masyaman.datapack.annotations.IgnoredField;
-import com.masyaman.datapack.annotations.SerializeBy;
+import com.masyaman.datapack.annotations.serialization.IgnoredField;
+import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.reflection.ClassUtils;
 import com.masyaman.datapack.reflection.Getter;
 import com.masyaman.datapack.reflection.TypeDescriptor;

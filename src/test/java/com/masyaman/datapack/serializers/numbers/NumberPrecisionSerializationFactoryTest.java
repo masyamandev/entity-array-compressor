@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.annotations.instances.PrecisionInstance;
+import com.masyaman.datapack.annotations.serialization.instances.PrecisionInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;

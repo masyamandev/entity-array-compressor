@@ -1,6 +1,6 @@
 package com.masyaman.datapack.compare.objects;
 
-import com.masyaman.datapack.annotations.Precision;
+import com.masyaman.datapack.annotations.serialization.Precision;
 import com.univocity.parsers.annotations.Parsed;
 
 public class GpsPositionWithSpeedDataLoss {

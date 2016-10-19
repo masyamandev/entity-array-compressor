@@ -1,7 +1,7 @@
 package com.masyaman.datapack.compare.objects;
 
-import com.masyaman.datapack.annotations.Precision;
-import com.masyaman.datapack.annotations.SerializeBy;
+import com.masyaman.datapack.annotations.serialization.Precision;
+import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.serializers.numbers.NumberLinearSerializationFactory;
 import com.univocity.parsers.annotations.Parsed;
 

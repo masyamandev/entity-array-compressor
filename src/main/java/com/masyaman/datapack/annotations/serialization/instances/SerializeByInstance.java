@@ -1,7 +1,7 @@
-package com.masyaman.datapack.annotations.instances;
+package com.masyaman.datapack.annotations.serialization.instances;
 
 import com.masyaman.datapack.annotations.InheritFromParent;
-import com.masyaman.datapack.annotations.SerializeBy;
+import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.serializers.SerializationFactory;
 
 @SerializeBy(SerializationFactory.class)

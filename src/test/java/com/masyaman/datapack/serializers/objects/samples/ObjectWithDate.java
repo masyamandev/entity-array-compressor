@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.objects.samples;
 
-import com.masyaman.datapack.annotations.SerializeBy;
+import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.serializers.dates.DateDiffSerializationFactory;
 
 import java.util.Date;

@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.annotations.SerializeValueBy;
+import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;

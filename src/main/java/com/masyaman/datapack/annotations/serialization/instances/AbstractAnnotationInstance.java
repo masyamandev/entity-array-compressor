@@ -1,4 +1,4 @@
-package com.masyaman.datapack.annotations.instances;
+package com.masyaman.datapack.annotations.serialization.instances;
 
 import java.lang.annotation.Annotation;
 
