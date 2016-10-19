@@ -11,6 +11,8 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.wrap;
+
 /**
  * Serialization factory for Strings.
  * Cached version of {@link StringSerializationFactory}
@@ -41,9 +43,8 @@ public class StringConstantsSerializationFactory extends SerializationFactory<St
     }
 
     @Override
-    public <E extends String> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return (Deserializer<E>) new SimpleCachedDeserializer(is, new StringDeserializer(is));
+    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
+        return wrap(new SimpleCachedDeserializer(is, new StringDeserializer(is)), type);
     }
-
 
 }

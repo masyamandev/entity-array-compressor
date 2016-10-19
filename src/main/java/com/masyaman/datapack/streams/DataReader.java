@@ -58,7 +58,7 @@ public abstract class DataReader implements ObjectReader {
     }
 
     public Object readObject() throws IOException {
-        return readObject(null);
+        return readObject(new TypeDescriptor<>(Object.class));
     }
 
     public abstract <T> T readObject(TypeDescriptor<T> type) throws IOException;

@@ -10,6 +10,8 @@ import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
 
+import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.wrap;
+
 /**
  * Serialization factory for Strings.
  */
@@ -38,8 +40,8 @@ public class StringSerializationFactory extends SerializationFactory<String> imp
     }
 
     @Override
-    public <E extends String> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return (Deserializer<E>) new StringDeserializer(is);
+    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
+        return wrap(new StringDeserializer(is), type);
     }
 
 

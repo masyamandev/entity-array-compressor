@@ -38,13 +38,9 @@ public class NumberTypeResolver {
 
     public static TypeDescriptor readType(DataReader dr, TypeDescriptor expectedType) throws IOException {
         String t = dr.readString();
-        if (expectedType != null && TYPE_TO_CLASS.containsKey(expectedType.getType())) {
+        if (expectedType != null && CLASS_TO_TYPE.containsKey(expectedType.getType())) {
             return expectedType;
         }
-        Class type = TYPE_TO_CLASS.get(t);
-        if (expectedType != null && !expectedType.getType().isAssignableFrom(type)) {
-            return expectedType;
-        }
-        return new TypeDescriptor(type);
+        return new TypeDescriptor(TYPE_TO_CLASS.get(t));
     }
 }

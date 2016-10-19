@@ -41,7 +41,7 @@ public final class UnsupportedSerializationFactory<E> extends SerializationFacto
     }
 
     @Override
-    public <E1 extends E> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
+    public <E1> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
         return new Deserializer<E1>() {
             @Override
             public E1 deserialize() throws IOException {

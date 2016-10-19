@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
@@ -131,6 +132,15 @@ public class CompareGpsTrack {
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
+                try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
             }
 
             return serialized;
@@ -155,6 +165,16 @@ public class CompareGpsTrack {
                         assertThat(objectReader.hasObjects()).isTrue();
                         Object deserialized = objectReader.readObject();
                         assertThat(deserialized).isEqualTo(event);
+                    }
+                    // TODO fix objectReader.hasObjects() somehow or remove method
+                    //assertThat(objectReader.hasObjects()).isFalse();
+                }
+                try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
                     // TODO fix objectReader.hasObjects() somehow or remove method
                     //assertThat(objectReader.hasObjects()).isFalse();

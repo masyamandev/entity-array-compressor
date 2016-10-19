@@ -1,5 +1,7 @@
 package com.masyaman.datapack.streams;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -87,6 +89,32 @@ public class SerializationFactoryLookupTest extends TestCase {
         }
     }
 
+    @Test
+    public void testDeserializersAsJson() throws Exception {
+        assertThat(factory.isApplicable(factory.getDefaultType()))
+                .as("Factory %s (%s) should be applicable for type %s", factory.getClass().getName(), factory.getName(),
+                        factory.getDefaultType().getType().getName())
+                .isTrue();
+
+        List<Object> objects = createObjectsOfType(factory.getDefaultType());
+
+        for (Object object : objects) {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            Serializer serializer = factory.createSerializer(new SerialDataWriter(os), new TypeDescriptor(object.getClass()));
+            serializer.serialize(object);
+
+            byte[] bytes = os.toByteArray();
+
+            ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+            Deserializer<String> deserializer = factory.createDeserializer(new SerialDataReader(is), DeserializationTypes.JSON_TYPE);
+            String deserialized = deserializer.deserialize();
+            assertThat(deserialized).isNotNull();
+            assertThat(deserialized).isNotEmpty();
+
+            new ObjectMapper().readValue(deserialized, Object.class);
+        }
+    }
+
     private List<Object> createObjectsOfType(TypeDescriptor typeDescriptor) {
         List<Object> objects = new ArrayList<>();
 
@@ -120,6 +148,7 @@ public class SerializationFactoryLookupTest extends TestCase {
         objects.add(create(typeDescriptor.getType(), "A"));
         objects.add(create(typeDescriptor.getType(), "BB"));
         objects.add(create(typeDescriptor.getType(), "CCC"));
+        objects.add(create(typeDescriptor.getType(), "`~!@#$%^&*()-_=+[]{};:\'\",./\\<>?"));
 
         // Add Enums
         objects.add(create(typeDescriptor.getType(), RoundingMode.UP));

@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.annotations.serialization.SerializeKeyBy;
 import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
@@ -57,8 +58,12 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
     }
 
     @Override
-    public <T extends E> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
-        return new MapDeserializer(is, type, new TypeDescriptor(type.getParametrizedType(0)), new TypeDescriptor(type.getParametrizedType(1)));
+    public <T> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
+        if (type.getAnnotation(AsJson.class) != null) {
+            return (Deserializer<T>) new JsonMapDeserializer(is, type);
+        } else {
+            return new MapDeserializer(is, type, new TypeDescriptor(type.getParametrizedType(0)), new TypeDescriptor(type.getParametrizedType(1)));
+        }
     }
 
     private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) {

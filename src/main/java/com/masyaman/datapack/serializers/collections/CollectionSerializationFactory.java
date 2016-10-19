@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
@@ -62,8 +63,10 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
     }
 
     @Override
-    public <T extends E> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
-        if (type.getType().isArray()) {
+    public <T> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
+        if (type.getAnnotation(AsJson.class) != null) {
+            return (Deserializer<T>) new JsonCollectionDeserializer(is, type);
+        } else if (type.getType().isArray()) {
             return (Deserializer<T>) new ArrayDeserializer(is, new TypeDescriptor(type.getType().getComponentType()));
         } else {
             return new CollectionDeserializer<>(is, type, new TypeDescriptor(type.getParametrizedType(0)));

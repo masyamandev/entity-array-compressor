@@ -1,10 +1,10 @@
 package com.masyaman.datapack.serializers.collections;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
@@ -37,6 +37,10 @@ public class BitSetSerializationFactory extends SerializationFactory {
 
     @Override
     public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
-        return new BitSetDeserializer(is);
+        if (type.getAnnotation(AsJson.class) != null) {
+            return new JsonBitSetDeserializer(is, type);
+        } else {
+            return new BitSetDeserializer(is);
+        }
     }
 }

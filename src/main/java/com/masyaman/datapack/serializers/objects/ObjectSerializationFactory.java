@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -38,6 +39,10 @@ public class ObjectSerializationFactory extends SerializationFactory<Object> {
 
     @Override
     public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return new ObjectDeserializer<>(is, type);
+        if (type.getAnnotation(AsJson.class) != null) {
+            return (Deserializer<E>) new JsonObjectDeserializer(is, type);
+        } else {
+            return new ObjectDeserializer<>(is, type);
+        }
     }
 }

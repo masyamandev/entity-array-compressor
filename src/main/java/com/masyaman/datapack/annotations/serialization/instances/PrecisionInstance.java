@@ -1,5 +1,6 @@
 package com.masyaman.datapack.annotations.serialization.instances;
 
+import com.masyaman.datapack.annotations.AbstractAnnotationInstance;
 import com.masyaman.datapack.annotations.serialization.Precision;
 
 import java.math.RoundingMode;
