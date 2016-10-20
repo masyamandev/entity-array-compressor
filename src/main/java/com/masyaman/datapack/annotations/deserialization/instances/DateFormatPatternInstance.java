@@ -13,6 +13,9 @@ public class DateFormatPatternInstance extends AbstractAnnotationInstance implem
         this(DateFormatPattern.DEFAULT_FORMAT, DateFormatPattern.DEFAULT_TZ);
     }
 
+    public DateFormatPatternInstance(String format) {
+        this(format, DateFormatPattern.DEFAULT_TZ);
+    }
     public DateFormatPatternInstance(String format, String timezone) {
         this.format = format;
         this.timezone = timezone;

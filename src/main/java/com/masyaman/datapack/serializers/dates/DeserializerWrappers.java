@@ -29,16 +29,34 @@ final class DeserializerWrappers {
             DateFormatPattern pattern = type.getAnnotation(DateFormatPattern.class);
             String format = pattern != null ? pattern.format() : DateFormatPattern.DEFAULT_FORMAT;
             String tz = pattern != null ? pattern.timezone() : DateFormatPattern.DEFAULT_TZ;
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            dateFormat.setTimeZone(TimeZone.getTimeZone(tz));
-            return FormatsDeserializerWrappers.wrap(new Deserializer<E>() {
-                @Override
-                public E deserialize() throws IOException {
-                    Long val = deserializer.deserialize();
-                    //return (E) (val == null ? null : dateFormat.format(new Date(val)));
-                    return (E) (val == null ? null : dateFormat.format(new Date(val)));
-                }
-            }, type);
+
+            if (DateFormatPattern.MILLIS_FORMAT.equals(format)) {
+                return FormatsDeserializerWrappers.wrap(new Deserializer<E>() {
+                    @Override
+                    public E deserialize() throws IOException {
+                        Long val = deserializer.deserialize();
+                        return (E) (val == null ? null : "" + val.longValue());
+                    }
+                }, type);
+            } else if (DateFormatPattern.SECONDS_FORMAT.equals(format)) {
+                return FormatsDeserializerWrappers.wrap(new Deserializer<E>() {
+                    @Override
+                    public E deserialize() throws IOException {
+                        Long val = deserializer.deserialize();
+                        return (E) (val == null ? null : "" + val.longValue()/1000L);
+                    }
+                }, type);
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+                dateFormat.setTimeZone(TimeZone.getTimeZone(tz));
+                return FormatsDeserializerWrappers.wrap(new Deserializer<E>() {
+                    @Override
+                    public E deserialize() throws IOException {
+                        Long val = deserializer.deserialize();
+                        return (E) (val == null ? null : dateFormat.format(new Date(val)));
+                    }
+                }, type);
+            }
         } else {
             throw new IllegalArgumentException("Class " + type.getType().getName() + " is not supported");
         }

@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
+import com.masyaman.datapack.annotations.deserialization.DateFormatPattern;
 import com.masyaman.datapack.annotations.deserialization.instances.DateFormatPatternInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
@@ -117,9 +118,22 @@ public class DateSerializationFactoryTest {
         serializer.serialize(new Date(1400000000123L));
         byte[] bytes = os.toByteArray();
 
-        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance());
-        Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
-        assertThat(deserializer.deserialize()).isEqualTo("2014-05-13 16:53:20.123");
+        try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance());
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
+            assertThat(deserializer.deserialize()).isEqualTo("2014-05-13 16:53:20.123");
+        }
+
+        try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.MILLIS_FORMAT));
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
+            assertThat(deserializer.deserialize()).isEqualTo("1400000000123");
+        }
+
+        try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.SECONDS_FORMAT));
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
+            assertThat(deserializer.deserialize()).isEqualTo("1400000000");
+        }
     }
 }
