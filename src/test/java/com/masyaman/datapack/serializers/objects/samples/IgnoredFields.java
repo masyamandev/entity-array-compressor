@@ -16,6 +16,22 @@ public class IgnoredFields {
         this.stored = stored;
     }
 
+    public String getIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(String ignored) {
+        this.ignored = ignored;
+    }
+
+    public String getStored() {
+        return stored;
+    }
+
+    public void setStored(String stored) {
+        this.stored = stored;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

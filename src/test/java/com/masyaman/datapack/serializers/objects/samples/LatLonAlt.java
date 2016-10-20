@@ -11,6 +11,14 @@ public class LatLonAlt extends LatLon {
         this.alt = alt;
     }
 
+    public double getAlt() {
+        return alt;
+    }
+
+    public void setAlt(double alt) {
+        this.alt = alt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -12,6 +12,22 @@ public class TsTz {
         this.tz = tz;
     }
 
+    public long getTs() {
+        return ts;
+    }
+
+    public void setTs(long ts) {
+        this.ts = ts;
+    }
+
+    public long getTz() {
+        return tz;
+    }
+
+    public void setTz(long tz) {
+        this.tz = tz;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -16,6 +16,22 @@ public class LatLonTsTzAsObject {
         this.tsTz = tsTz;
     }
 
+    public Object getLatLon() {
+        return latLon;
+    }
+
+    public void setLatLon(Object latLon) {
+        this.latLon = latLon;
+    }
+
+    public Object getTsTz() {
+        return tsTz;
+    }
+
+    public void setTsTz(Object tsTz) {
+        this.tsTz = tsTz;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

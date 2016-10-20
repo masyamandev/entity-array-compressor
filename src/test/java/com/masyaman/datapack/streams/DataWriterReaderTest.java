@@ -1,10 +1,15 @@
 package com.masyaman.datapack.streams;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
+import com.masyaman.datapack.serializers.objects.samples.*;
 import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataWriterReaderTest extends TestCase {
@@ -44,4 +49,48 @@ public class DataWriterReaderTest extends TestCase {
         assertThat(reader.readObject()).isEqualTo(new Double(2.2));
         assertThat(reader.readObject()).isEqualTo(new Float(3.3));
     }
+
+    @Test
+    public void testObjectSerialization() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        assertThat(dr.readObject()).isNull();
+    }
+
+    @Test
+    public void testObjectDeserializationAsJson() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        ObjectMapper mapper = new ObjectMapper();
+
+        assertThat(mapper.readValue(dr.readObject(JSON_TYPE), ArrayFields.class))
+                .isEqualTo(new ArrayFields(new Object[] {1, 1, 1D}, new String[] {"A", "B"})); // No Long here
+        assertThat(mapper.readValue(dr.readObject(JSON_TYPE), LatLonTsTz.class))
+                .isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+
+        assertThat(dr.readObject(JSON_TYPE)).contains("\"alt\":3.3");
+        assertThat(dr.readObject(JSON_TYPE)).isNull();
+    }
+
 }

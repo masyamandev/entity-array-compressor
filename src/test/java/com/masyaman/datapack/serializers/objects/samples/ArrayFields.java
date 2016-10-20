@@ -14,6 +14,22 @@ public class ArrayFields {
         this.strings = strings;
     }
 
+    public Object[] getObjects() {
+        return objects;
+    }
+
+    public void setObjects(Object[] objects) {
+        this.objects = objects;
+    }
+
+    public String[] getStrings() {
+        return strings;
+    }
+
+    public void setStrings(String[] strings) {
+        this.strings = strings;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

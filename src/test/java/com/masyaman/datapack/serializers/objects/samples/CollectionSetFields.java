@@ -21,6 +21,22 @@ public class CollectionSetFields {
         }
     }
 
+    public Set getObjects() {
+        return objects;
+    }
+
+    public void setObjects(Set objects) {
+        this.objects = objects;
+    }
+
+    public Set<String> getStrings() {
+        return strings;
+    }
+
+    public void setStrings(Set<String> strings) {
+        this.strings = strings;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

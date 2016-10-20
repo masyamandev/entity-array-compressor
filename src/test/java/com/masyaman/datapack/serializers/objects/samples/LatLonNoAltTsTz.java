@@ -16,6 +16,22 @@ public class LatLonNoAltTsTz {
         this.tsTz = tsTz;
     }
 
+    public LatLon getLatLon() {
+        return latLon;
+    }
+
+    public void setLatLon(LatLon latLon) {
+        this.latLon = latLon;
+    }
+
+    public TsTz getTsTz() {
+        return tsTz;
+    }
+
+    public void setTsTz(TsTz tsTz) {
+        this.tsTz = tsTz;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
