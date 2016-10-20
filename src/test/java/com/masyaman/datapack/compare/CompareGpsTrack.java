@@ -166,8 +166,7 @@ public class CompareGpsTrack {
                         Object deserialized = objectReader.readObject();
                         assertThat(deserialized).isEqualTo(event);
                     }
-                    // TODO fix objectReader.hasObjects() somehow or remove method
-                    //assertThat(objectReader.hasObjects()).isFalse();
+                    assertThat(objectReader.hasObjects()).isFalse();
                 }
                 try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
@@ -176,8 +175,7 @@ public class CompareGpsTrack {
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
-                    // TODO fix objectReader.hasObjects() somehow or remove method
-                    //assertThat(objectReader.hasObjects()).isFalse();
+                    assertThat(objectReader.hasObjects()).isFalse();
                 }
             }
 

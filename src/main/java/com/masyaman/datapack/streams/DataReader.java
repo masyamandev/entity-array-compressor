@@ -8,19 +8,20 @@ import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DataReader implements ObjectReader {
 
-    protected InputStream is;
+    protected PushbackInputStream is;
 
     private Deserializer<Long> signedLongDeserializer;
     private Deserializer<Long> unsignedLongDeserializer;
     private Deserializer<String> stringDeserializer;
 
-    public DataReader(InputStream is) throws IOException {
-        this.is = is;
+    public DataReader(InputStream inputStream) throws IOException {
+        this.is = new PushbackInputStream(inputStream);
 
         signedLongDeserializer = new SignedLongReader(is);
         unsignedLongDeserializer = new UnsignedLongReader(is);
@@ -34,7 +35,13 @@ public abstract class DataReader implements ObjectReader {
 
     @Override
     public boolean hasObjects() throws IOException {
-        return is.available() > 0;
+        int read = is.read();
+        if (read >= 0) {
+            is.unread(read);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public byte readByte() throws IOException {
