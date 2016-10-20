@@ -141,6 +141,15 @@ public class CompareGpsTrack {
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
+                try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
             }
 
             return serialized;
@@ -172,6 +181,15 @@ public class CompareGpsTrack {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
                         String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
+                try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }

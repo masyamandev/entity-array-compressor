@@ -1,7 +1,8 @@
 package com.masyaman.datapack.streams;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
+import com.masyaman.datapack.annotations.deserialization.instances.AsJsonInstance;
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.objects.samples.*;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -76,6 +77,7 @@ public class DataWriterReaderTest extends TestCase {
         dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
         dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(new IgnoredFields("xx", "yy"));
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
@@ -90,7 +92,35 @@ public class DataWriterReaderTest extends TestCase {
                 .isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
 
         assertThat(dr.readObject(JSON_TYPE)).contains("\"alt\":3.3");
+        assertThat(dr.readObject(JSON_TYPE)).isEqualTo("{\"stored\":\"yy\"}");
         assertThat(dr.readObject(JSON_TYPE)).isNull();
+    }
+
+    @Test
+    public void testObjectDeserializationAsJsonWithType() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new LatLon(1.1, 2.2));
+        dw.writeObject(new IgnoredFields("xx", "yy"));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        ObjectMapper mapper = new ObjectMapper();
+
+        // class IgnoredFields has field 'stored', so we can check that real field is not overwritten
+        TypeDescriptor<String> jsonType = new TypeDescriptor(String.class, new AsJsonInstance(false, "stored"));
+
+        String latLon = dr.readObject(jsonType);
+        assertThat(latLon).contains("\"lat\":1.1");
+        assertThat(latLon).contains("\"lon\":2.2");
+        assertThat(latLon).contains("\"stored\":\"" + LatLon.class.getTypeName() + "\"");
+
+        // ensure that there is only one field 'stored'
+        assertThat(dr.readObject(jsonType)).isEqualTo("{\"stored\":\"yy\"}");
+        assertThat(dr.readObject(jsonType)).isNull();
     }
 
 }

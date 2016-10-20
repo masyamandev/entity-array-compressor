@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
@@ -17,21 +18,35 @@ class JsonObjectDeserializer implements Deserializer<String> {
     private List<String> fields = new ArrayList<>();
     private List<Deserializer> deserializers = new ArrayList<>();
 
-    private final String className;
+    private String typeField;
 
-    public JsonObjectDeserializer(DataReader is, TypeDescriptor type) throws IOException {
+    public JsonObjectDeserializer(DataReader is, TypeDescriptor<?> type) throws IOException {
         this.is = is;
 
-        className = is.readString();
+        String classField = null;
+        String className = is.readString();
+        if (type.getAnnotation(AsJson.class) != null) {
+            classField =  type.getAnnotation(AsJson.class).typeField();
+            if (classField.isEmpty()) {
+                classField = null;
+            }
+        }
 
         Long fieldsNum = is.readUnsignedLong();
         for (int i = 0; i < fieldsNum; i++) {
             String fieldName = is.readString();
+            if (fieldName.equals(classField)) {
+                classField = null;
+            }
 
             Deserializer deserializer = is.createAndRegisterDeserializer(type);
 
             deserializers.add(deserializer);
             fields.add(toJsonString(fieldName));
+        }
+
+        if (classField != null) {
+            typeField = toJsonString(classField) + ":" + toJsonString(className);
         }
     }
 
@@ -44,11 +59,15 @@ class JsonObjectDeserializer implements Deserializer<String> {
 
         boolean allNulls = true;
 
+        if (typeField != null) {
+            sb.append(typeField);
+        }
+
         for (int i = 0; i < fields.size(); i++) {
             Object field = deserializers.get(i).deserialize();
             allNulls &= field == null;
 
-            if (i > 0) {
+            if (sb.length() > 1) {
                 sb.append(",");
             }
             sb.append(fields.get(i));

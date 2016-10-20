@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AsJson {
     boolean numbersAsStrings() default false;
-    // TODO add field for saving class name / object type
+    String typeField() default "";
     // TODO add date deserialization format
 }
