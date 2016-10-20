@@ -5,7 +5,9 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AsJson {
+
+    String NO_FIELD_TYPE = "";
+
     boolean numbersAsStrings() default false;
-    String typeField() default "";
-    // TODO add date deserialization format
+    String typeField() default NO_FIELD_TYPE;
 }

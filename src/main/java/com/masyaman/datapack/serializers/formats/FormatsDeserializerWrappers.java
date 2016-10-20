@@ -18,14 +18,6 @@ public class FormatsDeserializerWrappers {
         }
     }
 
-    public static <T> Deserializer<T> wrapDate(Deserializer deserializer, TypeDescriptor<T> type) throws IOException {
-        if (type.getAnnotation(AsJson.class) != null) {
-            return (Deserializer<T>) toJsonString(deserializer);
-        } else {
-            return deserializer;
-        }
-    }
-
     public static <T> Deserializer<T> wrap(Deserializer deserializer, TypeDescriptor<T> type) throws IOException {
         if (type.getAnnotation(AsJson.class) != null) {
             return (Deserializer<T>) toJsonString(deserializer);

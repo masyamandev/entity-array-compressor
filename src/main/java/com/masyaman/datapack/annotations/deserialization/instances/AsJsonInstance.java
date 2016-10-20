@@ -9,7 +9,7 @@ public class AsJsonInstance extends AbstractAnnotationInstance implements AsJson
     private String typeField;
 
     public AsJsonInstance() {
-        this(false, "");
+        this(false, NO_FIELD_TYPE);
     }
 
     public AsJsonInstance(boolean numbersAsStrings, String typeField) {
@@ -17,8 +17,8 @@ public class AsJsonInstance extends AbstractAnnotationInstance implements AsJson
         this.typeField = typeField;
     }
 
-    public AsJsonInstance(AsJson cloned) {
-        this(cloned.numbersAsStrings(), cloned.typeField());
+    public AsJsonInstance(AsJson toClone) {
+        this(toClone.numbersAsStrings(), toClone.typeField());
     }
 
     @Override

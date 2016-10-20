@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
+import com.masyaman.datapack.annotations.deserialization.instances.DateFormatPatternInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -107,5 +108,18 @@ public class DateSerializationFactoryTest {
         for (int i = 0; i < ll.length; i++) {
             assertThat(deserializer.deserialize().getTime()).isEqualTo(ll[i]);
         }
+    }
+
+    @Test
+    public void testDateToString() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE_TYPE);
+        serializer.serialize(new Date(1400000000123L));
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance());
+        Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
+        assertThat(deserializer.deserialize()).isEqualTo("2014-05-13 16:53:20.123");
     }
 }
