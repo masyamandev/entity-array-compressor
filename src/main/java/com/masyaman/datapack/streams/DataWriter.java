@@ -4,7 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
 import com.masyaman.datapack.serializers.primitives.StringWriter;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
@@ -121,10 +120,7 @@ public abstract class DataWriter implements ObjectWriter {
             Integer id = typeToId.getOrDefault(type, 0);
             writeUnsignedLong(Long.valueOf(id));
             if (id <= 0) {
-                SerializationFactory factory = serializationFactoryLookup.getSerializationFactory(type);
-                if (factory == null) {
-                    factory = ObjectSerializationFactory.INSTANCE;
-                }
+                SerializationFactory factory = serializationFactoryLookup.getSerializationFactory(type, true);
                 return writeAndRegisterSerializer(factory, type);
             } else {
                 return registeredSerializers.get(id - 1);

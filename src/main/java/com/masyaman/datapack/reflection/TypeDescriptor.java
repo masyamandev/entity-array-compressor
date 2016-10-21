@@ -1,10 +1,7 @@
 package com.masyaman.datapack.reflection;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Arrays;
 
 public class TypeDescriptor<T> {
@@ -62,6 +59,10 @@ public class TypeDescriptor<T> {
             return Object.class;
         }
         return (Class) getParametrizedType().getActualTypeArguments()[i]; // TODO
+    }
+
+    public boolean isFinal() {
+        return Modifier.isFinal(type.getModifiers());
     }
 
     @Override

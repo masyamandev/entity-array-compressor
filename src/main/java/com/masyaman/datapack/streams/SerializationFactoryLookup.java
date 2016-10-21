@@ -55,7 +55,7 @@ public class SerializationFactoryLookup {
 
     }
 
-    public SerializationFactory getSerializationFactory(TypeDescriptor type) throws IOException {
+    public SerializationFactory getSerializationFactory(TypeDescriptor type, boolean exactType) throws IOException {
         switch (type.getType().getName()) {
             case "java.lang.String":
                 return StringSerializationFactory.INSTANCE;
@@ -99,7 +99,8 @@ public class SerializationFactoryLookup {
         if (type.getType() != Object.class && type.getType().getName().startsWith("java")) {
             throw new IOException("Unable to find serializer for type " + type.getType().getName());
         }
-        return null;//new ObjectSerializationFactory.INSTANCE;
+        
+        return exactType ? ObjectSerializationFactory.INSTANCE : UnknownTypeSerializationFactory.INSTANCE;
     }
 
     public SerializationFactory getByName(String name) {

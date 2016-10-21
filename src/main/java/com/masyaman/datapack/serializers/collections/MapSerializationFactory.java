@@ -7,7 +7,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
@@ -67,10 +66,6 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
     }
 
     private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
-        SerializationFactory serializationFactory = os.getSerializationFactoryLookup().getSerializationFactory(type);
-        if (serializationFactory == null) {
-            serializationFactory = UnknownTypeSerializationFactory.INSTANCE;
-        }
-        return serializationFactory;
+        return os.getSerializationFactoryLookup().getSerializationFactory(type, type.isFinal());
     }
 }

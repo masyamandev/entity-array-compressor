@@ -47,12 +47,9 @@ class ObjectSerializer<T> implements Serializer<T> {
             SerializationFactory serializationFactory;
             try {
                 serializationFactory = declared != null ? getInstance(declared.value()) :
-                        os.getSerializationFactoryLookup().getSerializationFactory(declaredType);
+                        os.getSerializationFactoryLookup().getSerializationFactory(declaredType, declaredType.isFinal());
             } catch (Exception e) {
                 throw new IOException("Unable to create serializer for field " + clazz.getName() + "." + getterEntry.getKey(), e);
-            }
-            if (serializationFactory == null) {
-                serializationFactory = UnknownTypeSerializationFactory.INSTANCE;
             }
 
             serializations.add(new SerializationData(getterEntry.getKey(), getter, serializationFactory, declaredType));
