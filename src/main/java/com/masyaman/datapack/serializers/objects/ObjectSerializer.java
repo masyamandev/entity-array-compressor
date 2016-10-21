@@ -44,11 +44,14 @@ class ObjectSerializer<T> implements Serializer<T> {
                     getter.type().getParametrizedType(),
                     annotationsFrom(declared, getter.type().getAnnotations()));
 
-            SerializationFactory serializationFactory = declared != null ? getInstance(declared.value()) :
-                    os.getSerializationFactoryLookup().getSerializationFactory(declaredType);
-            if (serializationFactory == UnsupportedSerializationFactory.INSTANCE) {
-                throw new IOException("Unable to find serializer for " + clazz.getName() + "." + getterEntry.getKey());
-            } else if (serializationFactory == null) {
+            SerializationFactory serializationFactory;
+            try {
+                serializationFactory = declared != null ? getInstance(declared.value()) :
+                        os.getSerializationFactoryLookup().getSerializationFactory(declaredType);
+            } catch (Exception e) {
+                throw new IOException("Unable to create serializer for field " + clazz.getName() + "." + getterEntry.getKey(), e);
+            }
+            if (serializationFactory == null) {
                 serializationFactory = UnknownTypeSerializationFactory.INSTANCE;
             }
 

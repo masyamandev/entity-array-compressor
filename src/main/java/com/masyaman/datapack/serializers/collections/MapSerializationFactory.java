@@ -66,7 +66,7 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
         }
     }
 
-    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) {
+    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
         SerializationFactory serializationFactory = os.getSerializationFactoryLookup().getSerializationFactory(type);
         if (serializationFactory == null) {
             serializationFactory = UnknownTypeSerializationFactory.INSTANCE;

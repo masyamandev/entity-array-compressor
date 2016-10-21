@@ -12,11 +12,11 @@ import com.masyaman.datapack.serializers.numbers.*;
 import com.masyaman.datapack.serializers.objects.ObjectSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeCachedSerializationFactory;
 import com.masyaman.datapack.serializers.objects.UnknownTypeSerializationFactory;
-import com.masyaman.datapack.serializers.objects.UnsupportedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
 import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 
+import java.io.IOException;
 import java.util.*;
 
 public class SerializationFactoryLookup {
@@ -44,7 +44,6 @@ public class SerializationFactoryLookup {
             ObjectSerializationFactory.INSTANCE,
             UnknownTypeSerializationFactory.INSTANCE,
             UnknownTypeCachedSerializationFactory.INSTANCE
-            //UnsupportedSerializationFactory.INSTANCE
     );
 
     private Map<String, SerializationFactory> factories = new HashMap<>();
@@ -56,7 +55,7 @@ public class SerializationFactoryLookup {
 
     }
 
-    public SerializationFactory getSerializationFactory(TypeDescriptor type) {
+    public SerializationFactory getSerializationFactory(TypeDescriptor type) throws IOException {
         switch (type.getType().getName()) {
             case "java.lang.String":
                 return StringSerializationFactory.INSTANCE;
@@ -77,7 +76,7 @@ public class SerializationFactoryLookup {
             case "java.lang.Byte":
             case "char":
             case "java.lang.Char":
-                return UnsupportedSerializationFactory.INSTANCE; // TODO
+                throw new IOException("Unable to find serializer for type " + type.getType().getName());
 
             case "java.util.BitSet":
                 return BitSetSerializationFactory.INSTANCE;
@@ -98,7 +97,7 @@ public class SerializationFactoryLookup {
         }
 
         if (type.getType() != Object.class && type.getType().getName().startsWith("java")) {
-            return UnsupportedSerializationFactory.INSTANCE;
+            throw new IOException("Unable to find serializer for type " + type.getType().getName());
         }
         return null;//new ObjectSerializationFactory.INSTANCE;
     }
