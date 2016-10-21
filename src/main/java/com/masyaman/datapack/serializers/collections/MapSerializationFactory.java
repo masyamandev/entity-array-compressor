@@ -46,9 +46,11 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
         TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getParametrizedType(1)),
                 annotationsFrom(valueDeclared, type.getAnnotations()));
 
+        boolean isSpecifiedKeyType = serializeAs(keyDeclared, null) != null || keyType.isFinal();
+        boolean isSpecifiedValueType = serializeAs(valueDeclared, null) != null || valueType.isFinal();
 
-        SerializationFactory keyFactory = keyDeclared != null ? getInstance(keyDeclared.value()) : getSerializer(os, keyType);
-        SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
+        SerializationFactory keyFactory = keyDeclared != null ? getInstance(keyDeclared.value()) : getSerializer(os, keyType, isSpecifiedKeyType);
+        SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType, isSpecifiedValueType);
 
         boolean isOrderedMap = LinkedHashMap.class.isAssignableFrom(type.getType());
         boolean allowReordering = allowReordering(type, !isOrderedMap);
@@ -65,7 +67,7 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
         }
     }
 
-    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
-        return os.getSerializationFactoryLookup().getSerializationFactory(type, type.isFinal());
+    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type, boolean isSpecifiedType) throws IOException {
+        return os.getSerializationFactoryLookup().getSerializationFactory(type, isSpecifiedType);
     }
 }

@@ -43,7 +43,8 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
             TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getType().getComponentType()),
                     annotationsFrom(valueDeclared, type.getAnnotations()));
 
-            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
+            boolean isSpecifiedType = serializeAs(valueDeclared, null) != null || valueType.isFinal();
+            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType, isSpecifiedType);
 
             return (Serializer<T>) new ArraySerializer(os, valueFactory, valueType, allowReordering(type, false));
         } else {
@@ -52,7 +53,8 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
             TypeDescriptor valueType = new TypeDescriptor(serializeAs(valueDeclared, type.getParametrizedType(0)),
                     annotationsFrom(valueDeclared, type.getAnnotations()));
 
-            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType);
+            boolean isSpecifiedType = serializeAs(valueDeclared, null) != null || valueType.isFinal();
+            SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType, isSpecifiedType);
 
             boolean isOrdered = !Set.class.isAssignableFrom(type.getType()) || LinkedHashSet.class.isAssignableFrom(type.getType());
             boolean allowReordering = allowReordering(type, !isOrdered);
@@ -72,7 +74,7 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
         }
     }
 
-    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type) throws IOException {
-        return os.getSerializationFactoryLookup().getSerializationFactory(type, type.isFinal());
+    private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type, boolean isSpecifiedType) throws IOException {
+        return os.getSerializationFactoryLookup().getSerializationFactory(type, isSpecifiedType);
     }
 }
