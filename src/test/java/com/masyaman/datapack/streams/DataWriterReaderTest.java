@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,6 +70,50 @@ public class DataWriterReaderTest extends TestCase {
         assertThat(dr.readObject()).isEqualTo(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
         assertThat(dr.readObject()).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
         assertThat(dr.readObject()).isNull();
+    }
+
+    @Test
+    public void testReadingAsIterator() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        List<LatLonTsTz> deserialized = new ArrayList<>();
+        for (LatLonTsTz o : new SerialDataReader(new ByteArrayInputStream(bytes)).asIterable(LatLonTsTz.class)) {
+            deserialized.add(o);
+        }
+
+        assertThat(deserialized.size() == 3);
+        assertThat(deserialized.get(0)).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        assertThat(deserialized.get(1)).isEqualTo(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        assertThat(deserialized.get(2)).isNull();
+    }
+
+    @Test
+    public void testReadingAsIteratorObject() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        List<Object> deserialized = new ArrayList<>();
+        for (Object o : new SerialDataReader(new ByteArrayInputStream(bytes)).asIterable(Object.class)) {
+            deserialized.add(o);
+        }
+
+        assertThat(deserialized.size() == 4);
+        assertThat(deserialized.get(0)).isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        assertThat(deserialized.get(1)).isEqualTo(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        assertThat(deserialized.get(2)).isEqualTo(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        assertThat(deserialized.get(3)).isNull();
     }
 
     @Test

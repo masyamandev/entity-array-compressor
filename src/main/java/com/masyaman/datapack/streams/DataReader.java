@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class DataReader implements ObjectReader {
@@ -66,6 +67,35 @@ public abstract class DataReader implements ObjectReader {
 
     public Object readObject() throws IOException {
         return readObject(new TypeDescriptor<>(Object.class));
+    }
+
+    @Override
+    public <T> Iterable<T> asIterable(Class<T> clazz) {
+        TypeDescriptor<T> typeDescriptor = new TypeDescriptor<T>(clazz);
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    @Override
+                    public boolean hasNext() {
+                        try {
+                            return hasObjects();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public T next() {
+                        try {
+                            return readObject(typeDescriptor);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+            }
+        };
     }
 
     public abstract <T> T readObject(TypeDescriptor<T> type) throws IOException;

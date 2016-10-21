@@ -9,4 +9,6 @@ public interface ObjectReader extends Closeable {
     Object readObject() throws IOException;
     <T> T readObject(TypeDescriptor<T> type) throws IOException;
     boolean hasObjects() throws IOException;
+
+    <T> Iterable<T> asIterable(Class<T> clazz);
 }
