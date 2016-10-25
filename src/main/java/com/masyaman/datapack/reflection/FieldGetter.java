@@ -7,9 +7,9 @@ public class FieldGetter<T> implements Getter<T> {
     private Field field;
     private TypeDescriptor typeDescriptor;
 
-    public FieldGetter(Field field) {
+    public FieldGetter(Field field, TypeDescriptor typeDescriptor) {
         this.field = field;
-        this.typeDescriptor = new TypeDescriptor(field);
+        this.typeDescriptor = typeDescriptor;
     }
 
     @Override

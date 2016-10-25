@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.annotations.serialization.IgnoredField;
 import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.reflection.ClassUtils;
@@ -27,11 +28,18 @@ class ObjectSerializer<T> implements Serializer<T> {
     public ObjectSerializer(DataWriter os, TypeDescriptor type) throws IOException {
         this.os = os;
 
-        Class clazz = type.getType();
-        os.writeString(clazz.getName());
-//        System.out.println("Serializing " + clazz.getName());
+        Class<?> clazz = type.getType();
+        Class<?> mixInClass = os.getClassManager().getMixInClass(clazz);
 
-        Map<String, Getter> getterMap = ClassUtils.getterMap(clazz);
+        if (mixInClass != null && mixInClass.isAnnotationPresent(Alias.class)) {
+            os.writeString(mixInClass.getAnnotation(Alias.class).value());
+        } else if (clazz.isAnnotationPresent(Alias.class)){
+            os.writeString(clazz.getAnnotation(Alias.class).value());
+        } else {
+            os.writeString(clazz.getName());
+        }
+
+        Map<String, Getter> getterMap = ClassUtils.getterMap(clazz, os.getClassManager());
         for (Map.Entry<String, Getter> getterEntry : getterMap.entrySet()) {
             Getter<?> getter = getterEntry.getValue();
 

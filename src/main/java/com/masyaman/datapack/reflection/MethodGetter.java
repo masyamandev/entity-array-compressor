@@ -7,9 +7,9 @@ public class MethodGetter<T> implements Getter<T> {
     private Method method;
     private TypeDescriptor typeDescriptor;
 
-    public MethodGetter(Method method) {
+    public MethodGetter(Method method, TypeDescriptor typeDescriptor) {
         this.method = method;
-        this.typeDescriptor = new TypeDescriptor(method);
+        this.typeDescriptor = typeDescriptor;
     }
 
     @Override

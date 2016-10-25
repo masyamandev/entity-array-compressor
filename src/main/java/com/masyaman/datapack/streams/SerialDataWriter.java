@@ -12,11 +12,15 @@ public class SerialDataWriter extends DataWriter.Abstract {
     public static final long CURRENT_VERSION = 0;
 
     public SerialDataWriter(OutputStream os) throws IOException {
-        this(os, new SerializationFactoryLookup());
+        this(os, new ClassManager());
     }
 
-    public SerialDataWriter(OutputStream os, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(os);
+    public SerialDataWriter(OutputStream os, ClassManager classManager) throws IOException {
+        this(os, classManager, new SerializationFactoryLookup());
+    }
+
+    public SerialDataWriter(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+        super(os, classManager, serializationFactoryLookup);
         this.serializationFactoryLookup = serializationFactoryLookup;
         writeGlobalSettings();
     }

@@ -25,22 +25,26 @@ class ObjectDeserializer<T> implements Deserializer<T> {
         this.is = is;
 
         String className = is.readString();
-        Class<T> clazz;
+        Class<T> clazz = (Class<T>) is.getClassManager().getClassByAlias(className);
+        if (clazz == null) {
+            try {
+                clazz = (Class<T>) Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new IOException("Unable to find class for name " + className);
+            }
+        }
         try {
-            clazz = (Class<T>) Class.forName(className);
             if (type != null && !type.getType().isAssignableFrom(clazz)) {
                 throw new IOException("Classes are not matched, expected " + type.getType().getName() +
                         " but found " + clazz.getName());
             }
             constructor = clazz.getConstructor();
             constructor.setAccessible(true);
-        } catch (ClassNotFoundException e) {
-            throw new IOException("Unable to find class for name " + className);
         } catch (NoSuchMethodException e) {
-            throw new IOException("Unable to find default constructor for class " + className);
+            throw new IOException("Unable to find default constructor for class " + clazz.getName());
         }
 
-        Map<String, Setter> setterMap = ClassUtils.setterMap(clazz);
+        Map<String, Setter> setterMap = ClassUtils.setterMap(clazz, is.getClassManager());
 
         Long fieldsNum = is.readUnsignedLong();
         for (int i = 0; i < fieldsNum; i++) {

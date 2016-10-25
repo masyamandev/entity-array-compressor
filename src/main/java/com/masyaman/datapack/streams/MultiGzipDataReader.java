@@ -18,17 +18,20 @@ public class MultiGzipDataReader extends DataReader.Abstract {
     private List<InputStream> streams;
 
     public MultiGzipDataReader(InputStream is) throws IOException {
-        this(is, new SerializationFactoryLookup());
+        this(is, new ClassManager());
     }
 
-    public MultiGzipDataReader(InputStream is, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        this(splitStreams(is));
-        this.serializationFactoryLookup = serializationFactoryLookup;
+    public MultiGzipDataReader(InputStream is, ClassManager classManager) throws IOException {
+        this(is, classManager, new SerializationFactoryLookup());
+    }
+
+    public MultiGzipDataReader(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+        this(splitStreams(is), classManager, serializationFactoryLookup);
         readGlobalSettings();
     }
 
-    private MultiGzipDataReader(List<InputStream> streams) throws IOException {
-        super(streams.remove(0));
+    private MultiGzipDataReader(List<InputStream> streams, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+        super(streams.remove(0), classManager, serializationFactoryLookup);
         this.streams = streams;
     }
 

@@ -1,16 +1,15 @@
 package com.masyaman.datapack.reflection;
 
 import java.lang.reflect.Method;
-import java.util.function.Function;
 
 public class MethodSetter implements Setter {
 
     private Method method;
     private TypeDescriptor typeDescriptor;
 
-    public MethodSetter(Method method) {
+    public MethodSetter(Method method, TypeDescriptor typeDescriptor) {
         this.method = method;
-        this.typeDescriptor = new TypeDescriptor(method);
+        this.typeDescriptor = typeDescriptor;
     }
 
     @Override

@@ -21,11 +21,15 @@ public class MultiGzipDataWriter extends DataWriter.Abstract {
     private List<DataWriter.Wrapper> dataWriters = new ArrayList<>();
 
     public MultiGzipDataWriter(OutputStream os) throws IOException {
-        this(os, new SerializationFactoryLookup());
+        this(os, new ClassManager());
     }
 
-    public MultiGzipDataWriter(OutputStream os, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(new ByteArrayOutputWrapper());
+    public MultiGzipDataWriter(OutputStream os, ClassManager classManager) throws IOException {
+        this(os, classManager, new SerializationFactoryLookup());
+    }
+
+    public MultiGzipDataWriter(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+        super(new ByteArrayOutputWrapper(), classManager, serializationFactoryLookup);
         this.serializationFactoryLookup = serializationFactoryLookup;
         writeGlobalSettings();
         outputStream = os;

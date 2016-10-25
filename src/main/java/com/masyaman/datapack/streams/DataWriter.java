@@ -66,6 +66,8 @@ public abstract class DataWriter implements ObjectWriter {
 
     public abstract <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;
 
+    public abstract ClassManager getClassManager();
+
     public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
     public abstract <E> Serializer<E> createAndRegisterSerializer(SerializationFactory factory, TypeDescriptor<E> type) throws IOException;
@@ -85,6 +87,11 @@ public abstract class DataWriter implements ObjectWriter {
         }
 
         @Override
+        public ClassManager getClassManager() {
+            return parent.getClassManager();
+        }
+
+        @Override
         public SerializationFactoryLookup getSerializationFactoryLookup() {
             return parent.getSerializationFactoryLookup();
         }
@@ -98,13 +105,16 @@ public abstract class DataWriter implements ObjectWriter {
 
     public static abstract class Abstract extends DataWriter {
 
+        protected ClassManager classManager;
         protected SerializationFactoryLookup serializationFactoryLookup;
 
         protected Map<TypeDescriptor, Integer> typeToId = new HashMap<>();
         protected List<Serializer> registeredSerializers = new ArrayList<>();
 
-        public Abstract(OutputStream os) throws IOException {
+        public Abstract(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
             super(os);
+            this.classManager = classManager;
+            this.serializationFactoryLookup = serializationFactoryLookup;
         }
 
         public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {
@@ -125,6 +135,10 @@ public abstract class DataWriter implements ObjectWriter {
             } else {
                 return registeredSerializers.get(id - 1);
             }
+        }
+
+        public ClassManager getClassManager() {
+            return classManager;
         }
 
         public SerializationFactoryLookup getSerializationFactoryLookup() {

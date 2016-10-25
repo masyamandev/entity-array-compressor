@@ -1,5 +1,8 @@
 package com.masyaman.datapack.reflection;
 
+import com.masyaman.datapack.annotations.Alias;
+import com.masyaman.datapack.streams.ClassManager;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -7,7 +10,7 @@ import java.util.Map;
 
 public class ClassUtils {
 
-    public static Map<String, Getter> getterMap(Class clazz) {
+    public static Map<String, Getter> getterMap(Class clazz, ClassManager classManager) {
         Map<String, Getter> getterMap = new HashMap<>();
 
         // Add all getters for getter methods
@@ -37,9 +40,12 @@ public class ClassUtils {
 
                 field.setAccessible(true);
 
-                String varName = field.getName();
+                TypeDescriptor<?> mixInType = getMixInType(field, classManager.getMixInForField(clazz, field.getName()));
+                Getter getter = new FieldGetter(field, mixInType);
 
-                Getter getter = new FieldGetter(field);
+                Alias alias = mixInType.getAnnotation(Alias.class);
+                String varName = alias != null ? alias.value() : field.getName();
+
                 getterMap.putIfAbsent(varName, getter);
             }
             searchClass = searchClass.getSuperclass();
@@ -48,7 +54,7 @@ public class ClassUtils {
         return getterMap;
     }
 
-    public static Map<String, Setter> setterMap(Class clazz) {
+    public static Map<String, Setter> setterMap(Class clazz, ClassManager classManager) {
         Map<String, Setter> setterMap = new HashMap<>();
 
         // Add all setters for private fields
@@ -61,15 +67,30 @@ public class ClassUtils {
 
                 field.setAccessible(true);
 
-                String varName = field.getName();
+                TypeDescriptor<?> mixInType = getMixInType(field, classManager.getMixInForField(clazz, field.getName()));
+                Setter getter = new FieldSetter(field, mixInType);
 
-                Setter getter = new FieldSetter(field);
+                Alias alias = mixInType.getAnnotation(Alias.class);
+                String varName = alias != null ? alias.value() : field.getName();
+
                 setterMap.putIfAbsent(varName, getter);
             }
             searchClass = searchClass.getSuperclass();
         }
 
         return setterMap;
+    }
+
+    private static TypeDescriptor getMixInType(Field field, Class mixInClass) {
+        if (mixInClass == null) {
+            return new TypeDescriptor(field);
+        }
+        try {
+            Field mixInField = mixInClass.getDeclaredField(field.getName());
+            return new TypeDescriptor(mixInField);
+        } catch (NoSuchFieldException e) {
+            return new TypeDescriptor(field);
+        }
     }
 
 }

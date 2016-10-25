@@ -1,16 +1,15 @@
 package com.masyaman.datapack.reflection;
 
 import java.lang.reflect.Field;
-import java.util.function.Function;
 
 public class FieldSetter implements Setter {
 
     private Field field;
     private TypeDescriptor typeDescriptor;
 
-    public FieldSetter(Field field) {
+    public FieldSetter(Field field, TypeDescriptor typeDescriptor) {
         this.field = field;
-        this.typeDescriptor = new TypeDescriptor(field);
+        this.typeDescriptor = typeDescriptor;
     }
 
     @Override

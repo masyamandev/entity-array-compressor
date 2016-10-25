@@ -100,6 +100,8 @@ public abstract class DataReader implements ObjectReader {
 
     public abstract <T> T readObject(TypeDescriptor<T> type) throws IOException;
 
+    public abstract ClassManager getClassManager();
+
     public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
     public abstract <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException;
@@ -119,6 +121,11 @@ public abstract class DataReader implements ObjectReader {
         }
 
         @Override
+        public ClassManager getClassManager() {
+            return parent.getClassManager();
+        }
+
+        @Override
         public SerializationFactoryLookup getSerializationFactoryLookup() {
             return parent.getSerializationFactoryLookup();
         }
@@ -132,12 +139,15 @@ public abstract class DataReader implements ObjectReader {
 
     public static abstract class Abstract extends DataReader {
 
+        protected ClassManager classManager;
         protected SerializationFactoryLookup serializationFactoryLookup;
 
         protected List<Deserializer> registeredDeserializers = new ArrayList<>();
 
-        public Abstract(InputStream is) throws IOException {
+        public Abstract(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
             super(is);
+            this.classManager = classManager;
+            this.serializationFactoryLookup = serializationFactoryLookup;
         }
 
         public <T> T readObject(TypeDescriptor<T> type) throws IOException {
@@ -150,6 +160,10 @@ public abstract class DataReader implements ObjectReader {
             } else {
                 return (T) registeredDeserializers.get(id.intValue() - 1).deserialize();
             }
+        }
+
+        public ClassManager getClassManager() {
+            return classManager;
         }
 
         public SerializationFactoryLookup getSerializationFactoryLookup() {

@@ -10,12 +10,15 @@ import java.io.InputStream;
 public class SerialDataReader extends DataReader.Abstract {
 
     public SerialDataReader(InputStream is) throws IOException {
-        this(is, new SerializationFactoryLookup());
+        this(is, new ClassManager());
     }
 
-    public SerialDataReader(InputStream is, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(is);
-        this.serializationFactoryLookup = serializationFactoryLookup;
+    public SerialDataReader(InputStream is, ClassManager classManager) throws IOException {
+        this(is, classManager, new SerializationFactoryLookup());
+    }
+
+    public SerialDataReader(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
+        super(is, classManager, serializationFactoryLookup);
         readGlobalSettings();
     }
 
