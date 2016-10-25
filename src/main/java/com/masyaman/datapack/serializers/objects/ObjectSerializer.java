@@ -9,11 +9,10 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.utils.Constants;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
@@ -65,6 +64,10 @@ class ObjectSerializer<T> implements Serializer<T> {
             serializations.add(new SerializationData(getterEntry.getKey(), getter, serializationFactory, declaredType));
         }
 
+        if (Constants.ENABLE_REORDERING_FIELDS) {
+            Collections.sort(serializations);
+        }
+
         os.writeUnsignedLong((long) serializations.size());
         for (SerializationData serialization : serializations) {
             os.writeString(serialization.fieldName);
@@ -96,7 +99,7 @@ class ObjectSerializer<T> implements Serializer<T> {
         }
     }
 
-    private static class SerializationData {
+    private static class SerializationData implements Comparable<SerializationData> {
         private String fieldName;
         private Getter getter;
         private SerializationFactory serializationFactory;
@@ -108,6 +111,52 @@ class ObjectSerializer<T> implements Serializer<T> {
             this.getter = getter;
             this.serializationFactory = serializationFactory;
             this.declaredType = declaredType;
+        }
+
+        @Override
+        public String toString() {
+            return fieldName + ": " + declaredType.getType().getSimpleName();
+        }
+
+        @Override
+        public int compareTo(SerializationData o) {
+            int compare;
+            compare = serializationFactory.getName().compareTo(serializationFactory.getName());
+            if (compare != 0) {
+                return compare;
+            }
+            compare = Integer.compare(typeSort(), o.typeSort());
+            if (compare != 0) {
+                return compare;
+            }
+            return declaredType.getType().getName().compareToIgnoreCase(o.declaredType.getType().getName());
+        }
+
+        private int typeSort() {
+            Class type = declaredType.getType();
+            if (type.isEnum()) {
+                return 0;
+            } else if (type == int.class || type == Integer.class) {
+                return 1;
+            } else if (type == long.class || type == Long.class) {
+                return 2;
+            } else if (type == float.class || type == Float.class || type == double.class || type == Double.class) {
+                return 3;
+            } else if (type.isPrimitive() || Number.class.isAssignableFrom(type)) {
+                return 4;
+            } else if (Date.class.isAssignableFrom(type)) {
+                return 5;
+            } else if (String.class.isAssignableFrom(type)) {
+                return 6;
+            } else if (Map.class.isAssignableFrom(type)) {
+                return 19;
+            } else if (Collection.class.isAssignableFrom(type)) {
+                return 18;
+            } else if (type.isArray()) {
+                return 17;
+            } else {
+                return 10;
+            }
         }
     }
 }

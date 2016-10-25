@@ -6,12 +6,13 @@ import com.masyaman.datapack.streams.ClassManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ClassUtils {
 
     public static Map<String, Getter> getterMap(Class clazz, ClassManager classManager) {
-        Map<String, Getter> getterMap = new HashMap<>();
+        Map<String, Getter> getterMap = new LinkedHashMap<>();
 
         // Add all getters for getter methods
 //        for (Method method : clazz.getMethods()) {
