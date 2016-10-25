@@ -35,7 +35,7 @@ public class ClassManagerTest {
     }
 
     @Test
-    public void testFieldsAlias() throws Exception {
+    public void testFieldsAliasJson() throws Exception {
         ClassManager classManager = new ClassManager();
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
@@ -84,6 +84,35 @@ public class ClassManagerTest {
         DataReader dr = new SerialDataReader(is, classManager);
 
         assertThat(dr.readObject()).isEqualTo(new LatLonAlt(1.1, 2.2, 3.3));
+    }
+
+    @Test
+    public void testExtendsAliasJson() throws Exception {
+        ClassManager classManager = new ClassManager();
+        classManager.addMixIn(LatLon.class, LatLonMixIn.class);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os, classManager);
+        dw.writeObject(new LatLonAlt(1.1, 2.2, 3.3));
+
+        byte[] bytes = os.toByteArray();
+        String bytesAsString = new String(bytes);
+        assertThat(bytesAsString).contains("LatLonAlt");
+        assertThat(bytesAsString).doesNotContain("LLClass");
+        assertThat(bytesAsString).doesNotContain("lat");
+        assertThat(bytesAsString).doesNotContain("lon");
+        assertThat(bytesAsString).contains("Latitude");
+        assertThat(bytesAsString).contains("Longitude");
+        assertThat(bytesAsString).contains("alt");
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is, classManager);
+
+        String json = dr.readObject(JSON_WITH_TYPES_TYPE);
+        assertThat(json).contains("\"type\":\"" + LatLonAlt.class.getName() + "\"");
+        assertThat(json).contains("\"Latitude\":1.1");
+        assertThat(json).contains("\"Longitude\":2.2");
+        assertThat(json).contains("\"alt\":3.3");
     }
 
     @Test(expected = IOException.class)
