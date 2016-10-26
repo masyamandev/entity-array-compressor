@@ -1,0 +1,8 @@
+option java_package = "com.masyaman.datapack.compare.objects.protobuf";
+
+message GpsPositionWithSpeedProto {
+  required int32 lat = 1;
+  required int32 lon = 2;
+  required int32 speed = 3;
+  required int64 ts = 4;
+}

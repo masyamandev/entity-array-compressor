@@ -8,6 +8,7 @@ import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
+import com.masyaman.datapack.compare.objects.protobuf.GpsPositionWithSpeed.GpsPositionWithSpeedProto;
 import com.masyaman.datapack.streams.*;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
@@ -50,6 +51,7 @@ public class CompareGpsTrack {
         testSerialization("Smile", smileSerialize(), events);
         testSerialization("KryoAll", kryoSerializeAll(), events);
         testSerialization("KryoByOne", kryoSerializeByOne(), events);
+        testSerialization("Protobuf", protobufSerialize(), events);
     }
 
 
@@ -105,6 +107,24 @@ public class CompareGpsTrack {
                  Output output = new Output(byteStream)) {
                 for (Object o : e) {
                     kryo.writeObject(output, o);
+                }
+                return byteStream.toByteArray();
+            }
+        };
+    }
+
+    private static DataSerializer protobufSerialize() throws Exception {
+        return e -> {
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+                for (Object o : e) {
+                    GpsPositionWithSpeed pos = (GpsPositionWithSpeed) o;
+                    GpsPositionWithSpeedProto proto = GpsPositionWithSpeedProto.newBuilder()
+                                    .setLat((int) Math.round(pos.getLat() * 1000000))
+                                    .setLon((int) Math.round(pos.getLon() * 1000000))
+                                    .setSpeed((int) Math.round(pos.getSpeed() * 10))
+                                    .setTs(pos.getTimestamp())
+                                    .build();
+                    proto.writeTo(byteStream);
                 }
                 return byteStream.toByteArray();
             }
