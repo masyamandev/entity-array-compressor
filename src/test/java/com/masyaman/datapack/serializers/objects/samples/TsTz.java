@@ -2,12 +2,12 @@ package com.masyaman.datapack.serializers.objects.samples;
 
 public class TsTz {
     protected long ts;
-    protected long tz;
+    protected int tz;
 
     public TsTz() {
     }
 
-    public TsTz(long ts, long tz) {
+    public TsTz(long ts, int tz) {
         this.ts = ts;
         this.tz = tz;
     }
@@ -24,7 +24,7 @@ public class TsTz {
         return tz;
     }
 
-    public void setTz(long tz) {
+    public void setTz(int tz) {
         this.tz = tz;
     }
 
