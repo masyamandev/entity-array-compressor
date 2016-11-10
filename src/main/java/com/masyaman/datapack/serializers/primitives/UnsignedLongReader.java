@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.primitives;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class UnsignedLongReader implements Deserializer<Long> {
     }
 
     @Override
-    public Long deserialize() throws IOException {
+    public Long deserialize(TypeDescriptor unused) throws IOException {
         int b = is.read();
         if (b == 0x7F) {
             return null; // -64 in single byte representation

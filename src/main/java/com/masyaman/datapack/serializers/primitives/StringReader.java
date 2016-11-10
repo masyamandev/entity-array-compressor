@@ -1,10 +1,12 @@
 package com.masyaman.datapack.serializers.primitives;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 import static com.masyaman.datapack.utils.Constants.CHARSET;
 
 public class StringReader implements Deserializer<String> {
@@ -18,8 +20,8 @@ public class StringReader implements Deserializer<String> {
     }
 
     @Override
-    public String deserialize() throws IOException {
-        Long length = lengthReader.deserialize();
+    public String deserialize(TypeDescriptor unused) throws IOException {
+        Long length = lengthReader.deserialize(LONG);
         if (length == null) {
             return null;
         }

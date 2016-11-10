@@ -107,8 +107,8 @@ public class CollectionsSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LIST_TYPE);
-        Collection deserialized = deserializer.deserialize();
+        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        Collection deserialized = deserializer.deserialize(LIST_TYPE);
 
         Collection expected = new ArrayList<>();
         expected.add(1.1);
@@ -133,8 +133,8 @@ public class CollectionsSerializationFactoryTest {
         assertThat(bytes.length).isBetween(minSize, maxSize);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), tdDeser);
-        Collection deserialized = deserializer.deserialize();
+        Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        Collection deserialized = deserializer.deserialize(tdDeser);
         assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
         assertThat(deserialized).containsOnlyElementsOf(collection);
         if (collection instanceof List && deserialized instanceof List) {

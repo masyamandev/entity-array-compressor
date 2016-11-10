@@ -47,13 +47,13 @@ public class NumberSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(10L);
-        assertThat(deserializer.deserialize()).isEqualTo(30L);
-        assertThat(deserializer.deserialize()).isEqualTo(60L);
-        assertThat(deserializer.deserialize()).isEqualTo(50L);
-        assertThat(deserializer.deserialize()).isEqualTo(-50L);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(60L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(-50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
     }
 
     @Test
@@ -84,14 +84,14 @@ public class NumberSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(10L);
-        assertThat(deserializer.deserialize()).isEqualTo(30L);
-        assertThat(deserializer.deserialize()).isEqualTo(60L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
-        assertThat(deserializer.deserialize()).isEqualTo(50L);
-        assertThat(deserializer.deserialize()).isEqualTo(-10L);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(60L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(-10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
     }
 
     @Test
@@ -122,14 +122,14 @@ public class NumberSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(10L);
-        assertThat(deserializer.deserialize()).isEqualTo(30L);
-        assertThat(deserializer.deserialize()).isEqualTo(50L);
-        assertThat(deserializer.deserialize()).isEqualTo(60L);
-        assertThat(deserializer.deserialize()).isEqualTo(70L);
-        assertThat(deserializer.deserialize()).isEqualTo(50L);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(60L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(70L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
     }
 
     @Test
@@ -173,17 +173,17 @@ public class NumberSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(10L);
-        assertThat(deserializer.deserialize()).isEqualTo(30L);
-        assertThat(deserializer.deserialize()).isEqualTo(50L);
-        assertThat(deserializer.deserialize()).isEqualTo(60L);
-        assertThat(deserializer.deserialize()).isEqualTo(80L);
-        assertThat(deserializer.deserialize()).isEqualTo(90L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(60L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(80L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(90L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
     }
 
     @Test
@@ -221,16 +221,16 @@ public class NumberSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer(LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(10L);
-        assertThat(deserializer.deserialize()).isEqualTo(30L);
-        assertThat(deserializer.deserialize()).isEqualTo(60L);
-        assertThat(deserializer.deserialize()).isEqualTo(100L);
-        assertThat(deserializer.deserialize()).isEqualTo(220L);
-        assertThat(deserializer.deserialize()).isNull();
-        assertThat(deserializer.deserialize()).isEqualTo(220L + 16383L);
-        assertThat(deserializer.deserialize()).isEqualTo(-100010L);
-        assertThat(deserializer.deserialize()).isEqualTo(-100009L);
+        Deserializer<Long> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(60L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(100L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(220L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(220L + 16383L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(-100010L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(-100009L);
     }
 
 }

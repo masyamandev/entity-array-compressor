@@ -169,4 +169,28 @@ public class DataWriterReaderTest extends TestCase {
         assertThat(dr.readObject(jsonType)).isNull();
     }
 
+    @Test
+    public void testObjectDeserializationWithDifferentTypes() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(10);
+        dw.writeObject(10);
+        dw.writeObject(10);
+        dw.writeObject(10);
+        dw.writeObject(10);
+        dw.writeObject(10);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+
+        assertThat(dr.readObject()).isEqualTo(10);
+        assertThat(dr.readObject(new TypeDescriptor(Integer.class))).isEqualTo(10);
+        assertThat(dr.readObject(new TypeDescriptor(Long.class))).isEqualTo(10L);
+        assertThat(dr.readObject(new TypeDescriptor(Double.class))).isEqualTo(10.0d);
+        assertThat(dr.readObject(new TypeDescriptor(Float.class))).isEqualTo(10.0f);
+        assertThat(dr.readObject(new TypeDescriptor(String.class))).isEqualTo("10");
+    }
+
 }

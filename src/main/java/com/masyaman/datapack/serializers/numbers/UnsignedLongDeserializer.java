@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
@@ -14,7 +15,7 @@ public class UnsignedLongDeserializer implements Deserializer<Long> {
     }
 
     @Override
-    public Long deserialize() throws IOException {
+    public Long deserialize(TypeDescriptor type) throws IOException {
         return is.readUnsignedLong();
     }
 }

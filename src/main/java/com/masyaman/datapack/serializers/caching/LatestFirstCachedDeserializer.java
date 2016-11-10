@@ -1,13 +1,12 @@
 package com.masyaman.datapack.serializers.caching;
 
 import com.masyaman.datapack.cache.ObjectIdCache;
-import com.masyaman.datapack.cache.ObjectIdCacheRingBuffer;
 import com.masyaman.datapack.cache.ObjectIdCacheRingTree;
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  * Caching wrapper for Deserializer.
@@ -29,18 +28,18 @@ public class LatestFirstCachedDeserializer<E> implements Deserializer<E> {
     }
 
     @Override
-    public E deserialize() throws IOException {
+    public <T extends E> T deserialize(TypeDescriptor<T> type) throws IOException {
         Long id = is.readUnsignedLong();
         if (id == null) {
             return null;
         }
         E value;
         if (id <= 0) {
-            value = deserializer.deserialize();
+            value = deserializer.deserialize(type);
         } else {
             value = cache.removePosition(id.intValue() - 1);
         }
         cache.addHead(value);
-        return value;
+        return (T) value;
     }
 }

@@ -4,8 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import org.assertj.core.data.Offset;
@@ -36,9 +34,9 @@ public class NumberSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 63; l >= -63; l--) {
-            assertThat(deserializer.deserialize()).isCloseTo(SCALE * l, OFFSET);
+            assertThat(deserializer.deserialize(DOUBLE_TYPE)).isCloseTo(SCALE * l, OFFSET);
         }
     }
 
@@ -52,9 +50,9 @@ public class NumberSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 200; l < 8200; l+= 10) {
-            assertThat(deserializer.deserialize()).isCloseTo(SCALE * l, OFFSET);
+            assertThat(deserializer.deserialize(DOUBLE_TYPE)).isCloseTo(SCALE * l, OFFSET);
         }
     }
 
@@ -69,9 +67,9 @@ public class NumberSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = -200; l > -8200; l-= 10) {
-            assertThat(deserializer.deserialize()).isCloseTo(SCALE * l, OFFSET);
+            assertThat(deserializer.deserialize(DOUBLE_TYPE)).isCloseTo(SCALE * l, OFFSET);
         }
     }
 
@@ -91,10 +89,10 @@ public class NumberSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         Offset offset = Offset.offset(0.0000001);
         for (int i = 0; i < dd.length; i++) {
-            assertThat(deserializer.deserialize()).isCloseTo(dd[i], offset);
+            assertThat(deserializer.deserialize(DOUBLE_TYPE)).isCloseTo(dd[i], offset);
         }
     }
 
@@ -113,9 +111,9 @@ public class NumberSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < dd.length; i++) {
-            assertThat(deserializer.deserialize()).isCloseTo(dd[i], OFFSET);
+            assertThat(deserializer.deserialize(DOUBLE_TYPE)).isCloseTo(dd[i], OFFSET);
         }
     }
 
@@ -130,7 +128,7 @@ public class NumberSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 1);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DOUBLE_TYPE);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Double> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(DOUBLE_TYPE)).isNull();
     }
 }

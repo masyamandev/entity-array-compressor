@@ -1,6 +1,10 @@
 package com.masyaman.datapack.utils;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
+
 import java.math.RoundingMode;
+
+import static com.masyaman.datapack.annotations.AnnotationsHelper.getRoundingMode;
 
 public class MathUtils {
 
@@ -118,6 +122,26 @@ public class MathUtils {
                 return Math.round(Math.ceil(number));
             default:
                 throw new UnsupportedOperationException("Rounding mode " + roundingMode + " is not supported");
+        }
+    }
+
+    public static <T extends Number> T convertToType(Number val, TypeDescriptor<T> type) {
+        if (val == null) {
+            return null;
+        }
+
+        if (type.getType().isAssignableFrom(val.getClass())) {
+            return (T) val;
+        } else if (long.class.isAssignableFrom(type.getType()) || Long.class.isAssignableFrom(type.getType())) {
+            return (T) round(val, getRoundingMode(type));
+        } else if (int.class.isAssignableFrom(type.getType()) || Integer.class.isAssignableFrom(type.getType())) {
+            return (T) Integer.valueOf(round(val, getRoundingMode(type)).intValue());
+        } else if (double.class.isAssignableFrom(type.getType()) || Double.class.isAssignableFrom(type.getType())) {
+            return (T) Double.valueOf(val.doubleValue());
+        } else if (float.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType())) {
+            return (T) Float.valueOf(val.floatValue());
+        } else {
+            throw new IllegalArgumentException("Class " + type.getType().getName() + " is not supported");
         }
     }
 }

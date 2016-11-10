@@ -36,11 +36,16 @@ public class BitSetSerializationFactory extends SerializationFactory {
     }
 
     @Override
-    public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
-        if (type.getAnnotation(AsJson.class) != null) {
-            return new JsonBitSetDeserializer(is, type);
-        } else {
-            return new BitSetDeserializer(is);
-        }
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        return new Deserializer<Object>() {
+            @Override
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                if (type.getAnnotation(AsJson.class) != null) {
+                    return (T) new JsonBitSetDeserializer(is).deserialize(type);
+                } else {
+                    return (T) new BitSetDeserializer(is).deserialize(type);
+                }
+            }
+        };
     }
 }

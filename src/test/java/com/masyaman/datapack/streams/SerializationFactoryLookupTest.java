@@ -62,8 +62,8 @@ public class SerializationFactoryLookupTest extends TestCase {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is), factory.getDefaultType());
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(factory.getDefaultType())).isNull();
     }
 
     @Test
@@ -83,8 +83,8 @@ public class SerializationFactoryLookupTest extends TestCase {
             byte[] bytes = os.toByteArray();
 
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-            Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is), new TypeDescriptor(object.getClass()));
-            Object deserialized = deserializer.deserialize();
+            Deserializer deserializer = factory.createDeserializer(new SerialDataReader(is));
+            Object deserialized = deserializer.deserialize(new TypeDescriptor(object.getClass()));
             assertThat(deserialized).isEqualTo(object);
         }
     }
@@ -106,8 +106,8 @@ public class SerializationFactoryLookupTest extends TestCase {
             byte[] bytes = os.toByteArray();
 
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-            Deserializer<String> deserializer = factory.createDeserializer(new SerialDataReader(is), DeserializationTypes.JSON_TYPE);
-            String deserialized = deserializer.deserialize();
+            Deserializer<String> deserializer = factory.createDeserializer(new SerialDataReader(is));
+            String deserialized = deserializer.deserialize(DeserializationTypes.JSON_TYPE);
             assertThat(deserialized).isNotNull();
             assertThat(deserialized).isNotEmpty();
 

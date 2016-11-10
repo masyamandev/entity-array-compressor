@@ -6,18 +6,16 @@ import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
 
-class UnknownTypeDeserializer<T> implements Deserializer<T> {
+class UnknownTypeDeserializer<E> implements Deserializer<E> {
 
     private DataReader is;
-    private TypeDescriptor<T> type;
 
-    public UnknownTypeDeserializer(DataReader is, TypeDescriptor<T> type) {
+    public UnknownTypeDeserializer(DataReader is) {
         this.is = is;
-        this.type = type;
     }
 
     @Override
-    public T deserialize() throws IOException {
+    public <T extends E> T deserialize(TypeDescriptor<T> type) throws IOException {
         return is.readObject(type);
     }
 }

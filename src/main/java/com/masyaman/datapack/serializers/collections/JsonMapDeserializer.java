@@ -10,21 +10,18 @@ import java.util.*;
 
 class JsonMapDeserializer implements Deserializer<String> {
 
-    private static final Class[] CLASSES = {ArrayList.class, LinkedList.class,
-            HashSet.class, TreeSet.class, LinkedHashSet.class};
-
     private DataReader is;
     private Deserializer<String> keyDeserializer;
     private Deserializer<String> valueDeserializer;
 
-    public JsonMapDeserializer(DataReader is, TypeDescriptor type) throws IOException {
+    public JsonMapDeserializer(DataReader is, Deserializer keyDeserializer, Deserializer valueDeserializer) {
         this.is = is;
-        keyDeserializer = is.createAndRegisterDeserializer(type);
-        valueDeserializer = is.createAndRegisterDeserializer(type);
+        this.keyDeserializer = keyDeserializer;
+        this.valueDeserializer = valueDeserializer;
     }
 
     @Override
-    public String deserialize() throws IOException {
+    public String deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;
@@ -35,7 +32,7 @@ class JsonMapDeserializer implements Deserializer<String> {
 
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            keys.add(keyDeserializer.deserialize());
+            keys.add(keyDeserializer.deserialize(type));
         }
         for (int i = 0; i < length; i++) {
             if (i > 0) {
@@ -47,7 +44,7 @@ class JsonMapDeserializer implements Deserializer<String> {
             }
             sb.append(key);
             sb.append(":");
-            sb.append(valueDeserializer.deserialize());
+            sb.append(valueDeserializer.deserialize(type));
         }
 
         sb.append("}");

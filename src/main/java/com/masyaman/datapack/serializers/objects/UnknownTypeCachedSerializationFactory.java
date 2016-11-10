@@ -42,7 +42,7 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
     }
 
     @Override
-    public <E1> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
-        return new LatestFirstCachedDeserializer(is, new UnknownTypeDeserializer(is, type));
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        return new LatestFirstCachedDeserializer(is, new UnknownTypeDeserializer(is));
     }
 }

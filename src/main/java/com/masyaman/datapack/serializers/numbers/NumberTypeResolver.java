@@ -36,11 +36,8 @@ public class NumberTypeResolver {
         dw.writeString(typeString);
     }
 
-    public static TypeDescriptor readType(DataReader dr, TypeDescriptor expectedType) throws IOException {
+    public static TypeDescriptor readType(DataReader dr) throws IOException {
         String t = dr.readString();
-        if (expectedType != null && CLASS_TO_TYPE.containsKey(expectedType.getType())) {
-            return expectedType;
-        }
         return new TypeDescriptor(TYPE_TO_CLASS.get(t));
     }
 }

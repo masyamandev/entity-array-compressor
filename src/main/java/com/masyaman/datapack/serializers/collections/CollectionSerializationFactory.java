@@ -64,14 +64,20 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
     }
 
     @Override
-    public <T> Deserializer<T> createDeserializer(DataReader is, TypeDescriptor<T> type) throws IOException {
-        if (type.getAnnotation(AsJson.class) != null) {
-            return (Deserializer<T>) new JsonCollectionDeserializer(is, type);
-        } else if (type.getType().isArray()) {
-            return (Deserializer<T>) new ArrayDeserializer(is, new TypeDescriptor(type.getType().getComponentType()));
-        } else {
-            return new CollectionDeserializer<>(is, type, new TypeDescriptor(type.getParametrizedType(0)));
-        }
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        Deserializer<Object> valueDeserializer = is.createAndRegisterDeserializer();
+        return new Deserializer<Object>() {
+            @Override
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                if (type.getAnnotation(AsJson.class) != null) {
+                    return (T) new JsonCollectionDeserializer(is, valueDeserializer).deserialize(type);
+                } else if (type.getType().isArray()) {
+                    return (T) new ArrayDeserializer(is, valueDeserializer).deserialize(type);
+                } else {
+                    return (T) new CollectionDeserializer<>(is, valueDeserializer).deserialize(type);
+                }
+            }
+        };
     }
 
     private <T> SerializationFactory<T> getSerializer(DataWriter os, TypeDescriptor<T> type, boolean isSpecifiedType) throws IOException {

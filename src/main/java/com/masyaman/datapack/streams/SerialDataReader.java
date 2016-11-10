@@ -1,6 +1,5 @@
 package com.masyaman.datapack.streams;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 
@@ -34,12 +33,12 @@ public class SerialDataReader extends DataReader.Abstract {
     }
 
     @Override
-    protected <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
+    protected <E> Deserializer<E> readDeserializer() throws IOException {
         String name = readString();
         SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
         if (serializationFactory == null) {
             throw new IOException("Unable to find serialization factory '" + name + "'");
         }
-        return serializationFactory.createDeserializer(this, type);
+        return serializationFactory.createDeserializer(this);
     }
 }

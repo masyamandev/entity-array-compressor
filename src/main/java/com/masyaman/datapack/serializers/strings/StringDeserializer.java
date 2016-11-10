@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.strings;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
@@ -14,7 +15,7 @@ public class StringDeserializer implements Deserializer<String> {
     }
 
     @Override
-    public String deserialize() throws IOException {
+    public String deserialize(TypeDescriptor unused) throws IOException {
         return is.readString();
     }
 }

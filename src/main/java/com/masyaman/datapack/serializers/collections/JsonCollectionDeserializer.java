@@ -11,13 +11,13 @@ class JsonCollectionDeserializer implements Deserializer<String> {
     private DataReader is;
     private Deserializer<String> valueDeserializer;
 
-    public JsonCollectionDeserializer(DataReader is, TypeDescriptor type) throws IOException {
+    public JsonCollectionDeserializer(DataReader is, Deserializer valueDeserializer) {
         this.is = is;
-        valueDeserializer = is.createAndRegisterDeserializer(type);
+        this.valueDeserializer = valueDeserializer;
     }
 
     @Override
-    public String deserialize() throws IOException {
+    public String deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;
@@ -31,7 +31,7 @@ class JsonCollectionDeserializer implements Deserializer<String> {
             if (i > 0) {
                 sb.append(",");
             }
-            sb.append(valueDeserializer.deserialize());
+            sb.append(valueDeserializer.deserialize(type));
         }
 
         sb.append("]");

@@ -57,7 +57,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
     }
 
     @Override
-    public Deserializer createDeserializer(DataReader is, TypeDescriptor type) throws IOException {
+    public Deserializer createDeserializer(DataReader is) throws IOException {
         int datePrecision = is.readUnsignedLong().intValue();
         if (datePrecision < 0 || datePrecision >= DatePrecisions.SCALES.length) {
             throw new IOException("Incorrect precision " + datePrecision + " for Date");
@@ -65,7 +65,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
         long scale = DatePrecisions.SCALES[datePrecision];
 
-        return convertTo(scale(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), scale), type);
+        return convertTo(scale(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), scale));
     }
 
 }

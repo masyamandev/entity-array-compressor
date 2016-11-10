@@ -1,9 +1,15 @@
 package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.annotations.Alias;
+import com.masyaman.datapack.reflection.*;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -45,8 +51,37 @@ public class ClassManager {
         }
     }
 
-    public Class<?> getClassByAlias(String alias) {
-        return aliasToClass.get(alias);
+    public Class<?> getClassByName(String className) throws IOException {
+        Class clazz = aliasToClass.get(className);
+        if (clazz == null) {
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new IOException("Unable to find class for name " + className);
+            }
+        }
+        return clazz;
+    }
+
+    public ObjectFactory objectFactoryByName(String className) throws IOException {
+        Class clazz = getClassByName(className);
+        Constructor constructor;
+        try {
+            constructor = clazz.getConstructor();
+            constructor.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new IOException("Unable to find default constructor for class " + clazz.getName());
+        }
+        return new ObjectFactory() {
+            @Override
+            public Object create() throws IOException {
+                try {
+                    return constructor.newInstance();
+                } catch (ReflectiveOperationException e) {
+                    throw new IOException("Unable to create object of type " + constructor.getDeclaringClass().getName(), e);
+                }
+            }
+        };
     }
 
     public Class<?> getMixInClass(Class<?> clazz) {
@@ -65,5 +100,93 @@ public class ClassManager {
             c = c.getSuperclass();
         }
         return null;
+    }
+
+
+    public Map<String, Getter> getterMap(Class clazz) {
+        Map<String, Getter> getterMap = new LinkedHashMap<>();
+
+        // Add all getters for getter methods
+//        for (Method method : clazz.getMethods()) {
+//            if (Modifier.isStatic(method.getModifiers())) {
+//                continue;
+//            }
+//
+//            String name = method.getName();
+//            if (method.getParameterCount() == 0 && name.startsWith("get") && name.length() > 3) {
+//                method.setAccessible(true);
+//
+//                String varName = Character.toLowerCase(name.charAt(3)) + name.substring(4);
+//
+//                Getter getter = new MethodGetter(method);
+//                getterMap.putIfAbsent(varName, getter);
+//            }
+//        }
+
+        // Add all getters for private fields
+        Class searchClass = clazz;
+        while (searchClass != Object.class) {
+            for (Field field : searchClass.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+                    continue;
+                }
+
+                field.setAccessible(true);
+
+                TypeDescriptor<?> mixInType = getMixInType(field, getMixInForField(clazz, field.getName()));
+                Getter getter = new FieldGetter(field, mixInType);
+
+                Alias alias = mixInType.getAnnotation(Alias.class);
+                String varName = alias != null ? alias.value() : field.getName();
+
+                getterMap.putIfAbsent(varName, getter);
+            }
+            searchClass = searchClass.getSuperclass();
+        }
+
+        return getterMap;
+    }
+
+    public Map<String, Setter> setterMap(Class clazz) {
+        Map<String, Setter> setterMap = new HashMap<>();
+
+        // Add all setters for private fields
+        Class searchClass = clazz;
+        while (searchClass != Object.class) {
+            for (Field field : searchClass.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+                    continue;
+                }
+
+                field.setAccessible(true);
+
+                TypeDescriptor<?> mixInType = getMixInType(field, getMixInForField(clazz, field.getName()));
+                Setter getter = new FieldSetter(field, mixInType);
+
+                Alias alias = mixInType.getAnnotation(Alias.class);
+                String varName = alias != null ? alias.value() : field.getName();
+
+                setterMap.putIfAbsent(varName, getter);
+            }
+            searchClass = searchClass.getSuperclass();
+        }
+
+        return setterMap;
+    }
+
+    private TypeDescriptor getMixInType(Field field, Class mixInClass) {
+        if (mixInClass == null) {
+            return new TypeDescriptor(field);
+        }
+        try {
+            Field mixInField = mixInClass.getDeclaredField(field.getName());
+            return new TypeDescriptor(mixInField);
+        } catch (NoSuchFieldException e) {
+            return new TypeDescriptor(field);
+        }
+    }
+
+    public interface ObjectFactory<T> {
+        T create() throws IOException;
     }
 }

@@ -13,19 +13,17 @@ class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
     private static final Class[] CLASSES = {HashMap.class, TreeMap.class, LinkedHashMap.class};
 
     private DataReader is;
-    private TypeDescriptor type;
     private Deserializer<K> keyDeserializer;
     private Deserializer<V> valueDeserializer;
 
-    public MapDeserializer(DataReader is, TypeDescriptor type, TypeDescriptor<K> keyType, TypeDescriptor<V> valueType) throws IOException {
+    public MapDeserializer(DataReader is, Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
         this.is = is;
-        this.type = type;
-        keyDeserializer = is.createAndRegisterDeserializer(keyType);
-        valueDeserializer = is.createAndRegisterDeserializer(valueType);
+        this.keyDeserializer = keyDeserializer;
+        this.valueDeserializer = valueDeserializer;
     }
 
     @Override
-    public Map<K, V> deserialize() throws IOException {
+    public Map<K, V> deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;
@@ -43,10 +41,10 @@ class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
 
         List<K> keys = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
-            keys.add(keyDeserializer.deserialize());
+            keys.add((K) keyDeserializer.deserialize(type.getParametrizedTypeDescriptor(0)));
         }
         for (int i = 0; i < len; i++) {
-            map.put(keys.get(i), valueDeserializer.deserialize());
+            map.put(keys.get(i), (V) valueDeserializer.deserialize(type.getParametrizedTypeDescriptor(1)));
         }
         return map;
     }

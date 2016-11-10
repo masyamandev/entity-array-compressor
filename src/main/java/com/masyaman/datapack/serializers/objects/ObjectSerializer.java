@@ -3,7 +3,6 @@ package com.masyaman.datapack.serializers.objects;
 import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.annotations.serialization.IgnoredField;
 import com.masyaman.datapack.annotations.serialization.SerializeBy;
-import com.masyaman.datapack.reflection.ClassUtils;
 import com.masyaman.datapack.reflection.Getter;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -38,7 +37,7 @@ class ObjectSerializer<T> implements Serializer<T> {
             os.writeString(clazz.getName());
         }
 
-        Map<String, Getter> getterMap = ClassUtils.getterMap(clazz, os.getClassManager());
+        Map<String, Getter> getterMap = os.getClassManager().getterMap(clazz);
         for (Map.Entry<String, Getter> getterEntry : getterMap.entrySet()) {
             Getter<?> getter = getterEntry.getValue();
 

@@ -4,12 +4,13 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers;
 import com.masyaman.datapack.serializers.strings.StringCachedSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+
+import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.wrap;
 
 /**
  * Serialization factory for Enums.
@@ -46,21 +47,21 @@ public class EnumsSerializationFactory<E extends Enum> extends SerializationFact
     }
 
     @Override
-    public <E1> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
-        Deserializer deserializer = StringCachedSerializationFactory.INSTANCE.createDeserializer(is, new TypeDescriptor(String.class));
-        if (String.class.isAssignableFrom(type.getType())) {
-            return FormatsDeserializerWrappers.wrap(deserializer, type);
-        }
-        return new Deserializer<E1>() {
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        Deserializer<String> deserializer = StringCachedSerializationFactory.INSTANCE.createDeserializer(is);
+        return wrap(new Deserializer<Object>() {
             @Override
-            public E1 deserialize() throws IOException {
-                String value = (String) deserializer.deserialize();
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                String value = deserializer.deserialize(TypeDescriptor.STRING);
+                if (String.class.isAssignableFrom(type.getType())) {
+                    return (T) value;
+                }
                 if (value == null) {
                     return null;
                 } else {
-                    return (E1) Enum.valueOf(type.getType(), value);
+                    return (T) Enum.valueOf((Class) type.getType(), value);
                 }
             }
-        };
+        });
     }
 }

@@ -1,6 +1,5 @@
 package com.masyaman.datapack.streams;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
@@ -11,6 +10,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 
 // Experimental version of column-based gzipped storage
 public class MultiGzipDataReader extends DataReader.Abstract {
@@ -39,10 +40,10 @@ public class MultiGzipDataReader extends DataReader.Abstract {
         // Unoptimized code
         UnsignedLongReader lengthReader = new UnsignedLongReader(is);
 
-        int streams = lengthReader.deserialize().intValue();
+        int streams = lengthReader.deserialize(LONG).intValue();
         int[] lengths = new int[streams];
         for (int i = 0; i < streams; i++) {
-            lengths[i] = lengthReader.deserialize().intValue();
+            lengths[i] = lengthReader.deserialize(LONG).intValue();
         }
 
         List<InputStream> dataStreams = new LinkedList<>();
@@ -67,13 +68,13 @@ public class MultiGzipDataReader extends DataReader.Abstract {
     }
 
     @Override
-    protected <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException {
+    protected <E> Deserializer<E> readDeserializer() throws IOException {
         String name = readString();
         SerializationFactory serializationFactory = serializationFactoryLookup.getByName(name);
         if (serializationFactory == null) {
             throw new IOException("Unable to find serialization factory '" + name + "'");
         }
         DataReader dr = new DataReader.Wrapper(streams.remove(0), this);
-        return serializationFactory.createDeserializer(dr, type);
+        return serializationFactory.createDeserializer(dr);
     }
 }

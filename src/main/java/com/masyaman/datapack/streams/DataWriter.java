@@ -61,7 +61,7 @@ public abstract class DataWriter implements ObjectWriter {
     }
 
     public <T> void writeObject(T o) throws IOException {
-        writeObject(o, o == null ? null : new TypeDescriptor<T>(o.getClass()));
+        writeObject(o, o == null ? null : new TypeDescriptor(o.getClass()));
     }
 
     public abstract <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;

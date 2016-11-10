@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.caching;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
@@ -24,16 +25,16 @@ public class SimpleCachedDeserializer<E> implements Deserializer<E> {
     }
 
     @Override
-    public E deserialize() throws IOException {
+    public <T extends E> T deserialize(TypeDescriptor<T> type) throws IOException {
         Long id = is.readUnsignedLong();
         if (id == null) {
             return null;
         }
         E value = cache.get(id.intValue() - 1);
         if (value == null) {
-            value = deserializer.deserialize();
+            value = deserializer.deserialize(type);
             cache.put(cache.size(), value);
         }
-        return value;
+        return (T) value;
     }
 }

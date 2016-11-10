@@ -40,9 +40,8 @@ public class StringSerializationFactory extends SerializationFactory<String> imp
     }
 
     @Override
-    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return wrap(new StringDeserializer(is), type);
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        return wrap(new StringDeserializer(is));
     }
-
 
 }

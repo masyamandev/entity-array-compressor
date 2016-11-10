@@ -63,24 +63,24 @@ public class EnumsSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Digits> deserializer = dataReader.createAndRegisterDeserializer(ENUM_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
+        Deserializer<Digits> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
 
-        assertThat(deserializer.deserialize()).isNull();
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isNull();
     }
 
 
@@ -126,24 +126,24 @@ public class EnumsSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Digits> deserializer = dataReader.createAndRegisterDeserializer(ENUM_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
+        Deserializer<Digits> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.TWO);
 
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
-        assertThat(deserializer.deserialize()).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isEqualTo(Digits.THREE);
 
-        assertThat(deserializer.deserialize()).isNull();
+        assertThat(deserializer.deserialize(ENUM_TYPE)).isNull();
     }
 
 

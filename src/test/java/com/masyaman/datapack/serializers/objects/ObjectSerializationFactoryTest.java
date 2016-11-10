@@ -25,7 +25,8 @@ public class ObjectSerializationFactoryTest {
     @Test
     public void testSimpleSerialization() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<TsTz> serializer = FACTORY.createSerializer(new SerialDataWriter(os), new TypeDescriptor(TsTz.class));
+        TypeDescriptor type = new TypeDescriptor(TsTz.class);
+        Serializer<TsTz> serializer = FACTORY.createSerializer(new SerialDataWriter(os), type);
         serializer.serialize(new TsTz(100000L, 234));
         serializer.serialize(new TsTz(100000L, 234));
         serializer.serialize(new TsTz(100000L, 234));
@@ -35,10 +36,10 @@ public class ObjectSerializationFactoryTest {
         System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<TsTz> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), new TypeDescriptor(TsTz.class));
-        assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
-        assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
-        assertThat(deserializer.deserialize()).isEqualTo(new TsTz(100000L, 234));
+        Deserializer<TsTz> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(type)).isEqualTo(new TsTz(100000L, 234));
+        assertThat(deserializer.deserialize(type)).isEqualTo(new TsTz(100000L, 234));
+        assertThat(deserializer.deserialize(type)).isEqualTo(new TsTz(100000L, 234));
     }
 
     @Test

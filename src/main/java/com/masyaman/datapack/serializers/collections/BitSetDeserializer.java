@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.collections;
 
+import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
@@ -15,7 +16,7 @@ class BitSetDeserializer implements Deserializer<BitSet> {
     }
 
     @Override
-    public BitSet deserialize() throws IOException {
+    public BitSet deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;

@@ -7,49 +7,28 @@ import com.masyaman.datapack.utils.MathUtils;
 import java.io.IOException;
 import java.math.RoundingMode;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static com.masyaman.datapack.utils.MathUtils.median;
 
 final class DeserializerWrappers {
 
     private DeserializerWrappers() {}
 
-    public static <E extends Number> Deserializer<E> convertTo(Deserializer<? extends Number> deserializer, TypeDescriptor<E> type) {
-        if (type.getType().isAssignableFrom(Long.class) || long.class.isAssignableFrom(type.getType()) || Long.class.isAssignableFrom(type.getType())) {
-            return (Deserializer<E>) deserializer;
-        } else if (int.class.isAssignableFrom(type.getType()) || Integer.class.isAssignableFrom(type.getType())) {
-            return new Deserializer<E>() {
-                @Override
-                public E deserialize() throws IOException {
-                    Number val = deserializer.deserialize();
-                    return (E) (val == null ? null : val.intValue());
-                }
-            };
-        } else if (double.class.isAssignableFrom(type.getType()) || Double.class.isAssignableFrom(type.getType())) {
-            return new Deserializer<E>() {
-                @Override
-                public E deserialize() throws IOException {
-                    Number val = deserializer.deserialize();
-                    return (E) (val == null ? null : val.doubleValue());
-                }
-            };
-        } else if (float.class.isAssignableFrom(type.getType()) || Float.class.isAssignableFrom(type.getType())) {
-            return new Deserializer<E>() {
-                @Override
-                public E deserialize() throws IOException {
-                    Number val = deserializer.deserialize();
-                    return (E) (val == null ? null : val.floatValue());
-                }
-            };
-        } else {
-            throw new IllegalArgumentException("Class " + type.getType().getName() + " is not supported");
-        }
+    public static Deserializer convertTo(Deserializer<Long> deserializer, TypeDescriptor type) {
+        return new Deserializer<Number>() {
+            @Override
+            public <T extends Number> T deserialize(TypeDescriptor<T> unused) throws IOException {
+                Long val = deserializer.deserialize(LONG);
+                return (T) MathUtils.convertToType(val, type);
+            }
+        };
     }
 
     public static <E extends Number> Deserializer<E> scaleBy(Deserializer<E> deserializer, int decimalScale, RoundingMode roundingMode) throws IOException {
         return new Deserializer<E>() {
             @Override
-            public E deserialize() throws IOException {
-                return MathUtils.scale(deserializer.deserialize(), decimalScale, roundingMode);
+            public <T extends E> T deserialize(TypeDescriptor<T> type) throws IOException {
+                return MathUtils.scale(deserializer.deserialize(type), decimalScale, roundingMode);
             }
         };
     }
@@ -58,8 +37,8 @@ final class DeserializerWrappers {
         return new Deserializer<Long>() {
             private long prev = 0L;
             @Override
-            public Long deserialize() throws IOException {
-                Long val = deserializer.deserialize();
+            public Long deserialize(TypeDescriptor type) throws IOException {
+                Long val = deserializer.deserialize(LONG);
                 if (val == null) {
                     return null;
                 }
@@ -76,8 +55,8 @@ final class DeserializerWrappers {
             private long prev2 = 0L;
             private boolean isFirst = true;
             @Override
-            public Long deserialize() throws IOException {
-                Long val = deserializer.deserialize();
+            public Long deserialize(TypeDescriptor type) throws IOException {
+                Long val = deserializer.deserialize(LONG);
                 if (val == null) {
                     return null;
                 }
@@ -100,8 +79,8 @@ final class DeserializerWrappers {
             private int pos = 0;
             private boolean isFirst = true;
             @Override
-            public Long deserialize() throws IOException {
-                Long val = deserializer.deserialize();
+            public Long deserialize(TypeDescriptor type) throws IOException {
+                Long val = deserializer.deserialize(LONG);
                 if (val == null) {
                     return null;
                 }

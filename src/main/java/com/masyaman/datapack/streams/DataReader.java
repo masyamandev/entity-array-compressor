@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
+import static com.masyaman.datapack.reflection.TypeDescriptor.STRING;
+
 public abstract class DataReader implements ObjectReader {
 
     protected PushbackInputStream is;
@@ -54,15 +57,15 @@ public abstract class DataReader implements ObjectReader {
     }
     
     public Long readSignedLong() throws IOException {
-        return signedLongDeserializer.deserialize();
+        return signedLongDeserializer.deserialize(LONG);
     }
 
     public Long readUnsignedLong() throws IOException {
-        return unsignedLongDeserializer.deserialize();
+        return unsignedLongDeserializer.deserialize(LONG);
     }
 
     public String readString() throws IOException {
-        return stringDeserializer.deserialize();
+        return stringDeserializer.deserialize(STRING);
     }
 
     public Object readObject() throws IOException {
@@ -104,7 +107,7 @@ public abstract class DataReader implements ObjectReader {
 
     public abstract SerializationFactoryLookup getSerializationFactoryLookup();
 
-    public abstract <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException;
+    public abstract <E> Deserializer<E> createAndRegisterDeserializer() throws IOException;
 
 
     public static class Wrapper extends DataReader {
@@ -131,8 +134,8 @@ public abstract class DataReader implements ObjectReader {
         }
 
         @Override
-        public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
-            return parent.createAndRegisterDeserializer(type);
+        public <E> Deserializer<E> createAndRegisterDeserializer() throws IOException {
+            return parent.createAndRegisterDeserializer();
         }
     }
 
@@ -156,9 +159,9 @@ public abstract class DataReader implements ObjectReader {
                 return null;
             }
             if (id <= 0) {
-                return readAndRegisterDeserializer(type).deserialize();
+                return readAndRegisterDeserializer().deserialize(type);
             } else {
-                return (T) registeredDeserializers.get(id.intValue() - 1).deserialize();
+                return (T) registeredDeserializers.get(id.intValue() - 1).deserialize(type);
             }
         }
 
@@ -170,25 +173,25 @@ public abstract class DataReader implements ObjectReader {
             return serializationFactoryLookup;
         }
 
-        public <E> Deserializer<E> createAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+        public <E> Deserializer<E> createAndRegisterDeserializer() throws IOException {
             Long id = readUnsignedLong();
             if (id == null) {
-                return readDeserializer(type);
+                return readDeserializer();
             } else if (id <= 0) {
-                return readAndRegisterDeserializer(type);
+                return readAndRegisterDeserializer();
             } else {
                 return registeredDeserializers.get(id.intValue() - 1);
             }
         }
 
-        private <E> Deserializer<E> readAndRegisterDeserializer(TypeDescriptor<E> type) throws IOException {
+        private <E> Deserializer<E> readAndRegisterDeserializer() throws IOException {
             int index = registeredDeserializers.size();
             registeredDeserializers.add(null);
-            Deserializer<E> deserializer = readDeserializer(type);
+            Deserializer<E> deserializer = readDeserializer();
             registeredDeserializers.set(index, deserializer);
             return deserializer;
         }
 
-        protected abstract <E> Deserializer<E> readDeserializer(TypeDescriptor<E> type) throws IOException;
+        protected abstract <E> Deserializer<E> readDeserializer() throws IOException;
     }
 }

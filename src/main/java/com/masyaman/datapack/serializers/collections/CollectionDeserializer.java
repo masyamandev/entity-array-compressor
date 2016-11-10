@@ -14,17 +14,15 @@ class CollectionDeserializer<V> implements Deserializer<Collection<V>> {
             HashSet.class, TreeSet.class, LinkedHashSet.class};
 
     private DataReader is;
-    private TypeDescriptor type;
     private Deserializer<V> valueDeserializer;
 
-    public CollectionDeserializer(DataReader is, TypeDescriptor type, TypeDescriptor<V> valueType) throws IOException {
+    public CollectionDeserializer(DataReader is, Deserializer<V> valueDeserializer) {
         this.is = is;
-        this.type = type;
-        valueDeserializer = is.createAndRegisterDeserializer(valueType);
+        this.valueDeserializer = valueDeserializer;
     }
 
     @Override
-    public Collection<V> deserialize() throws IOException {
+    public Collection<V> deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;
@@ -37,7 +35,7 @@ class CollectionDeserializer<V> implements Deserializer<Collection<V>> {
             throw new IOException("Class initializatoin exception", e);
         }
         for (int i = 0; i < len; i++) {
-            collection.add(valueDeserializer.deserialize());
+            collection.add((V) valueDeserializer.deserialize(type.getParametrizedTypeDescriptor(0)));
         }
         return collection;
     }

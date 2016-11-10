@@ -4,8 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import junit.framework.TestCase;
@@ -36,11 +34,11 @@ public class StringSerializationFactoryTest extends TestCase {
         assertThat(bytes).hasSize(dataWriterBytes.length + 5 + 9 * 3 + 10 + 3);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), STRING_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo("abcABC123");
-        assertThat(deserializer.deserialize()).isEqualTo("1234567890");
-        assertThat(deserializer.deserialize()).isEqualTo("abcABC123");
-        assertThat(deserializer.deserialize()).isEqualTo("\n\r\t");
-        assertThat(deserializer.deserialize()).isEqualTo("abcABC123");
+        Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("1234567890");
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("\n\r\t");
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
     }
 }

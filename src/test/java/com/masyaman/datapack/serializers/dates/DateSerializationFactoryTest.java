@@ -39,9 +39,9 @@ public class DateSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DATE_TYPE);
+        Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -61,9 +61,9 @@ public class DateSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -83,9 +83,9 @@ public class DateSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i].getTime());
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i].getTime());
         }
     }
 
@@ -105,9 +105,9 @@ public class DateSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), DATE_TYPE);
+        Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize().getTime()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(DATE_TYPE).getTime()).isEqualTo(ll[i]);
         }
     }
 
@@ -120,20 +120,20 @@ public class DateSerializationFactoryTest {
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
             TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance());
-            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
-            assertThat(deserializer.deserialize()).isEqualTo("2014-05-13 16:53:20.123");
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+            assertThat(deserializer.deserialize(type)).isEqualTo("2014-05-13 16:53:20.123");
         }
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
             TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.MILLIS_FORMAT));
-            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
-            assertThat(deserializer.deserialize()).isEqualTo("1400000000123");
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+            assertThat(deserializer.deserialize(type)).isEqualTo("1400000000123");
         }
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
             TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.SECONDS_FORMAT));
-            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), type);
-            assertThat(deserializer.deserialize()).isEqualTo("1400000000");
+            Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+            assertThat(deserializer.deserialize(type)).isEqualTo("1400000000");
         }
     }
 }

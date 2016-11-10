@@ -44,9 +44,8 @@ public class StringCachedSerializationFactory extends SerializationFactory<Strin
     }
 
     @Override
-    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return wrap(new LatestFirstCachedDeserializer(is, new StringDeserializer(is)), type);
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        return wrap(new LatestFirstCachedDeserializer(is, new StringDeserializer(is)));
     }
-
 
 }

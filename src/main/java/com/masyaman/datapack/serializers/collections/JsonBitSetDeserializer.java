@@ -11,12 +11,12 @@ class JsonBitSetDeserializer implements Deserializer<String> {
 
     private DataReader is;
 
-    public JsonBitSetDeserializer(DataReader is, TypeDescriptor type) throws IOException {
+    public JsonBitSetDeserializer(DataReader is) throws IOException {
         this.is = is;
     }
 
     @Override
-    public String deserialize() throws IOException {
+    public String deserialize(TypeDescriptor type) throws IOException {
         Long length = is.readUnsignedLong();
         if (length == null) {
             return null;

@@ -5,12 +5,13 @@ import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.GloballyDefined;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers;
 import com.masyaman.datapack.serializers.strings.StringConstantsSerializationFactory;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
+
+import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.wrap;
 
 /**
  * Serialization factory for Enums.
@@ -47,21 +48,23 @@ public class EnumsConstantsSerializationFactory<E extends Enum> extends Serializ
     }
 
     @Override
-    public <E1> Deserializer<E1> createDeserializer(DataReader is, TypeDescriptor<E1> type) throws IOException {
-        Deserializer deserializer = StringConstantsSerializationFactory.INSTANCE.createDeserializer(is, new TypeDescriptor(String.class));
-        if (String.class.isAssignableFrom(type.getType())) {
-            return FormatsDeserializerWrappers.wrap(deserializer, type);
-        }
-        return new Deserializer<E1>() {
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        Deserializer<String> deserializer = StringConstantsSerializationFactory.INSTANCE.createDeserializer(is);
+        return wrap(new Deserializer<Object>() {
             @Override
-            public E1 deserialize() throws IOException {
-                String value = (String) deserializer.deserialize();
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                String value = deserializer.deserialize(TypeDescriptor.STRING);
+                if (type.getType().isAssignableFrom(String.class)) {
+                    return (T) value;
+                }
                 if (value == null) {
                     return null;
+                } else if (type.getType().isEnum()) {
+                    return (T) Enum.valueOf((Class) type.getType(), value);
                 } else {
-                    return (E1) Enum.valueOf(type.getType(), value);
+                    throw new IOException("Unable to deserialize enum as type " + type.getType().getName());
                 }
             }
-        };
+        }); // TODO: remove code duplication
     }
 }

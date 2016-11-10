@@ -145,8 +145,8 @@ public class MapSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), MAP_TYPE);
-        Map deserialized = deserializer.deserialize();
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        Map deserialized = deserializer.deserialize(MAP_TYPE);
 
         Map expected = new HashMap<>();
         expected.put(1.1, 1.111);
@@ -171,8 +171,8 @@ public class MapSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), MAP_TYPE);
-        Map deserialized = deserializer.deserialize();
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        Map deserialized = deserializer.deserialize(MAP_TYPE);
 
         Map expected = new HashMap<>();
         expected.put(1.111, 1.1);
@@ -194,8 +194,8 @@ public class MapSerializationFactoryTest {
         assertThat(bytes.length).isBetween(minSize, maxSize);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), tdDeser);
-        Map deserialized = deserializer.deserialize();
+        Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        Map deserialized = deserializer.deserialize(tdDeser);
         assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
         assertThat(deserialized).isEqualTo(map);
     }

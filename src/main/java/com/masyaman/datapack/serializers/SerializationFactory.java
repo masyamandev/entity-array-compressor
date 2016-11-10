@@ -24,7 +24,7 @@ public abstract class SerializationFactory<T> {
 
     public abstract <E extends T> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException;
 
-    public abstract <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException;
+    public abstract Deserializer createDeserializer(DataReader is) throws IOException;
 
     public static <I extends SerializationFactory> SerializationFactory<I> getInstance(Class<I> serializationFactoryClass) {
         try {

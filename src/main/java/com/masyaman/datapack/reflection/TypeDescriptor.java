@@ -6,34 +6,37 @@ import java.util.Arrays;
 
 public class TypeDescriptor<T> {
 
+    public static final TypeDescriptor<String> STRING = new TypeDescriptor<>(String.class);
+    public static final TypeDescriptor<Long> LONG = new TypeDescriptor<>(Long.class);
+
     private Class<T> type;
     private ParameterizedType parametrizedType;
     private Annotation[] annotations;
 
 
-    public TypeDescriptor(Class type) {
+    public TypeDescriptor(Class<T> type) {
         this(type, type.getAnnotations());
     }
 
-    public TypeDescriptor(Class type, Annotation... annotations) {
+    public TypeDescriptor(Class<T> type, Annotation... annotations) {
         this(type, null, annotations);
     }
 
-    public TypeDescriptor(Class type, Type parametrizedType, Annotation... annotations) {
+    public TypeDescriptor(Class<T> type, Type parametrizedType, Annotation... annotations) {
         this.type = type;
         this.parametrizedType = parametrizedType instanceof ParameterizedType ? (ParameterizedType) parametrizedType : null;
         this.annotations = annotations;
     }
 
     public TypeDescriptor(Field field) {
-        this(field.getType(), field.getGenericType(), field.getDeclaredAnnotations());
+        this((Class<T>) field.getType(), field.getGenericType(), field.getDeclaredAnnotations());
     }
 
     public TypeDescriptor(Method method) {
-        this(method.getReturnType(), method.getGenericReturnType(), method.getDeclaredAnnotations());
+        this((Class<T>) method.getReturnType(), method.getGenericReturnType(), method.getDeclaredAnnotations());
     }
 
-    public Class getType() {
+    public Class<T> getType() {
         return type;
     }
 
@@ -59,6 +62,10 @@ public class TypeDescriptor<T> {
             return Object.class;
         }
         return (Class) getParametrizedType().getActualTypeArguments()[i]; // TODO
+    }
+
+    public TypeDescriptor getParametrizedTypeDescriptor(int i) {
+        return new TypeDescriptor(getParametrizedType(i));
     }
 
     public boolean isFinal() {

@@ -4,8 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
@@ -36,11 +34,11 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(dataWriterBytes.length + 1 + 1 + 2 + 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), BITSET_TYPE);
-        assertThat(deserializer.deserialize()).isNull();
-        assertThat(deserializer.deserialize()).isEqualTo(bitset());
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(2));
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(2, 7));
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isNull();
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset());
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(2));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(2, 7));
     }
 
     @Test
@@ -57,10 +55,10 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(dataWriterBytes.length + 3 + 3 + 3);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), BITSET_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(8));
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(8, 15));
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(1, 8, 15));
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(8));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(8, 15));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(1, 8, 15));
     }
 
     @Test
@@ -77,10 +75,10 @@ public class BitSetSerializationFactoryTest {
         assertThat(bytes).hasSize(dataWriterBytes.length + 9 + 10 + 10);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), BITSET_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(63));
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(64));
-        assertThat(deserializer.deserialize()).isEqualTo(bitset(1, 65));
+        Deserializer<BitSet> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(63));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(64));
+        assertThat(deserializer.deserialize(BITSET_TYPE)).isEqualTo(bitset(1, 65));
     }
 
     public static BitSet bitset(int... values) {

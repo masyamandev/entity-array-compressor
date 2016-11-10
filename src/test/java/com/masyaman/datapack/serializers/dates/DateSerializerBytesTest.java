@@ -52,10 +52,10 @@ public class DateSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isNull();
     }
 
     @Test
@@ -85,11 +85,11 @@ public class DateSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isNull();
     }
 
     @Test
@@ -119,11 +119,11 @@ public class DateSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isNull();
     }
 
     @Test
@@ -156,12 +156,12 @@ public class DateSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 3));
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 2));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + SECOND * 3));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isNull();
     }
 
     @Test
@@ -194,12 +194,12 @@ public class DateSerializerBytesTest {
 
         // Read objects
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
-        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer(DATE_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP));
-        assertThat(deserializer.deserialize()).isEqualTo(new Date (SOME_TIMESTAMP + HOUR * 24));
+        Deserializer<Date> deserializer = dataReader.createAndRegisterDeserializer();
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP));
+        assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(new Date (SOME_TIMESTAMP + HOUR * 24));
     }
 
 }

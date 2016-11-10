@@ -47,16 +47,16 @@ public abstract class AbstractNumberSerializationFactory extends SerializationFa
     }
 
     @Override
-    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        TypeDescriptor numberType = NumberTypeResolver.readType(is, type);
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        TypeDescriptor numberType = NumberTypeResolver.readType(is);
         int decimalPrecision = -is.readSignedLong().intValue();
 
         Deserializer deserializer = createDeserializer(is, numberType, decimalPrecision);
-        return wrapNumber(deserializer, type);
+        return wrapNumber(deserializer);
     }
 
     public abstract <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type, int decimalPrecision, RoundingMode roundingMode) throws IOException;
 
-    public abstract <E extends Number> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type, int decimalPrecision) throws IOException;
+    public abstract <E extends Number> Deserializer createDeserializer(DataReader is, TypeDescriptor<E> type, int decimalPrecision) throws IOException;
 
 }

@@ -3,7 +3,6 @@ package com.masyaman.datapack.randombeans;
 import com.masyaman.datapack.randombeans.objects.BeanWithNumbers;
 import com.masyaman.datapack.randombeans.objects.BeanWithNumbersAndCollections;
 import com.masyaman.datapack.randombeans.objects.BeanWithStrings;
-import com.masyaman.datapack.randombeans.objects.SampleEnum;
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import io.github.benas.randombeans.api.Randomizer;
@@ -38,7 +37,7 @@ public class ObjectsRandomizator {
                 .randomize(String.class, new StringRandomizer())
                 .randomize(BitSet.class, new BitSetRandomizer())
 //                .randomize(BeanWithNumbers.class, new RandomType<>(BeanWithNumbers.class, BeanWithNumbersAndCollections.class))
-                .randomize(Object.class, new RandomType<>(SampleEnum.class,
+                .randomize(Object.class, new RandomType<>(//SampleEnum.class,
                         BeanWithStrings.class, BeanWithNumbers.class, BeanWithNumbersAndCollections.class,
                         Integer.class, Long.class, Float.class, Double.class, String.class))
                 .build();

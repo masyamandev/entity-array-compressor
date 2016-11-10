@@ -43,8 +43,8 @@ public class StringConstantsSerializationFactory extends SerializationFactory<St
     }
 
     @Override
-    public <E> Deserializer<E> createDeserializer(DataReader is, TypeDescriptor<E> type) throws IOException {
-        return wrap(new SimpleCachedDeserializer(is, new StringDeserializer(is)), type);
+    public Deserializer createDeserializer(DataReader is) throws IOException {
+        return wrap(new SimpleCachedDeserializer(is, new StringDeserializer(is)));
     }
 
 }

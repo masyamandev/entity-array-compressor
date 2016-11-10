@@ -4,8 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
@@ -33,9 +31,9 @@ public class UnsignedLongSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 127);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 126; l >= 0; l--) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
         }
     }
 
@@ -51,9 +49,9 @@ public class UnsignedLongSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 1600 * 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 200; l < 16200; l+= 10) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
         }
     }
 
@@ -68,9 +66,9 @@ public class UnsignedLongSerializationFactoryTest {
         // It just have to serialize & deserialize it
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 0; l > -20000; l-= 10) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
         }
     }
 
@@ -90,9 +88,9 @@ public class UnsignedLongSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -111,9 +109,9 @@ public class UnsignedLongSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -144,20 +142,20 @@ public class UnsignedLongSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 1 * 4 + 2 * 4 + 3 * 1 + 9 * 3);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
 
-        assertThat(deserializer.deserialize()).isNull();
-        assertThat(deserializer.deserialize()).isEqualTo(0L);
-        assertThat(deserializer.deserialize()).isEqualTo(1L);
-        assertThat(deserializer.deserialize()).isEqualTo(126L);
-        assertThat(deserializer.deserialize()).isEqualTo(127L);
-        assertThat(deserializer.deserialize()).isEqualTo(128L);
-        assertThat(deserializer.deserialize()).isEqualTo(129L);
-        assertThat(deserializer.deserialize()).isEqualTo(16383L);
-        assertThat(deserializer.deserialize()).isEqualTo(16384L);
-        assertThat(deserializer.deserialize()).isEqualTo(Long.MAX_VALUE);
-        assertThat(deserializer.deserialize()).isEqualTo(Long.MIN_VALUE);
-        assertThat(deserializer.deserialize()).isEqualTo(-1L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(0L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(1L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(126L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(127L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(128L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(129L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(16383L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(16384L);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MAX_VALUE);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MIN_VALUE);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(-1L);
     }
 
     @Test
@@ -172,9 +170,9 @@ public class UnsignedLongSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 2 * 9);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(Long.MAX_VALUE);
-        assertThat(deserializer.deserialize()).isEqualTo(Long.MIN_VALUE);
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MAX_VALUE);
+        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MIN_VALUE);
     }
 
     @Test
@@ -188,7 +186,7 @@ public class UnsignedLongSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 1);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), LONG_TYPE);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
     }
 }

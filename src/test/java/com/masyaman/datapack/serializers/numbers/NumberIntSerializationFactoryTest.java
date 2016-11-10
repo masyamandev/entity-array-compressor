@@ -4,8 +4,6 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
-import com.masyaman.datapack.streams.DataReader;
-import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
@@ -33,9 +31,9 @@ public class NumberIntSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 63 * 2 + 1);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = 63; l >= -63; l--) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
         }
     }
 
@@ -51,9 +49,9 @@ public class NumberIntSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 800 * 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = 200; l < 8200; l+= 10) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
         }
     }
 
@@ -69,9 +67,9 @@ public class NumberIntSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 800 * 2);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = -200; l > -8200; l-= 10) {
-            assertThat(deserializer.deserialize()).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
         }
     }
 
@@ -91,9 +89,9 @@ public class NumberIntSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -112,9 +110,9 @@ public class NumberIntSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(ll[i]);
         }
     }
 
@@ -130,9 +128,9 @@ public class NumberIntSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 2 * 5);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
-        assertThat(deserializer.deserialize()).isEqualTo(Integer.MAX_VALUE);
-        assertThat(deserializer.deserialize()).isEqualTo(Integer.MIN_VALUE);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(Integer.MAX_VALUE);
+        assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(Integer.MIN_VALUE);
     }
 
     @Test
@@ -146,7 +144,7 @@ public class NumberIntSerializationFactoryTest {
         assertThat(bytes).hasSize(serializerBytes.length + 1);
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is), INTEGER_TYPE);
-        assertThat(deserializer.deserialize()).isNull();
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(INTEGER_TYPE)).isNull();
     }
 }

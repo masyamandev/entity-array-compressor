@@ -6,52 +6,26 @@ import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.toJsonString;
 
 class JsonObjectDeserializer implements Deserializer<String> {
 
+
     private DataReader is;
 
-    private List<String> fields = new ArrayList<>();
-    private List<Deserializer> deserializers = new ArrayList<>();
+    private String className;
+    private List<ObjectDeserializer.FieldDeserializer> deserialization;
 
-    private String typeField;
-
-    public JsonObjectDeserializer(DataReader is, TypeDescriptor<?> type) throws IOException {
+    public JsonObjectDeserializer(DataReader is, String className, List<ObjectDeserializer.FieldDeserializer> deserialization) {
         this.is = is;
-
-        String classField = null;
-        String className = is.readString();
-        if (type.getAnnotation(AsJson.class) != null) {
-            classField =  type.getAnnotation(AsJson.class).typeField();
-            if (classField.isEmpty()) {
-                classField = null;
-            }
-        }
-
-        Long fieldsNum = is.readUnsignedLong();
-        for (int i = 0; i < fieldsNum; i++) {
-            String fieldName = is.readString();
-            if (fieldName.equals(classField)) {
-                classField = null;
-            }
-
-            Deserializer deserializer = is.createAndRegisterDeserializer(type);
-
-            deserializers.add(deserializer);
-            fields.add(toJsonString(fieldName));
-        }
-
-        if (classField != null) {
-            typeField = toJsonString(classField) + ":" + toJsonString(className);
-        }
+        this.className = className;
+        this.deserialization = deserialization;
     }
 
     @Override
-    public String deserialize() throws IOException {
+    public <T extends String> T deserialize(TypeDescriptor<T> type) throws IOException {
 
         StringBuilder sb = new StringBuilder();
 
@@ -59,28 +33,41 @@ class JsonObjectDeserializer implements Deserializer<String> {
 
         boolean allNulls = true;
 
-        if (typeField != null) {
-            sb.append(typeField);
+        String classField = "";
+        if (type.getAnnotation(AsJson.class) != null) {
+            classField = type.getAnnotation(AsJson.class).typeField();
         }
 
-        for (int i = 0; i < fields.size(); i++) {
-            Object field = deserializers.get(i).deserialize();
+        for (ObjectDeserializer.FieldDeserializer fieldDeserializer : deserialization) {
+            Object field = fieldDeserializer.getDeserializer().deserialize(type);
             allNulls &= field == null;
 
             if (sb.length() > 1) {
                 sb.append(",");
             }
-            sb.append(fields.get(i));
+            sb.append(toJsonString(fieldDeserializer.getFieldName()));
             sb.append(":");
             sb.append(field);
+
+            if (fieldDeserializer.getFieldName().equals(classField)) {
+                classField = "";
+            }
         }
 
         if (allNulls && is.readUnsignedLong() == null) {
-            return "null";
+            return (T) "null";
+        }
+
+        if (!classField.isEmpty()) {
+            if (sb.length() > 1) {
+                sb.append(",");
+            }
+            sb.append(toJsonString(classField) + ":" + toJsonString(className));
         }
 
         sb.append("}");
 
-        return sb.toString();
+        return (T) sb.toString();
     }
+
 }

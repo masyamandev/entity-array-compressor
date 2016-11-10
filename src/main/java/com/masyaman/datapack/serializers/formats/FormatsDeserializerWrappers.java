@@ -3,45 +3,46 @@ package com.masyaman.datapack.serializers.formats;
 import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.utils.MathUtils;
 
 import java.io.IOException;
 
 public class FormatsDeserializerWrappers {
 
-    public static <T> Deserializer<T> wrapNumber(Deserializer deserializer, TypeDescriptor<T> type) throws IOException {
-        if (type.getAnnotation(AsJson.class) != null && type.getAnnotation(AsJson.class).numbersAsStrings()) {
-            return (Deserializer<T>) toJsonString(deserializer);
-        } if (String.class.isAssignableFrom(type.getType())) {
-            return (Deserializer<T>) toString(deserializer);
-        } else {
-            return deserializer;
-        }
-    }
-
-    public static <T> Deserializer<T> wrap(Deserializer deserializer, TypeDescriptor<T> type) throws IOException {
-        if (type.getAnnotation(AsJson.class) != null) {
-            return (Deserializer<T>) toJsonString(deserializer);
-        } else {
-            return deserializer;
-        }
-    }
-
-    private static Deserializer<String> toString(Deserializer deserializer) throws IOException {
-        return new Deserializer<String>() {
+    public static Deserializer wrapNumber(Deserializer deserializer) throws IOException {
+        return new Deserializer<Object>() {
             @Override
-            public String deserialize() throws IOException {
-                Object val = deserializer.deserialize();
-                return val == null ? null : val.toString();
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                Object val = deserializer.deserialize(type);
+                if (val == null) {
+                    return null;
+                } else if (type.getAnnotation(AsJson.class) != null && type.getAnnotation(AsJson.class).numbersAsStrings()) {
+                    return (T) toJsonString(val.toString());
+                } if (Number.class.isAssignableFrom(type.getType()) && val instanceof Number) {
+                    return (T) MathUtils.convertToType((Number) val, (TypeDescriptor) type);
+                } else if (String.class.isAssignableFrom(type.getType())) {
+                    return (T) val.toString();
+                } else {
+                    return (T) val;
+                }
             }
         };
     }
 
-    private static Deserializer<String> toJsonString(Deserializer deserializer) throws IOException {
-        return new Deserializer<String>() {
+    public static Deserializer wrap(Deserializer deserializer) throws IOException {
+        return new Deserializer<Object>() {
             @Override
-            public String deserialize() throws IOException {
-                Object val = deserializer.deserialize();
-                return val == null ? null : toJsonString(val.toString());
+            public <T> T deserialize(TypeDescriptor<T> type) throws IOException {
+                Object val = deserializer.deserialize(type);
+                if (val == null) {
+                    return null;
+                } else if (type.getAnnotation(AsJson.class) != null) {
+                    return (T) toJsonString(val.toString());
+                } if (String.class.isAssignableFrom(type.getType())) {
+                    return (T) val.toString();
+                } else {
+                    return (T) val;
+                }
             }
         };
     }
