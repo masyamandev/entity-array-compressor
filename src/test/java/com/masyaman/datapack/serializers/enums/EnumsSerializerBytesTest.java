@@ -30,9 +30,8 @@ public class EnumsSerializerBytesTest {
         Serializer<Digits> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, ENUM_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
-                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
+                serializationFactory.getName().length(), serializationFactory.getName() // save serializer
                 // serializer properties
-                0 // Cache size TODO to be removed
         ));
 
         serializer.serialize(Digits.TWO);
@@ -94,9 +93,8 @@ public class EnumsSerializerBytesTest {
         Serializer<Digits> serializer = dataWriter.createAndRegisterSerializer(serializationFactory, ENUM_TYPE);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0, // serializer id, 0 is required for globally-defined
-                serializationFactory.getName().length(), serializationFactory.getName(), // save serializer
+                serializationFactory.getName().length(), serializationFactory.getName() // save serializer
                 // serializer properties
-                0 // Cache size TODO to be removed
         ));
 
         serializer.serialize(Digits.TWO);
