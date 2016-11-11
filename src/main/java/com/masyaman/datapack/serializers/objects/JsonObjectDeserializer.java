@@ -3,6 +3,7 @@ package com.masyaman.datapack.serializers.objects;
 import com.masyaman.datapack.annotations.deserialization.AsJson;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
+import com.masyaman.datapack.serializers.objects.ObjectDeserializer.FieldDeserializer;
 import com.masyaman.datapack.streams.DataReader;
 
 import java.io.IOException;
@@ -16,9 +17,9 @@ class JsonObjectDeserializer implements Deserializer<String> {
     private DataReader is;
 
     private String className;
-    private List<ObjectDeserializer.FieldDeserializer> deserialization;
+    private List<FieldDeserializer> deserialization;
 
-    public JsonObjectDeserializer(DataReader is, String className, List<ObjectDeserializer.FieldDeserializer> deserialization) {
+    public JsonObjectDeserializer(DataReader is, String className, List<FieldDeserializer> deserialization) {
         this.is = is;
         this.className = className;
         this.deserialization = deserialization;
@@ -38,7 +39,7 @@ class JsonObjectDeserializer implements Deserializer<String> {
             classField = type.getAnnotation(AsJson.class).typeField();
         }
 
-        for (ObjectDeserializer.FieldDeserializer fieldDeserializer : deserialization) {
+        for (FieldDeserializer fieldDeserializer : deserialization) {
             Object field = fieldDeserializer.getDeserializer().deserialize(type);
             allNulls &= field == null;
 

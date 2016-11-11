@@ -40,12 +40,15 @@ public class StringCachedSerializationFactory extends SerializationFactory<Strin
 
     @Override
     public <E extends String> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        return (Serializer<E>) new LatestFirstCachedSerializer(os, new StringSerializer(os), AnnotationsHelper.getCacheSize(type));
+        int cacheSize = AnnotationsHelper.getCacheSize(type);
+        os.writeUnsignedLong((long) cacheSize);
+        return (Serializer<E>) new LatestFirstCachedSerializer(os, new StringSerializer(os), cacheSize);
     }
 
     @Override
     public Deserializer createDeserializer(DataReader is) throws IOException {
-        return wrap(new LatestFirstCachedDeserializer(is, new StringDeserializer(is)));
+        int cacheSize = is.readUnsignedLong().intValue();
+        return wrap(new LatestFirstCachedDeserializer(is, cacheSize, new StringDeserializer(is)));
     }
 
 }

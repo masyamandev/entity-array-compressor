@@ -1,7 +1,5 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
-import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.utils.CollectionReorderer;
@@ -15,18 +13,15 @@ import static com.masyaman.datapack.utils.Constants.COLLECTION_REORDERING_CACHE_
 class MapSerializer<K, V> implements Serializer<Map<K, V>> {
 
     private DataWriter os;
-    private TypeDescriptor<K> keyType;
     private Serializer<K> keySerializer;
     private Serializer<V> valueSerializer;
 
     private CollectionReorderer<K> collectionReorderer;
 
-    public MapSerializer(DataWriter os, SerializationFactory<K> keySerializationFactory, TypeDescriptor<K> keyType,
-                         SerializationFactory<V> valueSerializationFactory, TypeDescriptor<V> valueType, boolean allowReordering) throws IOException {
+    public MapSerializer(DataWriter os, Serializer<K> keySerializer, Serializer<V> valueSerializer, boolean allowReordering) throws IOException {
         this.os = os;
-        this.keySerializer = os.createAndRegisterSerializer(keySerializationFactory, keyType);
-        this.valueSerializer = os.createAndRegisterSerializer(valueSerializationFactory, valueType);
-        this.keyType = keyType;
+        this.keySerializer = keySerializer;
+        this.valueSerializer = valueSerializer;
 
         if (allowReordering && COLLECTION_REORDERING_CACHE_SIZE >= 0) {
             this.collectionReorderer = new CollectionReorderer<>(COLLECTION_REORDERING_CACHE_SIZE);

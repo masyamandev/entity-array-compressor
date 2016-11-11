@@ -88,6 +88,18 @@ public class ClassManager {
         return mixInClasses.get(clazz);
     }
 
+    public String getClassName(Class<?> clazz) {
+        Class<?> mixInClass = getMixInClass(clazz);
+
+        if (mixInClass != null && mixInClass.isAnnotationPresent(Alias.class)) {
+            return mixInClass.getAnnotation(Alias.class).value();
+        } else if (clazz.isAnnotationPresent(Alias.class)) {
+            return clazz.getAnnotation(Alias.class).value();
+        } else {
+            return clazz.getName();
+        }
+    }
+
     public Class<?> getMixInForField(Class<?> clazz, String fieldName) {
         Class c = clazz;
         while (c != null) {

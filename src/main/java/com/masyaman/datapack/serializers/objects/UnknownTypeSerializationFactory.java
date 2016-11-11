@@ -33,7 +33,7 @@ public final class UnknownTypeSerializationFactory<E> extends SerializationFacto
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        return new UnknownTypeSerializer(os, type);
+        return new UnknownTypeSerializer(os);
     }
 
     @Override

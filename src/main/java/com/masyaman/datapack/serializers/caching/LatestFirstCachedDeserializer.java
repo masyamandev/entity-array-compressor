@@ -20,10 +20,10 @@ public class LatestFirstCachedDeserializer<E> implements Deserializer<E> {
 
     private ObjectIdCache<E> cache;
 
-    public LatestFirstCachedDeserializer(DataReader is, Deserializer<E> deserializer) throws IOException {
+    public LatestFirstCachedDeserializer(DataReader is, int cacheSize, Deserializer<E> deserializer) throws IOException {
         this.is = is;
         this.deserializer = deserializer;
-        cacheSize = is.readUnsignedLong().intValue();
+        this.cacheSize = cacheSize;
         cache = new ObjectIdCacheRingTree<>(cacheSize);
     }
 

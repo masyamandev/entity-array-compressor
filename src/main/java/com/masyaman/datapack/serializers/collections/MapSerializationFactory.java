@@ -55,7 +55,10 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
         boolean isOrderedMap = LinkedHashMap.class.isAssignableFrom(type.getType());
         boolean allowReordering = allowReordering(type, !isOrderedMap);
 
-        return new MapSerializer(os, keyFactory, keyType, valueFactory, valueType, allowReordering);
+        Serializer keySerializer = os.createAndRegisterSerializer(keyFactory, keyType);
+        Serializer valueSerializer = os.createAndRegisterSerializer(valueFactory, valueType);
+
+        return new MapSerializer(os, keySerializer, valueSerializer, allowReordering);
     }
 
     @Override

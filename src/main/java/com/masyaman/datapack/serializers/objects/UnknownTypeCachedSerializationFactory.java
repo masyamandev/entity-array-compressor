@@ -38,11 +38,14 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        return new LatestFirstCachedSerializer(os, new UnknownTypeSerializer(os, type), AnnotationsHelper.getCacheSize(type));
+        int cacheSize = AnnotationsHelper.getCacheSize(type);
+        os.writeUnsignedLong((long) cacheSize);
+        return new LatestFirstCachedSerializer(os, new UnknownTypeSerializer(os), cacheSize);
     }
 
     @Override
     public Deserializer createDeserializer(DataReader is) throws IOException {
-        return new LatestFirstCachedDeserializer(is, new UnknownTypeDeserializer(is));
+        int cacheSize = is.readUnsignedLong().intValue();
+        return new LatestFirstCachedDeserializer(is, cacheSize, new UnknownTypeDeserializer(is));
     }
 }

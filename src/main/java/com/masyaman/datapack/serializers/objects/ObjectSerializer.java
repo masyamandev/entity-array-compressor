@@ -1,92 +1,40 @@
 package com.masyaman.datapack.serializers.objects;
 
-import com.masyaman.datapack.annotations.Alias;
-import com.masyaman.datapack.annotations.serialization.IgnoredField;
-import com.masyaman.datapack.annotations.serialization.SerializeBy;
 import com.masyaman.datapack.reflection.Getter;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
-import com.masyaman.datapack.utils.Constants;
 
 import java.io.IOException;
-import java.util.*;
-
-import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
-import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
-import static com.masyaman.datapack.serializers.SerializationFactory.getInstance;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 class ObjectSerializer<T> implements Serializer<T> {
 
     private DataWriter os;
-    private List<SerializationData> serializations = new ArrayList<>();
+    private List<FieldSerializer> fieldSerializers;
 
-
-    public ObjectSerializer(DataWriter os, TypeDescriptor type) throws IOException {
+    public ObjectSerializer(DataWriter os, List<FieldSerializer> fieldSerializers) {
         this.os = os;
-
-        Class<?> clazz = type.getType();
-        Class<?> mixInClass = os.getClassManager().getMixInClass(clazz);
-
-        if (mixInClass != null && mixInClass.isAnnotationPresent(Alias.class)) {
-            os.writeString(mixInClass.getAnnotation(Alias.class).value());
-        } else if (clazz.isAnnotationPresent(Alias.class)){
-            os.writeString(clazz.getAnnotation(Alias.class).value());
-        } else {
-            os.writeString(clazz.getName());
-        }
-
-        Map<String, Getter> getterMap = os.getClassManager().getterMap(clazz);
-        for (Map.Entry<String, Getter> getterEntry : getterMap.entrySet()) {
-            Getter<?> getter = getterEntry.getValue();
-
-            if (getter.type().getAnnotation(IgnoredField.class) != null) {
-                continue;
-            }
-
-            SerializeBy declared = getter.type().getAnnotation(SerializeBy.class);
-            TypeDescriptor declaredType = new TypeDescriptor(serializeAs(declared, getter.type().getType()),
-                    getter.type().getParametrizedType(),
-                    annotationsFrom(declared, getter.type().getAnnotations()));
-
-            boolean isSpecifiedType = serializeAs(declared, null) != null || declaredType.isFinal();
-
-            SerializationFactory serializationFactory;
-            try {
-                serializationFactory = declared != null ? getInstance(declared.value()) :
-                        os.getSerializationFactoryLookup().getSerializationFactory(declaredType, isSpecifiedType);
-            } catch (Exception e) {
-                throw new IOException("Unable to create serializer for field " + clazz.getName() + "." + getterEntry.getKey(), e);
-            }
-
-            serializations.add(new SerializationData(getterEntry.getKey(), getter, serializationFactory, declaredType));
-        }
-
-        if (Constants.ENABLE_REORDERING_FIELDS) {
-            Collections.sort(serializations);
-        }
-
-        os.writeUnsignedLong((long) serializations.size());
-        for (SerializationData serialization : serializations) {
-            os.writeString(serialization.fieldName);
-            serialization.serializer = os.createAndRegisterSerializer(serialization.serializationFactory, serialization.declaredType);
-        }
+        this.fieldSerializers = fieldSerializers;
     }
 
     @Override
     public void serialize(T o) throws IOException {
         if (o == null) {
-            for (SerializationData serialization : serializations) {
-                serialization.serializer.serialize(null);
+            for (FieldSerializer fieldSerializer : fieldSerializers) {
+                fieldSerializer.serializer.serialize(null);
             }
             os.writeUnsignedLong(null); // mark object as null;
         } else {
             boolean allNulls = true;
-            for (SerializationData serialization : serializations) {
+            for (FieldSerializer fieldSerializer : fieldSerializers) {
                 try {
-                    Object field = serialization.getter.get(o);
-                    serialization.serializer.serialize(field);
+                    Object field = fieldSerializer.getGetter().get(o);
+                    fieldSerializer.serializer.serialize(field);
                     allNulls &= field == null;
                 } catch (ReflectiveOperationException e) {
                     throw new IOException("Unable to serialize", e);
@@ -98,18 +46,42 @@ class ObjectSerializer<T> implements Serializer<T> {
         }
     }
 
-    private static class SerializationData implements Comparable<SerializationData> {
+    public static class FieldSerializer implements Comparable<FieldSerializer> {
         private String fieldName;
         private Getter getter;
         private SerializationFactory serializationFactory;
         private TypeDescriptor declaredType;
         private Serializer serializer;
 
-        public SerializationData(String fieldName, Getter getter, SerializationFactory serializationFactory, TypeDescriptor declaredType) {
+        public FieldSerializer(String fieldName, Getter getter, SerializationFactory serializationFactory, TypeDescriptor declaredType) {
             this.fieldName = fieldName;
             this.getter = getter;
             this.serializationFactory = serializationFactory;
             this.declaredType = declaredType;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        public Getter getGetter() {
+            return getter;
+        }
+
+        public SerializationFactory getSerializationFactory() {
+            return serializationFactory;
+        }
+
+        public TypeDescriptor getDeclaredType() {
+            return declaredType;
+        }
+
+        public Serializer getSerializer() {
+            return serializer;
+        }
+
+        public void setSerializer(Serializer serializer) {
+            this.serializer = serializer;
         }
 
         @Override
@@ -118,7 +90,7 @@ class ObjectSerializer<T> implements Serializer<T> {
         }
 
         @Override
-        public int compareTo(SerializationData o) {
+        public int compareTo(FieldSerializer o) {
             int compare;
             compare = serializationFactory.getName().compareTo(serializationFactory.getName());
             if (compare != 0) {

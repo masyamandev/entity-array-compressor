@@ -1,13 +1,11 @@
 package com.masyaman.datapack.serializers.caching;
 
 import com.masyaman.datapack.cache.ObjectIdCache;
-import com.masyaman.datapack.cache.ObjectIdCacheRingBuffer;
 import com.masyaman.datapack.cache.ObjectIdCacheRingTree;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  * Caching wrapper for Serializer.
@@ -28,7 +26,6 @@ public class LatestFirstCachedSerializer<E> implements Serializer<E> {
         this.os = os;
         this.serializer = serializer;
         this.cache = new ObjectIdCacheRingTree<>(cacheSize);
-        os.writeUnsignedLong((long) cacheSize);
     }
 
     @Override

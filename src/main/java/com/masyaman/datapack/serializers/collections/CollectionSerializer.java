@@ -1,7 +1,5 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
-import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.utils.CollectionReorderer;
@@ -18,9 +16,9 @@ class CollectionSerializer<V> implements Serializer<Collection<V>> {
 
     private CollectionReorderer<V> collectionReorderer;
 
-    public CollectionSerializer(DataWriter os, SerializationFactory<V> valueSerializationFactory, TypeDescriptor<V> valueType, boolean allowReordering) throws IOException {
+    public CollectionSerializer(DataWriter os, Serializer<V> valueSerializer, boolean allowReordering) throws IOException {
         this.os = os;
-        this.valueSerializer = os.createAndRegisterSerializer(valueSerializationFactory, valueType);
+        this.valueSerializer = valueSerializer;
 
         if (allowReordering && COLLECTION_REORDERING_CACHE_SIZE >= 0) {
             this.collectionReorderer = new CollectionReorderer<>(COLLECTION_REORDERING_CACHE_SIZE);

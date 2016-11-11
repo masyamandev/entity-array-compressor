@@ -46,7 +46,8 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
             boolean isSpecifiedType = serializeAs(valueDeclared, null) != null || valueType.isFinal();
             SerializationFactory valueFactory = valueDeclared != null ? getInstance(valueDeclared.value()) : getSerializer(os, valueType, isSpecifiedType);
 
-            return (Serializer<T>) new ArraySerializer(os, valueFactory, valueType, allowReordering(type, false));
+            Serializer<Object> serializer = os.createAndRegisterSerializer(valueFactory, valueType);
+            return (Serializer<T>) new ArraySerializer(os, serializer, allowReordering(type, false));
         } else {
             SerializeValueBy valueDeclared = type.getAnnotation(SerializeValueBy.class);
 
@@ -59,7 +60,8 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
             boolean isOrdered = !Set.class.isAssignableFrom(type.getType()) || LinkedHashSet.class.isAssignableFrom(type.getType());
             boolean allowReordering = allowReordering(type, !isOrdered);
 
-            return new CollectionSerializer(os, valueFactory, valueType, allowReordering);
+            Serializer<Object> serializer = os.createAndRegisterSerializer(valueFactory, valueType);
+            return new CollectionSerializer(os, serializer, allowReordering);
         }
     }
 
