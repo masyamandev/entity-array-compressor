@@ -46,6 +46,6 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
     @Override
     public Deserializer createDeserializer(DataReader is) throws IOException {
         int cacheSize = is.readUnsignedLong().intValue();
-        return new LatestFirstCachedDeserializer(is, cacheSize, new UnknownTypeDeserializer(is));
+        return new LatestFirstCachedDeserializer(is, new UnknownTypeDeserializer(is), cacheSize);
     }
 }

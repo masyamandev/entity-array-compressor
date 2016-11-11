@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.strings;
 
+import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -39,12 +40,15 @@ public class StringConstantsSerializationFactory extends SerializationFactory<St
 
     @Override
     public <E extends String> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        return (Serializer<E>) new SimpleCachedSerializer(os, new StringSerializer(os));
+        int cacheSize = AnnotationsHelper.getCacheSize(type);
+        os.writeUnsignedLong((long) cacheSize);
+        return (Serializer<E>) new SimpleCachedSerializer(os, new StringSerializer(os), cacheSize);
     }
 
     @Override
     public Deserializer createDeserializer(DataReader is) throws IOException {
-        return wrap(new SimpleCachedDeserializer(is, new StringDeserializer(is)));
+        int cacheSize = is.readUnsignedLong().intValue();
+        return wrap(new SimpleCachedDeserializer(is, new StringDeserializer(is), cacheSize));
     }
 
 }

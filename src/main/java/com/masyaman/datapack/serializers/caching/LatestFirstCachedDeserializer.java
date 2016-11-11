@@ -16,14 +16,12 @@ public class LatestFirstCachedDeserializer<E> implements Deserializer<E> {
 
     private DataReader is;
     private Deserializer<E> deserializer;
-    private int cacheSize;
 
     private ObjectIdCache<E> cache;
 
-    public LatestFirstCachedDeserializer(DataReader is, int cacheSize, Deserializer<E> deserializer) throws IOException {
+    public LatestFirstCachedDeserializer(DataReader is, Deserializer<E> deserializer, int cacheSize) throws IOException {
         this.is = is;
         this.deserializer = deserializer;
-        this.cacheSize = cacheSize;
         cache = new ObjectIdCacheRingTree<>(cacheSize);
     }
 

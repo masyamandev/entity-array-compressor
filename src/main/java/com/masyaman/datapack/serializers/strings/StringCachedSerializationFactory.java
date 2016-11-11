@@ -48,7 +48,7 @@ public class StringCachedSerializationFactory extends SerializationFactory<Strin
     @Override
     public Deserializer createDeserializer(DataReader is) throws IOException {
         int cacheSize = is.readUnsignedLong().intValue();
-        return wrap(new LatestFirstCachedDeserializer(is, cacheSize, new StringDeserializer(is)));
+        return wrap(new LatestFirstCachedDeserializer(is, new StringDeserializer(is), cacheSize));
     }
 
 }
