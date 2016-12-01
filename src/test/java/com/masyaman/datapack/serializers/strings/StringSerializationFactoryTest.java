@@ -41,4 +41,19 @@ public class StringSerializationFactoryTest extends TestCase {
         assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("\n\r\t");
         assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
     }
+
+    public void testUnicodeCharacters() throws Exception {
+        String testString = "W" + (char) 236 + (char) 0x457;
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Serializer<String> serializer = FACTORY.createSerializer(new SerialDataWriter(os), STRING_TYPE);
+
+        serializer.serialize(testString);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo(testString);
+    }
 }

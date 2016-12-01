@@ -23,8 +23,9 @@ public class StringWriter implements Serializer<String> {
            lengthWriter.serialize(null);
            return;
         }
-        lengthWriter.serialize((long) s.length());
-        for (byte b : s.getBytes(CHARSET)) {
+        byte[] bytes = s.getBytes(CHARSET);
+        lengthWriter.serialize((long) bytes.length);
+        for (byte b : bytes) {
             os.write(b);
         }
 
