@@ -63,6 +63,7 @@ Also there is a console tool which can convert a stream to json (in this example
 $ java -jar entity-array-compressor.jar -input=gzip < inputfile.gz > outputfile.json
 ```
 
+
 # Optimize serializers
 
 Depending on nature of data some assumptions could be made to make better compression. For example GPS position usually
@@ -165,7 +166,6 @@ null-friendly.
   * `UnknownTypeCachedSerializationFactory` - Serializer for objects of unknown type. Serialized objects are cached using
     latest first cache strategy. This serializer should not be used with mutable objects. Also it's worth to limit cache
     size with `CacheSize` annotation.
-
 
 
 # Format description
@@ -316,15 +316,13 @@ UNSIGNED_INT - Serializer id. Registered serializer ids are started from 1. 0 me
 ```
 
 Usually when a new object of unknown type is serialized, new serializer is created and stored in serializers list 
-(id assigned). Data written: id (0 for new serializer) + serializer name + serializer settings + object data 
+(id assigned). Data written: id (0 for new serializer) + serializer name + serializer settings + object data.
 When another object of the same type is serialized, previously created serializer is reused, no need to
 write serializer name and it's settings. Data written: id (>= 1 for registered serializers) + object data 
-
 
 ## Serializers
 
 [TODO describe settings and data formats for serializers] 
-
 
 ## Example of binary format
 
