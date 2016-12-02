@@ -69,6 +69,8 @@ Depending on nature of data some assumptions could be made to make better compre
 changed slowly and next point can be predicted using two previous points. Some data could be rounded, so it's not necessary
 to save all information. Such hints could be done with annotations.
 
+## Sample code
+
 In the following example we periodically (e.g. each second) save vehicle position, speed and radio station. We can specify
 serializer and precision to save space and get better compression:
 ```java
@@ -111,6 +113,8 @@ public class VehicleStatus {
 ```
 All serialization settings are stored in data stream, so they are not required during deserialization. Actually the whole 
 class may not be required during deserialization, data stream can be converted into json.
+
+## List of serializers
 
 Here is a list of available serialization factories in package `com.masyaman.datapack.serializers`. All serializers are
 null-friendly.
@@ -187,14 +191,14 @@ There are several types of primitives:
   and then value is stored and added to cache. Id is stored as Unsigned Long. There are several cache strategies, will be 
   described further.
   
-## Variable-length Integers and Longs
+### Variable-length Integers and Longs
 
 All Integer values are saved as 64-bits Longs in variable-length format. Signed and unsigned values are slightly different, 
 but the main idea is the same. Smaller values requires less space, 7 effective bits per byte in average.
 Another feature of this format is that values are null-friendly, so any value could be saved as null and this will require
 only 1 byte in stream.
 
-### Unsigned Integers and Longs
+#### Unsigned Integers and Longs
 
 First byte consists of 2 parts: length of record and optionally data bits. Length of record is a 0..8 bits of 1s and then
 one bit of 0 (0 could be omit if there are exactly 8 bits of leading 1s). Number of 1s indicates how many additional bytes
@@ -244,7 +248,7 @@ Special cases:
 * Value `127` can't be saved as single byte in 7 bit representation as it's reserved for `null`. So, it'll be stored in 2
   bytes: `1000 0000, 0111 1111`.
   
-### Signed Integers and Longs
+#### Signed Integers and Longs
 
 Signed Integers are stored mostly the same way as unsigned, but effective bit should be calculated differently.
 
@@ -274,3 +278,220 @@ all greater data bits (to the left in binary representation) during deserializat
 Another difference to Unsigned representation is storing `null` values. It's stored as smallest negative value which could
 be written in single byte representation. In current case it's `-64`, so `null` is stored as `0100 0000` while `-64` requires
 2 bytes: `1011 1111, 1100 0000`.
+
+### Strings
+
+Format of strings are pretty simple: string is converted into byte array using UTF8 encoding. Then array length is written
+as variable-length unsigned int. Then bytes from array are written.
+
+## Data format
+
+Data stream consists of stream header and serialized data.
+
+### Stream header
+
+Currently header consists of 2 bytes:
+```
+UNSIGNED_INT - version in unsigned int format, currently always 0
+UNSIGNED_INT - number settings, not supported yet, currently 0
+[optionally] - repeat for each setting, not supported yet
+  [settings] - not supported yet
+[optionally/]
+```
+
+### Stream data
+
+When an object is serialized, the following data is written:
+
+```
+UNSIGNED_INT - Serializer id. Registered serializer ids are started from 1. 0 means serializer in not registered yet,
+               create it and register (assign an id). Null means serializer in not registered, create temoprary serializer
+               but don't register it (don't assign an id to it).
+[optionally] - Write serializer's parameters if serializer is not registered.
+  STRING - Serializer name. Actually name is a short type of serializer.
+  [serializer settings] - Settings for specified serializer. Some serializers may not need any settings, another may require
+                          registering nested serializers.
+[optionally/]
+[serialized data] - Object data, specific for specified serializer.
+```
+
+Usually when a new object of unknown type is serialized, new serializer is created and stored in serializers list 
+(id assigned). Data written: id (0 for new serializer) + serializer name + serializer settings + object data 
+When another object of the same type is serialized, previously created serializer is reused, no need to
+write serializer name and it's settings. Data written: id (>= 1 for registered serializers) + object data 
+
+
+## Serializers
+
+[TODO describe settings and data formats for serializers] 
+
+
+## Example of binary format
+
+Here is a step by step serialization and description which data is written.
+
+```java
+ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+ObjectWriter serializer = new SerialDataWriter(byteStream);
+```
+Empty DataWriter is created, header is written, 2 bytes:
+```
+0x00 - DataWriter version, UNSIGNED_INT, currently 0. 
+0x00 - Number of serrings, UNSIGNED_INT, currently 0.
+```
+
+Let's write some data:
+```java
+serializer.writeObject(new VehicleStatus.GpsPosition(0.000010, 0.000020));
+```
+A lot of data for the first time, 47 bytes:
+```
+0x00 - Serializer id = 0, create serializer and assing an id = 1 for it.
+// Register new serializer:
+  // Write serializer name:
+  0x02 - Name length, UNSIGNED_INT, 2.
+  0x5f, 0x4f - Serializer name, "_O" - ObjectSerializationFactory.
+  // Write serializer settings, specific for ObjectSerializationFactory:
+  // Write class name:
+  0x0b - Class name length, 11. Actually it should be full class name with package, we've simplified it.
+  0x47, 0x70, 0x73, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e - Class name, "GpsPosition".
+  // Write fields
+  0x02 - Number of fields in class, 2.
+  // Write settings for field1:
+    // Write name of field:
+    0x03 - Field name length, 3.
+    0x6c, 0x61, 0x74 - Field name, "lat".
+    // Write serializer for field1:
+    0x7f - SerializerId, UNSIGNED_INT, null. Create new id-less serializer.
+    // Create new serializer:
+      // Write serializer name:
+      0x03 - Name length, UNSIGNED_INT, 3.
+      0x5f, 0x4e, 0x4c - Serializer name, "_NL" - NumberLinearSerializationFactory.
+      // Write serializer settings, specific for NumberLinearSerializationFactory.
+      0x03 - Length of original data type.
+      0x36, 0x34, 0x66 - Original data type, "64f" - Double data type.
+      0x06 - Prescale, number of decimal digits in fraction, 6.
+  // Write settings for field2:
+    // Anything is exactly the same as in field 1, except of field name "lon".
+    0x03, 0x6c, 0x6f, 0x6e, 0x7f, 0x03, 0x5f, 0x4e, 0x4c, 0x03, 0x36, 0x34, 0x66, 0x06 
+// Finally, write data itself:    
+0x0a - Object serializer passes field1 (lat) value to field1 serializer and it writes value (10 = 0.000010 * 10 ^ 6).
+0x14 - Object serializer passes field2 (lon) value to field1 serializer and it writes value (20 = 0.000010 * 20 ^ 6) .
+```
+Let's write data of the same type again:
+```java
+serializer.writeObject(new VehicleStatus.GpsPosition(0.000012, 0.000025));
+```
+This time much less data will be written as corresponding serializer already created and registered, only 3 bytes are written:
+```
+0x01 - Serializer id = 1, get serializer from registered list and pass value to it.
+// Write data itself:    
+0x02 - Pass field1 (lat) value to field1 serializer (2 = 0.000012 * 10 ^ 6 - 10) (prevValue = 10).
+0x05 - Pass field2 (lon) value to field1 serializer (5 = 0.000025 * 10 ^ 6 - 20) (prevValue = 20).
+```
+As we have `NumberLinearSerializationFactory` for lat and lon, next point should be predicted as (0.000014, 0.000030) and 
+only difference written. Lets check 
+```java
+serializer.writeObject(new VehicleStatus.GpsPosition(0.000015, 0.000028));
+```
+This time much less data will be written as corresponding serializer already created and registered, only 3 bytes are written:
+```
+0x01 - Serializer id = 1, get serializer from registered list and pass value to it.
+// Write data itself:    
+0x01 - Difference to predicted lat, (2 = 0.000015 * 10 ^ 6 - 14) (predicted value = 14).
+0x7e - Difference to predicted lon, (-2 = 0.000028 * 10 ^ 6 - 30) (predicted value = 30).
+```
+
+When unknown type is serialized, again, new serializer should be created:
+```java
+serializer.writeObject(new VehicleStatus(
+        new VehicleStatus.GpsPosition(0.000015, 0.000020),
+        20, 1000000L, "BestFm"));
+```
+As type VehicleStatus is much more complex than GpsPosition, more data will be written, 143 bytes:
+```
+0x00 - Serializer id = 0, create serializer and assing an id = 2 for it.
+// Register new serializer:
+  // Write serializer name:
+  0x02, 0x5f, 0x4f - Serializer length & name, 2 + "_O" - ObjectSerializationFactory.
+  // Write serializer settings, specific for ObjectSerializationFactory:
+  // Write class name:
+  0x0d, 0x56, 0x65, 0x68, 0x69, 0x63, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, - Class name 13 + "VehicleStatus".
+  // Write fields
+  0x04 - Number of fields in class, 4.
+  // Write settings for field1:
+    0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70 - field1 name, 9 + "timestamp" .
+    0x7f - SerializerId, UNSIGNED_INT, null. Create new id-less serializer.
+    // Create new serializer:
+      // Write serializer name:
+      0x03, 0x5f, 0x4e, 0x44 - 3 + "_ND", NumberDiffSerializationFactory .
+      // Write serializer settings, specific for NumberDiffSerializationFactory.
+      0x02, 0x36, 0x34 - Original data type, 2 + "64" - Long data type.
+      0x7d - Prescale, -3.
+  // Write settings for field2:
+    0x05, 0x73, 0x70, 0x65, 0x65, 0x64 - field2 name, 5 + "speed" .
+    0x7f - SerializerId, UNSIGNED_INT, null. Create new id-less serializer.
+    // Create new serializer:
+      // Write serializer name:
+      0x03, 0x5f, 0x4e, 0x44 - 3 + "_ND", NumberDiffSerializationFactory .
+      // Write serializer settings, specific for NumberDiffSerializationFactory.
+      0x03, 0x36, 0x34, 0x66 - Original data type, 3 + "64f" - Double data type.
+      0x01 - Prescale, 1.
+  // Write settings for field3:
+    00x0c, 0x72, 0x61, 0x64, 0x69, 0x6f, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e - field3 name, 12 + "radioStation" .
+    0x7f - SerializerId, UNSIGNED_INT, null. Create new id-less serializer.
+    // Create new serializer:
+      // Write serializer name:
+      0x03, 0x5f, 0x53, 0x43 - 3 + "_SC", StringCachedSerializationFactory .
+      // Write serializer settings, specific for StringCachedSerializationFactory.
+      0x14 - Cache size, 20 
+  // Write settings for field4:
+    0x0b, 0x67, 0x70, 0x73, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e - field4 name, 11 + "gpsPosition" .
+    0x7f - SerializerId, null. Create new serializer. Here could be 1 to re-use serializer, but new one is created.
+    // Create new serializer:
+      // Exactly the same data part as for GpsPosition class.
+      0x02, 0x5f, 0x4f - "_O".
+      0x0b, 0x47, 0x70, 0x73, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e - "GpsPosition".
+      0x02 - 2 fields.
+        0x03, 0x6c, 0x61, 0x74 - "lat".
+        0x7f - new serializer.
+          0x03, 0x5f, 0x4e, 0x4c - "_NL".
+          0x03, 0x36, 0x34, 0x66 - "64f". 
+          0x06 - Precision, 3.
+        0x03, 0x6c, 0x6f, 0x6e - "lon".
+        0x7f - new serializer.
+          0x03, 0x5f, 0x4e, 0x4c - "_NL".
+          0x03, 0x36, 0x34, 0x66 - "64f"
+          0x06 - Precision, 3.
+// Write data itself:
+// timestamp
+0x83, 0xe8 - 1000000 with prescale -3 = 1000, SINGED_INT
+// speed
+0x80, 0xc8 - 20 with prescale 1 = 200, SINGED_INT
+// radioStation
+0x00 - id in cache, 0, create new value and put in cache
+0x06, 0x42, 0x65, 0x73, 0x74, 0x46, 0x6d - radioStation value, 6 + "BestFm"
+// gpsPosition
+  0x0f - lat
+  0x14 - lon
+```
+Again, writing object of known type gives much less data output:
+```java
+serializer.writeObject(new VehicleStatus(
+        new VehicleStatus.GpsPosition(0.000018, 0.000025),
+        20, 1010000L, "BestFm"));
+```
+In this case output is 6 bytes only:
+```
+0x02 - Serializer id = 2, get serializer from registered list and pass value to it.
+// Write data itself:
+// timestamp
+0x0a - (1010000 - 1000000) with prescale -3 = 10, SINGED_INT
+// speed
+0x00 - no spped changes, SINGED_INT
+// radioStation
+0x01 - id in cache, under this index value "BestFm" is cached
+// gpsPosition
+  0x03 - diff to lat
+  0x05 - diff to lon
+```
