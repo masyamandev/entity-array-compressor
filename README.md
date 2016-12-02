@@ -58,6 +58,112 @@ try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(s
 }
 ```
 
+Also there is a console tool which can convert a stream to json (in this example tool requires gzipped stream):
+```sh
+$ java -jar entity-array-compressor.jar -input=gzip < inputfile.gz > outputfile.json
+```
+
+# Optimize serializers
+
+Depending on nature of data some assumptions could be made to make better compression. For example GPS position usually
+changed slowly and next point can be predicted using two previous points. Some data could be rounded, so it's not necessary
+to save all information. Such hints could be done with annotations.
+
+In the following example we periodically (e.g. each second) save vehicle position, speed and radio station. We can specify
+serializer and precision to save space and get better compression:
+```java
+public class VehicleStatus {
+
+    // Use serializer for specified type. This field will be serialized strictly as GpsPosition object, inheritance
+    // will not be allowed. If @SerializeBy annotation is omit, then serializer UnknownTypeSerializationFactory
+    // will be used which could increase space, but allows to store inherited objects (e.g. GpsPositionWithAltitude).
+    @SerializeBy(ObjectSerializationFactory.class)
+    private GpsPosition gpsPosition;
+
+    // By default NumberDiffSerializationFactory is used, difference to previous value will be stored.
+    // Store 1 decimal digit in fraction. Default rounding mode is HALF_UP.
+    @Precision(1)
+    private double speed;
+
+    // By default NumberDiffSerializationFactory is used, difference to previous value will be stored.
+    // Precision can be negative, in this case timestamp will be serialized as seconds instead of millis.
+    @Precision(value = -3, roundingMode = RoundingMode.FLOOR)
+    private long timestamp;
+
+    // Assuming radioStation will not be switched too often, so we can cache recent values and write only ids from cache.
+    @CacheSize(20)
+    @SerializeBy(StringCachedSerializationFactory.class)
+    private String radioStation;
+
+
+    public static class GpsPosition {
+
+        // Use linear prediction based on 2 previous values. Default precision is 6 decimal digits.
+        @SerializeBy(NumberLinearSerializationFactory.class)
+        private double lat;
+
+        // Use linear prediction based on 2 previous values. Default precision is 6 decimal digits.
+        @SerializeBy(NumberLinearSerializationFactory.class)
+        private double lon;
+
+    }
+}
+```
+All serialization settings are stored in data stream, so they are not required during deserialization. Actually the whole 
+class may not be required during deserialization, data stream can be converted into json.
+
+Here is a list of available serialization factories in package `com.masyaman.datapack.serializers`. All serializers are
+null-friendly.
+
+* `numbers` - Stores singed or unsigned Long. Values are stored as fixed-points Longs. Doubles are prescaled to Longs with 
+  specified precisions (by default 6 decimal digits).
+  * `NumberDiffSerializationFactory` - Default serializer for all numbers. During serialization it saves difference to 
+    previous value. This gives result close to 0 on small value changes.
+  * `NumberDiffNRSerializationFactory` - Same as `NumberDiffSerializationFactory` but has non-precise rounding, can give 
+    slightly better compression on noisy data.  
+  * `NumberIncrementalSerializationFactory` - Same as `NumberDiffSerializationFactory` for unsigned incrementing values.
+  * `NumberLinearSerializationFactory` - Makes linear prediction on 2 recent values and saves difference to prediction.
+  * `NumberMedianSerializationFactory` - Similar to `NumberLinearSerializationFactory`, but prediction is a previous value +
+    median of 3 recent value increments. 
+  * `NumberSerializationFactory` - Very basic serializer for signed values: store value as is using variable-length encoding.
+  * `UnsignedLongSerializationFactory` - Very basic serializer for unsigned values: store value as is using variable-length 
+    encoding.
+* `dates` - Special serializer for dates. Internally uses Number serializers, the only difference is precision. Stores
+  timestamp in millis prescaled using scales form `DatePrecisions`.
+  * `DateDiffSerializationFactory`
+  * `DateIncrementalSerializationFactory`
+  * `DateLinearSerializationFactory`
+  * `DateMedianSerializationFactory`
+  * `DateSerializationFactory`
+* `strings` - Serializers for Strings in UTF8.
+  * `StringSerializationFactory` - Serialize String as is: UTF8 byte array length (unsigned long) + UTF8 bytes.
+  * `StringCachedSerializationFactory` - Cached strings using latest first cache strategy (least recently used values have
+    smaller indices in cache). Could be used for storing big variety of strings, some of which are occurred many times, but 
+    most of them occurred only once. Cache size could be limited by `CacheSize` annotation.
+  * `StringConstantsSerializationFactory` - Cached strings using add last cache strategy (least recently added values have
+    bigger indices in cache, once value is added to cache, it's index remains the same). Could be better for storing small 
+    amount of unique strings.
+* `enums` - Serializers for Enums. Enums are saved as cached Strings using one of two caching strategies.
+  * `EnumsSerializationFactory`
+  * `EnumsConstantsSerializationFactory`
+* `collections` - Serializers for collections and arrays. Fields with collections could be marked with `AllowReordering`
+  annotation to specify if it's elements can be mixed up for better compression. Reordering requires caching of recently 
+  used elements, so it may be not good idea to use reordering on mutable objects. 
+  * `CollectionSerializationFactory` - Serialize collections and arrays. To specify serializer for values (not to collection 
+    itself) annotation `SerializeValueBy` can be used.
+  * `MapSerializationFactory` - Serialize maps. To specify serializer for key or values annotations `SerializeKeyBy` or 
+    `SerializeValueBy` can be used.
+  * `BitSetSerializationFactory` - Experimental serializer for `BitSet`.
+* `objects` - Serializers for custom objects.
+  * `ObjectSerializationFactory` - Serializer for objects of specific type.
+  * `UnknownTypeSerializationFactory` - Serializer for objects of unknown type. During serialization new serializer will be
+    created for each new type.
+  * `UnknownTypeCachedSerializationFactory` - Serializer for objects of unknown type. Serialized objects are cached using
+    latest first cache strategy. This serializer should not be used with mutable objects. Also it's worth to limit cache
+    size with `CacheSize` annotation.
+
+
+
 # Format description
 
 ## Basic types
