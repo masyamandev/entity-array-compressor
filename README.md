@@ -167,6 +167,72 @@ null-friendly.
     latest first cache strategy. This serializer should not be used with mutable objects. Also it's worth to limit cache
     size with `CacheSize` annotation.
 
+## Caching
+
+If the same object is serialized several times it may worth to use serializer with caching suppurt. In this case when object is serialized for the first time it will be serialized only once and added to cache list, when it's aimed to be serialized for the next time then only cache id will be written instead of serializing whole oblect. Good candidates for caching are Strings, enums and immutable objects.
+
+There are two basic caching algorithms.
+
+### Simple caching
+
+Add tail caching strategy. When element is added to cache, it's added to the tail of the list. So, index of cached object remains the same until cache size limit is reached and object is pushed out by another object. This cache algorithm could be good for a small amount of different objects.
+
+Here is an example of using this cache:
+```
+// Initial cache is empty, max size is 3.
+// Cahce: []
+$ push "AAA"
+>> id in cache: 0 // new object
+// Cache: ["AAA"]
+$ push "BBB"
+>> id in cache: 0 // new object
+// Cache: ["AAA", "BBB"]
+$ push "AAA"
+>> id in cache: 1 // first element in cahce
+// Cache: ["AAA", "BBB"]
+$ push "CCC"
+>> id in cache: 0 // new object
+// Cache: ["AAA", "BBB", "CCC"], max sise is reached
+$ push "DDD"
+>> id in cache: 0 // new object
+// Cache: ["AAA", "DDD", "CCC"], "BBB" is pushed out because it was the least recently used
+$ push "AAA"
+>> id in cache: 1 // first element in cahce
+// Cache: ["AAA", "DDD", "CCC"]
+```
+
+This cahce algorithm is used in the following serializers: `StringConstantsSerializationFactory`, `EnumsConstantsSerializationFactory`
+
+### Latest first caching
+
+When new element is added, it's added to the head of a list. When object is used and it's already in the cache list, it's moved th the head. This approach keeps recent and most often used objects near the head of the list. This cache algorithm could be good in case of mixing up oftely used object and objects used only once.
+
+Here is an example of using this cache:
+```
+// Initial cache is empty, max size is 3.
+// Cahce: []
+$ push "AAA"
+>> id in cache: 0 // new object
+// Cache: ["AAA"]
+$ push "BBB"
+>> id in cache: 0 // new object
+// Cache: ["BBB", "AAA"]
+$ push "AAA"
+>> id in cache: 2 // second element in cahce, used object is moved to the head
+// Cache: ["AAA", "BBB"]
+$ push "CCC"
+>> id in cache: 0 // new object
+// Cache: ["CCC", "AAA", "BBB"], max sise is reached
+$ push "DDD"
+>> id in cache: 0 // new object
+// Cache: ["DDD", "CCC", "AAA"], "BBB" is pushed out because it was the least recently used
+$ push "AAA"
+>> id in cache: 3 // second element in cahce, used object is moved to the head
+// Cache: ["AAA", "DDD", "CCC"]
+```
+
+This cahce algorithm is used in the following serializers: `StringCachedSerializationFactory`, `EnumsSerializationFactory`, `UnknownTypeCachedSerializationFactory`
+
 
 # Format description
 
