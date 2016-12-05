@@ -388,6 +388,63 @@ write serializer name and it's settings. Data written: id (>= 1 for registered s
 
 ## Serializers
 
+Here is a list of existing serializers. Each serializer description consists of 3 points:
+* Serializer short name: Identifier of serializer type, short String which identify how stream was serialized (and how to 
+  deserialize it). Standard serializer names are started witch underscore character '_'.
+* Serializer settings: Setting of serializer, written once when serializer is created.
+* Write data: Data format description, written on each serialization.
+
+### Numbers
+
+All number serializers writes original data type, so it can be deserialized to proper type. Number data types are String 
+constants:
+* `64`: Long, 64 bits signed integer.
+* `32`: Integer, 32 bits signed integer.
+* `64f`: Double, 64 bits float.
+* `32f`: Float, 32 bits float.
+Other types (Byte, Char) are not supported yet.
+
+Precision is a signed int value, indicates fractional part length in decimal digits. Precision could be negative, it this
+case value will be downscaled before serializing. Precision works as prescaling with the following pseudocode:
+```java
+outputValue = round(inputValue * pow(10, precision)) 
+```
+
+Here is a list number of serializers:
+* `NumberSerializationFactory`
+  * Serializer short name: `_N`.
+  * Serializer settings: (Number data type): String, precision: SignedInt.
+  * Write data: value: SignedInt.
+* `UnsignedLongSerializationFactory`
+  * Serializer short name: `_UL`.
+  * Serializer settings: (Number data type): String, precision: SignedInt.
+  * Write data: value: UnsignedInt. 
+* `NumberDiffSerializationFactory`
+  * Serializer short name: `_ND`.
+  * Serializer settings: (Number data type): String, precision: SignedInt.
+  * Write data: (value - prevValue): SignedInt.
+    Initially: prevValue = 0, updated after each data write.
+* `NumberDiffNRSerializationFactory` is fully compatible with `NumberDiffSerializationFactory`.
+* `NumberIncrementalSerializationFactory`
+  * Serializer short name: `_NI`.
+  * Serializer settings: (Number data type): String, precision: SignedInt.
+  * Write data: (value - prevValue): UnsignedInt.
+    Initially: prevValue = 0, updated after each data write.
+* `NumberLinearSerializationFactory`
+  * Serializer short name: `_NL`.
+  * Serializer settings: (Number data type): String, precision: SignedInt.
+  * Write data: (value - (prevValue * 2 - prevPrevValue)): SignedInt.
+    Initially prevValue = prevPrevValue = 0.
+    On first serialization: prevValue = prevPrevValue = value.
+    On later serializations: prevPrevValue = prevValue, prevValue = value.
+* `NumberMedianSerializationFactory`
+  * Serializer short name: `_NM`.
+  * Serializer settings: (Number data type): String, precision: SignedInt, (median length): UnsignedInt.
+  * Write data: (value - prevValue + median(diffs)): SignedInt.
+    Initially: prevValue = 0, diffs is array of zeros of length (median length).
+    On first serialization: prevValue = value.
+    On later serializations: diffs\[(i++) % diffs.length\] = (value - prevValue), prevValue = value.
+
 [TODO describe settings and data formats for serializers] 
 
 ## Example of binary format
