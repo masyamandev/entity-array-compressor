@@ -231,7 +231,7 @@ $ push "AAA"
 // Cache: ["AAA", "DDD", "CCC"]
 ```
 
-This cahce algorithm is used in the following serializers: `StringCachedSerializationFactory`, `EnumsSerializationFactory`, `UnknownTypeCachedSerializationFactory`
+This cache algorithm is used in the following serializers: `StringCachedSerializationFactory`, `EnumsSerializationFactory`, `UnknownTypeCachedSerializationFactory`
 
 
 # Format description
@@ -445,6 +445,33 @@ Here is a list number of serializers:
     On first serialization: prevValue = value.
     On later serializations: diffs\[(i++) % diffs.length\] = (value - prevValue), prevValue = value.
 
+### Strings
+
+There are cached and non-cached serializers for Strings. Both of them are using the following underlying mechanism of 
+serializing Strings: string in encoded to UTF8 byte array, then array length and array itself are written. Array length
+is written as variable-length UnsignedInt. When `null` is serialized then null is written instead of array length and array 
+body is omit.  
+
+In cached serializers index in cache is written prior to serializing string data. Index in cache could be:
+* `null`: value is `null`, no need to serialize value.
+* `0`: String is not in cache, value is serialized and added to cache.
+* `>= 1`: String is already in cache, no need to serialize value.
+
+Here is a list of String serializers:
+
+* `StringSerializationFactory` - non-cached serializer
+  * Serializer short name: `_S`.
+  * Serializer settings: nothing.
+  * Write data: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+* `StringCachedSerializationFactory` - cached serializer, use Latest first caching.
+  * Serializer short name: `_SC`.
+  * Serializer settings: (cache size): UnsignedInt.
+  * Write data: (index in cache): UnsignedInt, optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+* `StringConstantsSerializationFactory` - cached serializer, use Simple Caching.
+  * Serializer short name: `_SF`.
+  * Serializer settings: (cache size): UnsignedInt.
+  * Write data: (index in cache): UnsignedInt, optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+    
 [TODO describe settings and data formats for serializers] 
 
 ## Example of binary format
