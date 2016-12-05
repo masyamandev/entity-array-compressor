@@ -466,13 +466,31 @@ Here is a list of String serializers:
 * `StringCachedSerializationFactory` - cached serializer, use Latest first caching.
   * Serializer short name: `_SC`.
   * Serializer settings: (cache size): UnsignedInt.
-  * Write data: (index in cache): UnsignedInt, optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+  * Write data: (index in cache): UnsignedInt; optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
 * `StringConstantsSerializationFactory` - cached serializer, use Simple Caching.
   * Serializer short name: `_SF`.
   * Serializer settings: (cache size): UnsignedInt.
-  * Write data: (index in cache): UnsignedInt, optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+  * Write data: (index in cache): UnsignedInt; optionally: (UTF8 byte array length): UnsignedInt, (byte array): Byte[].
+
+### Objects
+
+Serializers for custom objects:
+* `ObjectSerializationFactory` - Serializer for object of specific type.
+  * Serializer short name: `_O`.
+  * Serializer settings: (Class name): String, (Number of fields): UnsignedInt; 
+    for each field: (Field name): String, (serializer id): UnsignedInt, optionally: (settings for serializer).
+  * Write data: for each field: serialize value using appropriate serializer.
+* `UnknownTypeSerializationFactory` - Type of object is unknown when serializer is created. 
+  * Serializer short name: `_U`.
+  * Serializer settings: nothing.
+  * Write data: (serializer id): UnsignedInt, Serialized data using by specified serializer.
+* `UnknownTypeCachedSerializationFactory` - cached version of `UnknownTypeSerializationFactory`, cache strategy is 
+  Latest first caching.
+  * Serializer short name: `_UC`.
+  * Serializer settings: (cache size): UnsignedInt.
+  * Write data: (index in cache): UnsignedInt; optionally: (serializer id): UnsignedInt, Serialized data using by specified serializer.
     
-[TODO describe settings and data formats for serializers] 
+[TODO describe settings and data formats for serializers: dates, enums, collections] 
 
 ## Example of binary format
 
