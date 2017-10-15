@@ -1,4 +1,4 @@
-package com.masyaman.datapack.streams;
+package com.masyaman.datapack.settings;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -19,6 +19,9 @@ import com.masyaman.datapack.serializers.strings.StringSerializationFactory;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Lookup of serialization factory by it's name or object class.
+ */
 public class SerializationFactoryLookup {
 
     static List<SerializationFactory> DEFAULT_FACTORIES = Arrays.asList(
@@ -52,7 +55,6 @@ public class SerializationFactoryLookup {
         for (SerializationFactory factory : DEFAULT_FACTORIES) {
             factories.put(factory.getName(), factory);
         }
-
     }
 
     public SerializationFactory getSerializationFactory(TypeDescriptor type, boolean exactType) throws IOException {

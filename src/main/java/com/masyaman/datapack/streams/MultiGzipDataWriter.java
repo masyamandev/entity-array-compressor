@@ -4,6 +4,7 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,16 +27,11 @@ public class MultiGzipDataWriter extends DataWriter.Abstract {
     private List<DataWriter.Wrapper> dataWriters = new ArrayList<>();
 
     public MultiGzipDataWriter(OutputStream os) throws IOException {
-        this(os, new ClassManager());
+        this(os, SettingsHandler.DEFAULTS);
     }
 
-    public MultiGzipDataWriter(OutputStream os, ClassManager classManager) throws IOException {
-        this(os, classManager, new SerializationFactoryLookup());
-    }
-
-    public MultiGzipDataWriter(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(new ByteArrayOutputWrapper(), classManager, serializationFactoryLookup);
-        this.serializationFactoryLookup = serializationFactoryLookup;
+    public MultiGzipDataWriter(OutputStream os, SettingsHandler settings) throws IOException {
+        super(new ByteArrayOutputWrapper(), settings);
         writeGlobalSettings();
         outputStream = os;
     }

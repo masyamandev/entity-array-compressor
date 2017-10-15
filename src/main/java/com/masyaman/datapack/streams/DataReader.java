@@ -5,6 +5,9 @@ import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.primitives.SignedLongReader;
 import com.masyaman.datapack.serializers.primitives.StringReader;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
+import com.masyaman.datapack.settings.ClassManager;
+import com.masyaman.datapack.settings.SerializationFactoryLookup;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,21 +18,26 @@ import java.util.List;
 
 import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static com.masyaman.datapack.reflection.TypeDescriptor.STRING;
+import static com.masyaman.datapack.settings.SettingsKeys.CHARSET;
+import static com.masyaman.datapack.settings.SettingsKeys.CLASS_MANAGER;
+import static com.masyaman.datapack.settings.SettingsKeys.SERIALIZATION_FACTORY_LOOKUP;
 
 public abstract class DataReader implements ObjectReader {
 
     protected PushbackInputStream is;
+    protected SettingsHandler settings;
 
     private Deserializer<Long> signedLongDeserializer;
     private Deserializer<Long> unsignedLongDeserializer;
     private Deserializer<String> stringDeserializer;
 
-    public DataReader(InputStream inputStream) throws IOException {
+    public DataReader(InputStream inputStream, SettingsHandler settings) throws IOException {
         this.is = new PushbackInputStream(inputStream);
+        this.settings = settings;
 
         signedLongDeserializer = new SignedLongReader(is);
         unsignedLongDeserializer = new UnsignedLongReader(is);
-        stringDeserializer = new StringReader(is, unsignedLongDeserializer);
+        stringDeserializer = new StringReader(is, unsignedLongDeserializer, settings.get(CHARSET));
     }
 
     @Override
@@ -70,6 +78,10 @@ public abstract class DataReader implements ObjectReader {
 
     public Object readObject() throws IOException {
         return readObject(new TypeDescriptor<>(Object.class));
+    }
+
+    public SettingsHandler getSettings() {
+        return settings;
     }
 
     @Override
@@ -114,7 +126,7 @@ public abstract class DataReader implements ObjectReader {
         DataReader parent;
 
         public Wrapper(InputStream is, DataReader parent) throws IOException {
-            super(is);
+            super(is, parent.settings);
             this.parent = parent;
         }
 
@@ -147,10 +159,10 @@ public abstract class DataReader implements ObjectReader {
 
         protected List<Deserializer> registeredDeserializers = new ArrayList<>();
 
-        public Abstract(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-            super(is);
-            this.classManager = classManager;
-            this.serializationFactoryLookup = serializationFactoryLookup;
+        public Abstract(InputStream is, SettingsHandler settings) throws IOException {
+            super(is, settings);
+            this.classManager = settings.get(CLASS_MANAGER);
+            this.serializationFactoryLookup = settings.get(SERIALIZATION_FACTORY_LOOKUP);
         }
 
         public <T> T readObject(TypeDescriptor<T> type) throws IOException {

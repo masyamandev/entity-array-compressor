@@ -3,6 +3,7 @@ package com.masyaman.datapack.streams;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,16 +17,11 @@ public class SerialDataWriter extends DataWriter.Abstract {
     public static final long CURRENT_VERSION = 0;
 
     public SerialDataWriter(OutputStream os) throws IOException {
-        this(os, new ClassManager());
+        this(os, SettingsHandler.DEFAULTS);
     }
 
-    public SerialDataWriter(OutputStream os, ClassManager classManager) throws IOException {
-        this(os, classManager, new SerializationFactoryLookup());
-    }
-
-    public SerialDataWriter(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(os, classManager, serializationFactoryLookup);
-        this.serializationFactoryLookup = serializationFactoryLookup;
+    public SerialDataWriter(OutputStream os, SettingsHandler settings) throws IOException {
+        super(os, settings);
         writeGlobalSettings();
     }
 

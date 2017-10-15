@@ -9,9 +9,9 @@ import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.ObjectDeserializer.FieldDeserializer;
+import com.masyaman.datapack.settings.SettingsKeys;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
-import com.masyaman.datapack.utils.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class ObjectSerializationFactory extends SerializationFactory<Object> {
             fieldSerializers.add(new FieldSerializer(getterEntry.getKey(), getter, serializationFactory, declaredType));
         }
 
-        if (Constants.ENABLE_REORDERING_FIELDS) {
+        if (os.getSettings().get(SettingsKeys.ENABLE_REORDERING_FIELDS)) {
             Collections.sort(fieldSerializers);
         }
 

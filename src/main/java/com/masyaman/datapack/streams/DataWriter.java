@@ -7,6 +7,9 @@ import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.primitives.SignedLongWriter;
 import com.masyaman.datapack.serializers.primitives.StringWriter;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
+import com.masyaman.datapack.settings.ClassManager;
+import com.masyaman.datapack.settings.SerializationFactoryLookup;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,20 +18,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.masyaman.datapack.settings.SettingsKeys.CHARSET;
+import static com.masyaman.datapack.settings.SettingsKeys.CLASS_MANAGER;
+import static com.masyaman.datapack.settings.SettingsKeys.SERIALIZATION_FACTORY_LOOKUP;
+
 public abstract class DataWriter implements ObjectWriter {
 
     protected OutputStream os;
+    protected SettingsHandler settings;
 
     private Serializer<Long> signedLongSerializer;
     private Serializer<Long> unsignedLongSerializer;
     private Serializer<String> stringSerializer;
 
-    public DataWriter(OutputStream os) throws IOException {
+    public DataWriter(OutputStream os, SettingsHandler settings) throws IOException {
         this.os = os;
+        this.settings = settings;
 
         signedLongSerializer = new SignedLongWriter(os);
         unsignedLongSerializer = new UnsignedLongWriter(os);
-        stringSerializer = new StringWriter(os, unsignedLongSerializer);
+        stringSerializer = new StringWriter(os, unsignedLongSerializer, settings.get(CHARSET));
     }
 
     @Override
@@ -64,6 +73,10 @@ public abstract class DataWriter implements ObjectWriter {
         writeObject(o, o == null ? null : new TypeDescriptor(o.getClass()));
     }
 
+    public SettingsHandler getSettings() {
+        return settings;
+    }
+
     public abstract <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException;
 
     public abstract ClassManager getClassManager();
@@ -77,7 +90,7 @@ public abstract class DataWriter implements ObjectWriter {
         DataWriter parent;
 
         public Wrapper(OutputStream os, DataWriter parent) throws IOException {
-            super(os);
+            super(os, parent.settings);
             this.parent = parent;
         }
 
@@ -111,10 +124,10 @@ public abstract class DataWriter implements ObjectWriter {
         protected Map<TypeDescriptor, Integer> typeToId = new HashMap<>();
         protected List<Serializer> registeredSerializers = new ArrayList<>();
 
-        public Abstract(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-            super(os);
-            this.classManager = classManager;
-            this.serializationFactoryLookup = serializationFactoryLookup;
+        public Abstract(OutputStream os, SettingsHandler settings) throws IOException {
+            super(os, settings);
+            this.classManager = settings.get(CLASS_MANAGER);
+            this.serializationFactoryLookup = settings.get(SERIALIZATION_FACTORY_LOOKUP);
         }
 
         public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {

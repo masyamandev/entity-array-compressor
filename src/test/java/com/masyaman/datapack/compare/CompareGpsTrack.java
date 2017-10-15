@@ -9,6 +9,8 @@ import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
 import com.masyaman.datapack.compare.objects.protobuf.GpsPositionWithSpeed.GpsPositionWithSpeedProto;
+import com.masyaman.datapack.settings.SettingsHandler;
+import com.masyaman.datapack.settings.SettingsKeys;
 import com.masyaman.datapack.streams.*;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
@@ -46,9 +48,12 @@ public class CompareGpsTrack {
         testSerialization("MultiGzipStream", multiGzipSerialize(true), events);
         testSerialization("MultiGzipOptimized", multiGzipSerialize(true), eventsOptimized);
         testSerialization("MultiGzipDataLoss", multiGzipSerialize(false), eventsDataLoss);
-        testSerialization("BufferedStream", bufferedSerialize(true), events);
-        testSerialization("BufferedOptimized", bufferedSerialize(true), eventsOptimized);
-        testSerialization("BufferedDataLoss", bufferedSerialize(false), eventsDataLoss);
+        testSerialization("BufferedStream32k", bufferedSerialize(32000, true), events);
+        testSerialization("BufferedOptimized32k", bufferedSerialize(32000, true), eventsOptimized);
+        testSerialization("BufferedDataLoss32k", bufferedSerialize(32000, false), eventsDataLoss);
+        testSerialization("BufferedStream1k", bufferedSerialize(1000, true), events);
+        testSerialization("BufferedOptimized1k", bufferedSerialize(1000, true), eventsOptimized);
+        testSerialization("BufferedDataLoss1k", bufferedSerialize(1000, false), eventsDataLoss);
         testSerialization("Csv", csvSerialize(), events);
         testSerialization("Json", jsonSerialize(), events);
         testSerialization("Smile", smileSerialize(), events);
@@ -179,11 +184,13 @@ public class CompareGpsTrack {
         };
     }
 
-    private static DataSerializer bufferedSerialize(boolean testDeserialization) throws Exception {
+    private static DataSerializer bufferedSerialize(int bufferSize, boolean testDeserialization) throws Exception {
         return e -> {
+            SettingsHandler settings = new SettingsHandler()
+                    .set(SettingsKeys.BYTE_BUFFER_SIZE, bufferSize);
             byte[] serialized;
             try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-                try (ObjectWriter serializer = new BufferedDataWriter(byteStream)) {
+                try (ObjectWriter serializer = new BufferedDataWriter(byteStream, settings)) {
                     for (Object event : e) {
                         serializer.writeObject(event);
                     }

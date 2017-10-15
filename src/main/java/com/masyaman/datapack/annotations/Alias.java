@@ -1,6 +1,6 @@
 package com.masyaman.datapack.annotations;
 
-import com.masyaman.datapack.streams.ClassManager;
+import com.masyaman.datapack.settings.ClassManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

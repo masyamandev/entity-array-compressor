@@ -1,4 +1,4 @@
-package com.masyaman.datapack.streams;
+package com.masyaman.datapack.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
@@ -8,6 +8,9 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.samples.LatLon;
 import com.masyaman.datapack.serializers.objects.samples.ObjectWithDate;
+import com.masyaman.datapack.settings.SerializationFactoryLookup;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import junit.framework.TestCase;
 import org.junit.BeforeClass;
 import org.junit.Test;

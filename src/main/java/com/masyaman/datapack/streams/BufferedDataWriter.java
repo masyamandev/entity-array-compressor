@@ -4,13 +4,15 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongWriter;
-import com.masyaman.datapack.utils.Constants;
+import com.masyaman.datapack.settings.SettingsHandler;
 import com.masyaman.datapack.utils.MultipleByteOutputStreamHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.masyaman.datapack.settings.SettingsKeys.BYTE_BUFFER_SIZE;
 
 /**
  * Serialize objects into a several data streams. Data is buffered and flushed when size limit exceeds.
@@ -24,26 +26,23 @@ public class BufferedDataWriter extends DataWriter.Abstract {
     private List<Wrapper> dataWriters = new ArrayList<>();
     private MultipleByteOutputStreamHandler streamHandler;
     private UnsignedLongWriter settingsWriter;
+    private int bufferSize;
 
     public BufferedDataWriter(OutputStream os) throws IOException {
-        this(os, new ClassManager());
+        this(os, SettingsHandler.DEFAULTS);
     }
 
-    public BufferedDataWriter(OutputStream os, ClassManager classManager) throws IOException {
-        this(os, classManager, new SerializationFactoryLookup());
+    public BufferedDataWriter(OutputStream os, SettingsHandler settings) throws IOException {
+        this(os, new MultipleByteOutputStreamHandler(), settings);
     }
 
-    public BufferedDataWriter(OutputStream os, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        this(os, new MultipleByteOutputStreamHandler(), classManager, serializationFactoryLookup);
-    }
-
-    public BufferedDataWriter(OutputStream os, MultipleByteOutputStreamHandler streamHandler, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(streamHandler.newStream(), classManager, serializationFactoryLookup);
-        this.serializationFactoryLookup = serializationFactoryLookup;
+    public BufferedDataWriter(OutputStream os, MultipleByteOutputStreamHandler streams, SettingsHandler settings) throws IOException {
+        super(streams.newStream(), settings);
         this.outputStream = os;
-        this.streamHandler = streamHandler;
+        this.streamHandler = streams;
         this.settingsWriter = new UnsignedLongWriter(os);
         writeGlobalSettings();
+        bufferSize = settings.get(BYTE_BUFFER_SIZE);
     }
 
     private void writeGlobalSettings() throws IOException {
@@ -70,7 +69,7 @@ public class BufferedDataWriter extends DataWriter.Abstract {
     @Override
     public <T> void writeObject(T o, TypeDescriptor<T> type) throws IOException {
         super.writeObject(o, type);
-        if (streamHandler.getCount() > Constants.BYTE_BUFFER_SIZE) {
+        if (streamHandler.getCount() > bufferSize) {
             flush(false);
         }
     }

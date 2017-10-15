@@ -2,6 +2,7 @@ package com.masyaman.datapack.streams;
 
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,15 +13,11 @@ import java.io.InputStream;
 public class SerialDataReader extends DataReader.Abstract {
 
     public SerialDataReader(InputStream is) throws IOException {
-        this(is, new ClassManager());
+        this(is, SettingsHandler.DEFAULTS);
     }
 
-    public SerialDataReader(InputStream is, ClassManager classManager) throws IOException {
-        this(is, classManager, new SerializationFactoryLookup());
-    }
-
-    public SerialDataReader(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(is, classManager, serializationFactoryLookup);
+    public SerialDataReader(InputStream is, SettingsHandler settings) throws IOException {
+        super(is, settings);
         readGlobalSettings();
     }
 

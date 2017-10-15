@@ -1,4 +1,4 @@
-package com.masyaman.datapack.streams;
+package com.masyaman.datapack.settings;
 
 import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.reflection.*;
@@ -35,14 +35,16 @@ public class ClassManager {
         }
     }
 
-    public void addMixIn(Class<?> clazz, Class<?> mixIn) {
+    public ClassManager addMixIn(Class<?> clazz, Class<?> mixIn) {
         mixInClasses.put(clazz, mixIn);
         addAlias(clazz, clazz.getAnnotation(Alias.class));
         addAlias(clazz, mixIn.getAnnotation(Alias.class));
+        return this;
     }
 
-    public void addAlias(Class<?> clazz) {
+    public ClassManager addAlias(Class<?> clazz) {
         addAlias(clazz, clazz.getAnnotation(Alias.class));
+        return this;
     }
 
     private void addAlias(Class<?> clazz, Alias alias) {

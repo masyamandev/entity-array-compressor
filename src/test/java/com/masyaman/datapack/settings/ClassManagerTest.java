@@ -1,8 +1,14 @@
-package com.masyaman.datapack.streams;
+package com.masyaman.datapack.settings;
 
 import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.serializers.objects.samples.LatLon;
 import com.masyaman.datapack.serializers.objects.samples.LatLonAlt;
+import com.masyaman.datapack.settings.ClassManager;
+import com.masyaman.datapack.settings.SettingsHandler;
+import com.masyaman.datapack.streams.DataReader;
+import com.masyaman.datapack.streams.DataWriter;
+import com.masyaman.datapack.streams.SerialDataReader;
+import com.masyaman.datapack.streams.SerialDataWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_WITH_TYPES_TYPE;
+import static com.masyaman.datapack.settings.SettingsKeys.CLASS_MANAGER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassManagerTest {
@@ -20,7 +27,7 @@ public class ClassManagerTest {
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new SerialDataWriter(os, classManager);
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler().set(CLASS_MANAGER, classManager));
         dw.writeObject(new LatLon(1.1, 2.2));
 
         byte[] bytes = os.toByteArray();
@@ -29,7 +36,7 @@ public class ClassManagerTest {
         assertThat(bytesAsString).contains("LLClass");
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new SerialDataReader(is, classManager);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
         assertThat(dr.readObject()).isEqualTo(new LatLon(1.1, 2.2));
     }
@@ -40,7 +47,7 @@ public class ClassManagerTest {
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new SerialDataWriter(os, classManager);
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler().set(CLASS_MANAGER, classManager));
         dw.writeObject(new LatLon(1.1, 2.2));
 
         byte[] bytes = os.toByteArray();
@@ -53,7 +60,7 @@ public class ClassManagerTest {
         assertThat(bytesAsString).contains("Longitude");
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new SerialDataReader(is, classManager);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
         String json = dr.readObject(JSON_WITH_TYPES_TYPE);
         assertThat(json).contains("\"type\":\"LLClass\"");
@@ -67,7 +74,7 @@ public class ClassManagerTest {
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new SerialDataWriter(os, classManager);
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler().set(CLASS_MANAGER, classManager));
         dw.writeObject(new LatLonAlt(1.1, 2.2, 3.3));
 
         byte[] bytes = os.toByteArray();
@@ -81,7 +88,7 @@ public class ClassManagerTest {
         assertThat(bytesAsString).contains("alt");
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new SerialDataReader(is, classManager);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
         assertThat(dr.readObject()).isEqualTo(new LatLonAlt(1.1, 2.2, 3.3));
     }
@@ -92,7 +99,7 @@ public class ClassManagerTest {
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new SerialDataWriter(os, classManager);
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler().set(CLASS_MANAGER, classManager));
         dw.writeObject(new LatLonAlt(1.1, 2.2, 3.3));
 
         byte[] bytes = os.toByteArray();
@@ -106,7 +113,7 @@ public class ClassManagerTest {
         assertThat(bytesAsString).contains("alt");
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new SerialDataReader(is, classManager);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
         String json = dr.readObject(JSON_WITH_TYPES_TYPE);
         assertThat(json).contains("\"type\":\"" + LatLonAlt.class.getName() + "\"");
@@ -121,7 +128,7 @@ public class ClassManagerTest {
         classManager.addMixIn(LatLon.class, LatLonMixIn.class);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataWriter dw = new SerialDataWriter(os, classManager);
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler().set(CLASS_MANAGER, classManager));
         dw.writeObject(new LatLon(1.1, 2.2));
 
         byte[] bytes = os.toByteArray();

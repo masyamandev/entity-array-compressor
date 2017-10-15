@@ -3,6 +3,7 @@ package com.masyaman.datapack.streams;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.primitives.UnsignedLongReader;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,20 +23,16 @@ public class MultiGzipDataReader extends DataReader.Abstract {
     private List<InputStream> streams;
 
     public MultiGzipDataReader(InputStream is) throws IOException {
-        this(is, new ClassManager());
+        this(is, SettingsHandler.DEFAULTS);
     }
 
-    public MultiGzipDataReader(InputStream is, ClassManager classManager) throws IOException {
-        this(is, classManager, new SerializationFactoryLookup());
-    }
-
-    public MultiGzipDataReader(InputStream is, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        this(splitStreams(is), classManager, serializationFactoryLookup);
+    public MultiGzipDataReader(InputStream is, SettingsHandler settings) throws IOException {
+        this(splitStreams(is), settings);
         readGlobalSettings();
     }
 
-    private MultiGzipDataReader(List<InputStream> streams, ClassManager classManager, SerializationFactoryLookup serializationFactoryLookup) throws IOException {
-        super(streams.remove(0), classManager, serializationFactoryLookup);
+    private MultiGzipDataReader(List<InputStream> streams, SettingsHandler settings) throws IOException {
+        super(streams.remove(0), settings);
         this.streams = streams;
     }
 
