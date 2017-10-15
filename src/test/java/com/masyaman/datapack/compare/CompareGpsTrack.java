@@ -46,6 +46,9 @@ public class CompareGpsTrack {
         testSerialization("MultiGzipStream", multiGzipSerialize(true), events);
         testSerialization("MultiGzipOptimized", multiGzipSerialize(true), eventsOptimized);
         testSerialization("MultiGzipDataLoss", multiGzipSerialize(false), eventsDataLoss);
+        testSerialization("BufferedStream", bufferedSerialize(true), events);
+        testSerialization("BufferedOptimized", bufferedSerialize(true), eventsOptimized);
+        testSerialization("BufferedDataLoss", bufferedSerialize(false), eventsDataLoss);
         testSerialization("Csv", csvSerialize(), events);
         testSerialization("Json", jsonSerialize(), events);
         testSerialization("Smile", smileSerialize(), events);
@@ -162,6 +165,51 @@ public class CompareGpsTrack {
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
                 try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
+            }
+
+            return serialized;
+        };
+    }
+
+    private static DataSerializer bufferedSerialize(boolean testDeserialization) throws Exception {
+        return e -> {
+            byte[] serialized;
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+                try (ObjectWriter serializer = new BufferedDataWriter(byteStream)) {
+                    for (Object event : e) {
+                        serializer.writeObject(event);
+                    }
+                }
+                serialized = byteStream.toByteArray();
+            }
+
+            if (testDeserialization) {
+                try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        Object deserialized = objectReader.readObject();
+                        assertThat(deserialized).isEqualTo(event);
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
+                try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
+                    for (Object event : e) {
+                        assertThat(objectReader.hasObjects()).isTrue();
+                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        assertThat(deserialized).isNotEmpty();
+                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    }
+                    assertThat(objectReader.hasObjects()).isFalse();
+                }
+                try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
                         String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);

@@ -58,7 +58,7 @@ public class MultiGzipDataReader extends DataReader.Abstract {
 
     private void readGlobalSettings() throws IOException {
         Long version = readUnsignedLong();
-        if (version == null || version.longValue() != SerialDataWriter.CURRENT_VERSION) {
+        if (version == null || version.longValue() != MultiGzipDataWriter.CURRENT_VERSION) {
             throw new IOException("Version " + version + " is not supported!");
         }
         Long settingsNumber = readUnsignedLong();
