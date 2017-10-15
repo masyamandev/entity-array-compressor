@@ -2,6 +2,7 @@ package com.masyaman.datapack.main;
 
 import com.masyaman.datapack.annotations.deserialization.instances.AsJsonInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
+import com.masyaman.datapack.streams.BufferedDataReader;
 import com.masyaman.datapack.streams.MultiGzipDataReader;
 import com.masyaman.datapack.streams.ObjectReader;
 import com.masyaman.datapack.streams.SerialDataReader;
@@ -35,8 +36,12 @@ public class ConsoleTool {
             String deserializer = getParam(args, "input", "serial");
             if ("serial".equals(deserializer)) {
                 objectReader = new SerialDataReader(is);
-            } else if ("gzip".equals(deserializer)) {
+            } else if ("serialgzip".equals(deserializer)) {
                 objectReader = new SerialDataReader(new GZIPInputStream(is));
+            } else if ("buffered".equals(deserializer)) {
+                objectReader = new BufferedDataReader(is);
+            } else if ("bufferedgzip".equals(deserializer)) {
+                objectReader = new BufferedDataReader(new GZIPInputStream(is));
             } else if ("multigzip".equals(deserializer)) {
                 objectReader = new MultiGzipDataReader(is);
             } else {
@@ -63,7 +68,7 @@ public class ConsoleTool {
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -help //this screen");
-        System.out.println("  -input=[serial, gzip, multigzip] //type of parser");
+        System.out.println("  -input=[serial, serialgzip, buffered, bufferedgzip, multigzip] //type of parser");
         //System.out.println("  -output=[json] //type of output");
         System.out.println("  -typeField=[field name] //field name in Json for original class name");
     }
