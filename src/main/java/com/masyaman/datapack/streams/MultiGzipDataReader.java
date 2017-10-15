@@ -13,7 +13,10 @@ import java.util.zip.GZIPInputStream;
 
 import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 
-// Experimental version of column-based gzipped storage
+/**
+ * Reader for {@link MultiGzipDataWriter}.
+ * It's experimental version and may be used only for testing compression.
+ */
 public class MultiGzipDataReader extends DataReader.Abstract {
 
     private List<InputStream> streams;

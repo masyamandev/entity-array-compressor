@@ -10,6 +10,9 @@ import java.io.InputStream;
 
 import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 
+/**
+ * Reader for {@link BufferedDataWriter}.
+ */
 public class BufferedDataReader extends DataReader.Abstract {
 
     private MultipleByteInputStreamHandler streamHandler;

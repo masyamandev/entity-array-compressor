@@ -6,6 +6,9 @@ import com.masyaman.datapack.serializers.SerializationFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Reader for {@link SerialDataWriter}.
+ */
 public class SerialDataReader extends DataReader.Abstract {
 
     public SerialDataReader(InputStream is) throws IOException {

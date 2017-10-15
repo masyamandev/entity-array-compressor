@@ -12,6 +12,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Serialize objects into a several data streams. Data is buffered and flushed when size limit exceeds.
+ * This method produces output which usually compresses better than in {@link SerialDataWriter}.
+ */
 public class BufferedDataWriter extends DataWriter.Abstract {
 
     public static final long CURRENT_VERSION = 0;

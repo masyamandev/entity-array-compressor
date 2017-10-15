@@ -7,6 +7,10 @@ import com.masyaman.datapack.serializers.Serializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Serialize objects into a single data stream.
+ * Once object is written, it's byte array is immediately pushed into a stream without any additional buffering.
+ */
 public class SerialDataWriter extends DataWriter.Abstract {
 
     public static final long CURRENT_VERSION = 0;

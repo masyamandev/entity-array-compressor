@@ -12,7 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
-// Experimental version of column-based gzipped storage
+/**
+ * Serialize objects into a multiple gzipped data streams.
+ * As each column is gzipped separately, this serializer has best compression. However it requires memory for whole
+ * compressed output before it can be written.
+ * It's experimental version and may be used only for testing compression.
+ */
 public class MultiGzipDataWriter extends DataWriter.Abstract {
 
     public static final long CURRENT_VERSION = 0;
