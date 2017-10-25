@@ -31,6 +31,7 @@ public class MapSerializationFactoryTest {
     public static final TypeDescriptor MAP_TYPE = new TypeDescriptor(Map.class);
     public static final TypeDescriptor HASH_MAP_TYPE = new TypeDescriptor(HashMap.class);
     public static final TypeDescriptor TREE_MAP_TYPE = new TypeDescriptor(TreeMap.class);
+    public static final TypeDescriptor OBJECT_TYPE = new TypeDescriptor(Object.class);
     private static final int HEADER_MAX_SIZE = 20;
 
     @Test
@@ -123,9 +124,11 @@ public class MapSerializationFactoryTest {
         checkSerialization(map, MAP_TYPE, MAP_TYPE, minSize, maxSize);
         checkSerialization(map, MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
         checkSerialization(map, MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
+        checkSerialization(map, MAP_TYPE, OBJECT_TYPE, minSize, maxSize);
         checkSerialization(map, HASH_MAP_TYPE, MAP_TYPE, minSize, maxSize);
         checkSerialization(map, HASH_MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
         checkSerialization(map, HASH_MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
+        checkSerialization(map, HASH_MAP_TYPE, OBJECT_TYPE, minSize, maxSize);
     }
 
     @Test

@@ -104,7 +104,9 @@ public class ObjectSerializationFactory extends SerializationFactory<Object> {
         return new Deserializer() {
             @Override
             public Object deserialize(TypeDescriptor type) throws IOException {
-                if (type.getAnnotation(AsJson.class) != null) {
+                if (Map.class.isAssignableFrom(type.getType())) {
+                    return new MapObjectDeserializer(is, className, deserializations).deserialize(type);
+                } else if (type.getAnnotation(AsJson.class) != null) {
                     return new JsonObjectDeserializer(is, className, deserializations).deserialize(type);
                 } else {
                     return new ObjectDeserializer<>(is, className, deserializations).deserialize(type);

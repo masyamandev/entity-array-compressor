@@ -15,6 +15,7 @@ import java.util.*;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.allowReordering;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.annotationsFrom;
 import static com.masyaman.datapack.annotations.AnnotationsHelper.serializeAs;
+import static com.masyaman.datapack.settings.SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE;
 
 public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
 
@@ -75,6 +76,8 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
                     return (T) new JsonCollectionDeserializer(is, valueDeserializer).deserialize(type);
                 } else if (type.getType().isArray()) {
                     return (T) new ArrayDeserializer(is, valueDeserializer).deserialize(type);
+                } else if (!Collection.class.isAssignableFrom(type.getType()) && is.getSettings().get(DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE).getType().isArray()) {
+                    return (T) new ArrayDeserializer(is, valueDeserializer).deserialize(is.getSettings().get(DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE));
                 } else {
                     return (T) new CollectionDeserializer<>(is, valueDeserializer).deserialize(type);
                 }

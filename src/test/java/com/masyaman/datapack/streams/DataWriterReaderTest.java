@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masyaman.datapack.annotations.deserialization.instances.AsJsonInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.objects.samples.*;
+import com.masyaman.datapack.settings.SettingsHandler;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -11,11 +12,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_TYPE;
+import static com.masyaman.datapack.settings.SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataWriterReaderTest extends TestCase {
+
+    public static final TypeDescriptor<Map> MAP_TYPE = new TypeDescriptor<Map>(Map.class);
 
     public void testStrings() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -167,6 +172,48 @@ public class DataWriterReaderTest extends TestCase {
         // ensure that there is only one field 'stored'
         assertThat(dr.readObject(jsonType)).isEqualTo("{\"stored\":\"yy\"}");
         assertThat(dr.readObject(jsonType)).isNull();
+    }
+
+    @Test
+    public void testObjectDeserializationAsMap() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new ArrayFields(new Object[] {new LatLon(1.1, 2.2), new TsTz(100000L, 234)}, new String[] {"A", "B"}));
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, Object> content = dr.readObject(MAP_TYPE);
+        assertThat(content).isNotNull();
+        assertThat(content).hasSize(2);
+        assertThat(content.get("strings")).isInstanceOf(List.class);
+        assertThat((List) content.get("strings")).containsExactly("A", "B");
+        assertThat(content.get("objects")).isInstanceOf(List.class);
+        assertThat((List) content.get("objects")).containsExactly(new LatLon(1.1, 2.2), new TsTz(100000L, 234));
+    }
+
+    @Test
+    public void testObjectDeserializationAsMapWithArrays() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new ArrayFields(new Object[] {new LatLon(1.1, 2.2), new TsTz(100000L, 234)}, new String[] {"A", "B"}));
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, new TypeDescriptor(Object[].class)));
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, Object> content = dr.readObject(MAP_TYPE);
+        assertThat(content).isNotNull();
+        assertThat(content).hasSize(2);
+        assertThat(content.get("strings")).isInstanceOf(Object[].class);
+        assertThat((Object[]) content.get("strings")).containsExactly("A", "B");
+        assertThat(content.get("objects")).isInstanceOf(Object[].class);
+        assertThat((Object[]) content.get("objects")).containsExactly(new LatLon(1.1, 2.2), new TsTz(100000L, 234));
     }
 
     @Test

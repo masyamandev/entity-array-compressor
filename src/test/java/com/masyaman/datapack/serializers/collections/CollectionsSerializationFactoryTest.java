@@ -23,6 +23,8 @@ public class CollectionsSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = CollectionSerializationFactory.INSTANCE;
 
+    public static final TypeDescriptor OBJECT_TYPE = new TypeDescriptor(Object.class);
+    public static final TypeDescriptor ARRAY_TYPE = new TypeDescriptor(Object[].class);
     public static final TypeDescriptor COLLECTION_TYPE = new TypeDescriptor(Collection.class);
     public static final TypeDescriptor LIST_TYPE = new TypeDescriptor(List.class);
     public static final TypeDescriptor ARRAY_LIST_TYPE = new TypeDescriptor(ArrayList.class);
@@ -34,7 +36,8 @@ public class CollectionsSerializationFactoryTest {
 
     public static final TypeDescriptor[] TYPES = new TypeDescriptor[] {
             COLLECTION_TYPE, LIST_TYPE, ARRAY_LIST_TYPE, LINKED_LIST_TYPE,
-            SET_TYPE, HASH_SET_TYPE, TREE_SET_TYPE, LINKED_HASH_SET_TYPE
+            SET_TYPE, HASH_SET_TYPE, TREE_SET_TYPE, LINKED_HASH_SET_TYPE,
+            OBJECT_TYPE, ARRAY_TYPE
     };
 
     private static final int HEADER_MAX_SIZE = 20;
@@ -134,8 +137,14 @@ public class CollectionsSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        Collection deserialized = deserializer.deserialize(tdDeser);
-        assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
+        Object deserializedObject = deserializer.deserialize(tdDeser);
+        Collection deserialized;
+        if (tdDeser.getType().isArray()) {
+            deserialized = Arrays.asList((Object[]) deserializedObject);
+        } else {
+            deserialized = (Collection) deserializedObject;
+            assertThat(tdDeser.getType().isAssignableFrom(deserialized.getClass())).isTrue();
+        }
         assertThat(deserialized).containsOnlyElementsOf(collection);
         if (collection instanceof List && deserialized instanceof List) {
             // check order

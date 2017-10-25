@@ -28,12 +28,19 @@ class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
         if (length == null) {
             return null;
         }
+        Class mapType = type.getType();
+        TypeDescriptor keyType = type.getParametrizedTypeDescriptor(0);
+        TypeDescriptor valueType = type.getParametrizedTypeDescriptor(1);
+        if (mapType.isAssignableFrom(Map.class)) {
+            mapType = Map.class;
+        }
+
         int len = length.intValue();
         Map<K, V> map = null;
         try {
-            map = (Map<K, V>) ConstructorUtils.createInstance(type.getType(), CLASSES);
+            map = (Map<K, V>) ConstructorUtils.createInstance(mapType, CLASSES);
         } catch (ReflectiveOperationException e) {
-            throw new IOException("Class initializatoin exception", e);
+            throw new IOException("Class initialization exception", e);
         }
 //        for (int i = 0; i < len; i++) {
 //            map.put(keyDeserializer.deserialize(), valueDeserializer.deserialize());
@@ -41,10 +48,10 @@ class MapDeserializer<K, V> implements Deserializer<Map<K, V>> {
 
         List<K> keys = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
-            keys.add((K) keyDeserializer.deserialize(type.getParametrizedTypeDescriptor(0)));
+            keys.add((K) keyDeserializer.deserialize(keyType));
         }
         for (int i = 0; i < len; i++) {
-            map.put(keys.get(i), (V) valueDeserializer.deserialize(type.getParametrizedTypeDescriptor(1)));
+            map.put(keys.get(i), (V) valueDeserializer.deserialize(valueType));
         }
         return map;
     }
