@@ -2,21 +2,22 @@ package com.masyaman.datapack.annotations;
 
 import com.masyaman.datapack.annotations.serialization.*;
 import com.masyaman.datapack.reflection.TypeDescriptor;
+import com.masyaman.datapack.settings.SettingsHandler;
 
 import java.lang.annotation.Annotation;
 import java.math.RoundingMode;
 
+import static com.masyaman.datapack.settings.SettingsKeys.DEFAULT_PRECISION;
+
 public class AnnotationsHelper {
 
-    public static final int DEFAULT_PRECISION = 6;
-
-    public static int getDecimalPrecision(TypeDescriptor<?> type) {
+    public static int getDecimalPrecision(TypeDescriptor<?> type, SettingsHandler settingsHandler) {
         Precision annotation = type.getAnnotation(Precision.class);
         if (annotation != null) {
             return annotation.value();
         }
         if (type.getType() == Double.class || type.getType() == double.class || type.getType() == Float.class || type.getType() == float.class) {
-            return DEFAULT_PRECISION;
+            return settingsHandler.get(DEFAULT_PRECISION);
         } else {
             return 0;
         }

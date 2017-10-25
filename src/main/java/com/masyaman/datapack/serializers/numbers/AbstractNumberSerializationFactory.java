@@ -37,7 +37,7 @@ public abstract class AbstractNumberSerializationFactory extends SerializationFa
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        int decimalPrecision = getDecimalPrecision(type);
+        int decimalPrecision = getDecimalPrecision(type, os.getSettings());
         RoundingMode roundingMode = getRoundingMode(type);
 
         NumberTypeResolver.writeType(os, type);

@@ -44,7 +44,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
     @Override
     public Serializer createSerializer(DataWriter os, TypeDescriptor type) throws IOException {
         RoundingMode roundingMode = getRoundingMode(type);
-        int datePrecision = getDecimalPrecision(type);
+        int datePrecision = getDecimalPrecision(type, os.getSettings());
         if (datePrecision < 0 || datePrecision >= DatePrecisions.SCALES.length) {
             throw new IOException("Incorrect precision " + datePrecision + " for Date");
         }

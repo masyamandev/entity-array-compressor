@@ -36,6 +36,12 @@ public final class SettingsKeys {
     public static final SettingKey<SerializationFactoryLookup> SERIALIZATION_FACTORY_LOOKUP = new SettingKey(new SerializationFactoryLookup());
 
     /**
+     * Default precision of doubles.
+     */
+    public static final SettingKey<Integer> DEFAULT_PRECISION = new SettingKey(6);
+
+
+    /**
      * Default type of deserialized collection if it's requested to deserialize it as object.
      * Can be new TypeDescriptor<>(Collection.class) or new TypeDescriptor<>(Object[].class)
      */
