@@ -2,23 +2,18 @@ package com.masyaman.datapack.annotations.deserialization.instances;
 
 import com.masyaman.datapack.annotations.AbstractAnnotationInstance;
 import com.masyaman.datapack.annotations.deserialization.AsJson;
+import com.masyaman.datapack.annotations.deserialization.TypeFieldName;
 
 @AsJson
 public class AsJsonInstance extends AbstractAnnotationInstance implements AsJson {
     private boolean numbersAsStrings;
-    private String typeField;
 
     public AsJsonInstance() {
-        this(false, NO_FIELD_TYPE);
+        this(false);
     }
 
-    public AsJsonInstance(boolean numbersAsStrings, String typeField) {
+    public AsJsonInstance(boolean numbersAsStrings) {
         this.numbersAsStrings = numbersAsStrings;
-        this.typeField = typeField;
-    }
-
-    public AsJsonInstance(AsJson toClone) {
-        this(toClone.numbersAsStrings(), toClone.typeField());
     }
 
     @Override
@@ -26,18 +21,9 @@ public class AsJsonInstance extends AbstractAnnotationInstance implements AsJson
         return numbersAsStrings;
     }
 
-    @Override
-    public String typeField() {
-        return typeField;
-    }
-
     public AsJsonInstance setNumbersAsStrings(boolean numbersAsStrings) {
         this.numbersAsStrings = numbersAsStrings;
         return this;
     }
 
-    public AsJsonInstance setTypeField(String typeField) {
-        this.typeField = typeField;
-        return this;
-    }
 }

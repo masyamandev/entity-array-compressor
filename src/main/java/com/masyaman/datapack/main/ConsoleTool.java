@@ -1,6 +1,7 @@
 package com.masyaman.datapack.main;
 
 import com.masyaman.datapack.annotations.deserialization.instances.AsJsonInstance;
+import com.masyaman.datapack.annotations.deserialization.instances.TypeFieldNameInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.streams.BufferedDataReader;
 import com.masyaman.datapack.streams.MultiGzipDataReader;
@@ -50,7 +51,7 @@ public class ConsoleTool {
             }
 
             String typeField = getParam(args, "typeField", "");
-            TypeDescriptor<String> type = new TypeDescriptor(String.class, new AsJsonInstance(false, typeField));
+            TypeDescriptor<String> type = new TypeDescriptor(String.class, new AsJsonInstance(false), new TypeFieldNameInstance(typeField));
 
             while (objectReader.hasObjects()) {
                 System.out.println(objectReader.readObject(type));

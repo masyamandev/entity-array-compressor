@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.objects;
 
-import com.masyaman.datapack.annotations.deserialization.AsJson;
+import com.masyaman.datapack.annotations.deserialization.TypeFieldName;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.objects.ObjectDeserializer.FieldDeserializer;
@@ -35,10 +35,9 @@ class MapObjectDeserializer implements Deserializer<Map> {
 
         boolean allNulls = true;
 
-        // TODO Should we move type field to separate annotation?
         String classField = "";
-        if (type.getAnnotation(AsJson.class) != null) {
-            classField = type.getAnnotation(AsJson.class).typeField();
+        if (type.getAnnotation(TypeFieldName.class) != null) {
+            classField = type.getAnnotation(TypeFieldName.class).typeField();
         }
 
         for (FieldDeserializer fieldDeserializer : deserialization) {

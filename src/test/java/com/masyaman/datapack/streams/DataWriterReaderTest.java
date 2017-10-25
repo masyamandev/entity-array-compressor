@@ -2,6 +2,7 @@ package com.masyaman.datapack.streams;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masyaman.datapack.annotations.deserialization.instances.AsJsonInstance;
+import com.masyaman.datapack.annotations.deserialization.instances.TypeFieldNameInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.objects.samples.*;
 import com.masyaman.datapack.settings.SettingsHandler;
@@ -162,7 +163,7 @@ public class DataWriterReaderTest extends TestCase {
         ObjectMapper mapper = new ObjectMapper();
 
         // class IgnoredFields has field 'stored', so we can check that real field is not overwritten
-        TypeDescriptor<String> jsonType = new TypeDescriptor(String.class, new AsJsonInstance(false, "stored"));
+        TypeDescriptor<String> jsonType = new TypeDescriptor(String.class, new AsJsonInstance(false), new TypeFieldNameInstance("stored"));
 
         String latLon = dr.readObject(jsonType);
         assertThat(latLon).contains("\"lat\":1.1");
