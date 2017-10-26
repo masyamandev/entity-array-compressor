@@ -153,8 +153,8 @@ public class NumberSerializerBytesTest {
         serializer.serialize(10L);
         serializer.serialize(30L);
         serializer.serialize(50L);
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(10, 20, 20));
-        // diffs are 20, 20, 0
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(10, 20, 0));
+        // diffs are 20, 20
         serializer.serialize(60L);
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(0x80 - 10));
 

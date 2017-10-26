@@ -1,5 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
+import com.masyaman.datapack.annotations.AnnotationsHelper;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.Serializer;
@@ -31,7 +32,7 @@ public class NumberMedianSerializationFactory extends AbstractNumberSerializatio
 
     @Override
     public <E extends Number> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type, int decimalPrecision, RoundingMode roundingMode) throws IOException {
-        int diffLength = DIFF_LEN;
+        int diffLength = AnnotationsHelper.getCacheSize(type, DIFF_LEN);
         os.writeUnsignedLong((long) diffLength);
         return scaleBy(round(medianSerializer(new LongSerializer(os), diffLength), roundingMode), decimalPrecision, roundingMode);
     }

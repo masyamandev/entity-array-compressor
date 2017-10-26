@@ -10,21 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MathUtilsTest {
 
     @Test
-    public void testMedian() throws Exception {
-        assertThat(median(1, 2, 6)).isEqualTo(2);
-        assertThat(median(3, 2, 6)).isEqualTo(3);
-        assertThat(median(3, 2, -1)).isEqualTo(2);
-        assertThat(median(3, -2, -1)).isEqualTo(-1);
-        assertThat(median(-3, 2, -1)).isEqualTo(-1);
-        assertThat(median(2, 2, 4)).isEqualTo(2);
-        assertThat(median(4, 2, 4)).isEqualTo(4);
-        assertThat(median(4, 6, 6)).isEqualTo(6);
-        assertThat(median(5, 5, 5)).isEqualTo(5);
-    }
-
-
-
-    @Test
     public void testDoubleRoundingHalfUp() throws Exception {
         RoundingMode mode = RoundingMode.HALF_UP;
 

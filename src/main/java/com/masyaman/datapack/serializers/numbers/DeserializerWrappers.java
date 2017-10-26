@@ -3,12 +3,12 @@ package com.masyaman.datapack.serializers.numbers;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.utils.MathUtils;
+import com.masyaman.datapack.utils.SlidingMedian;
 
 import java.io.IOException;
 import java.math.RoundingMode;
 
 import static com.masyaman.datapack.reflection.TypeDescriptor.*;
-import static com.masyaman.datapack.utils.MathUtils.median;
 
 final class DeserializerWrappers {
 
@@ -74,9 +74,8 @@ final class DeserializerWrappers {
 
     public static Deserializer<Long> medianDeserializer(Deserializer<Long> deserializer, int diffLength) {
         return new Deserializer<Long>() {
+            private SlidingMedian slidingMedian = new SlidingMedian(diffLength);
             private long prev = 0L;
-            private long[] diffs = new long[diffLength];
-            private int pos = 0;
             private boolean isFirst = true;
             @Override
             public Long deserialize(TypeDescriptor type) throws IOException {
@@ -84,13 +83,13 @@ final class DeserializerWrappers {
                 if (val == null) {
                     return null;
                 }
-                val += prev + median(diffs);
+                long median = isFirst ? 0 : slidingMedian.median();
+                val += prev + median;
 
                 if (isFirst) {
                     isFirst = false;
                 } else {
-                    diffs[pos] = val.longValue() - prev;
-                    pos = (pos + 1) % diffs.length;
+                    slidingMedian.pushValue(val.longValue() - prev);
                 }
 
                 prev = val;

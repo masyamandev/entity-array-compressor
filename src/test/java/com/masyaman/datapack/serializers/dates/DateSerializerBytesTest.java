@@ -147,7 +147,7 @@ public class DateSerializerBytesTest {
         serializer.serialize(new Date (SOME_TIMESTAMP + SECOND));
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(0x80 + 0x03, 0xE8)); // 1000L
         serializer.serialize(new Date (SOME_TIMESTAMP + SECOND * 2));
-        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0x80 + 0x03, 0xE8)); // 1000L
+        assertThat(stream.getNewBytes()).containsExactly(toByteArray(0));
         serializer.serialize(new Date (SOME_TIMESTAMP + SECOND * 3));
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(0));
         serializer.serialize(null);

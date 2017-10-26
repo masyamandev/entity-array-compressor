@@ -40,7 +40,7 @@ public class StringConstantsSerializationFactory extends SerializationFactory<St
 
     @Override
     public <E extends String> Serializer<E> createSerializer(DataWriter os, TypeDescriptor<E> type) throws IOException {
-        int cacheSize = AnnotationsHelper.getCacheSize(type);
+        int cacheSize = AnnotationsHelper.getCacheSize(type, 0);
         os.writeUnsignedLong((long) cacheSize);
         return (Serializer<E>) new SimpleCachedSerializer(os, new StringSerializer(os), cacheSize);
     }

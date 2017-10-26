@@ -8,29 +8,6 @@ import static com.masyaman.datapack.annotations.AnnotationsHelper.getRoundingMod
 
 public class MathUtils {
 
-    // TODO: works for length=3 only
-    public static long median(long... values) {
-        if (values.length != 3) {
-            throw new IllegalArgumentException("Not implemented");
-        }
-        int max = 0, min = 0;
-        for (int i = 1; i < values.length; i++) {
-            if (values[i] > values[max]) {
-                max = i;
-            }
-            if (values[i] < values[min]) {
-                min = i;
-            }
-        }
-        for (int i = 0; i < values.length; i++) {
-            if (i != max && i != min) {
-                return values[i];
-            }
-        }
-        return 0;
-    }
-
-
     private static final long[] longScales;
     static {
         longScales = new long[20];

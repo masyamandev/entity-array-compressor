@@ -38,7 +38,7 @@ public final class UnknownTypeCachedSerializationFactory<E> extends Serializatio
 
     @Override
     public <E1 extends E> Serializer<E1> createSerializer(DataWriter os, TypeDescriptor<E1> type) throws IOException {
-        int cacheSize = AnnotationsHelper.getCacheSize(type);
+        int cacheSize = AnnotationsHelper.getCacheSize(type, 0);
         os.writeUnsignedLong((long) cacheSize);
         return new LatestFirstCachedSerializer(os, new UnknownTypeSerializer(os), cacheSize);
     }

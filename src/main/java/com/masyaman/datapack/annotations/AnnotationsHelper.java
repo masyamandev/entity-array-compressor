@@ -32,12 +32,12 @@ public class AnnotationsHelper {
         }
     }
 
-    public static int getCacheSize(TypeDescriptor<?> type) {
+    public static int getCacheSize(TypeDescriptor<?> type, int defaultValue) {
         CacheSize annotation = type.getAnnotation(CacheSize.class);
         if (annotation != null) {
             return annotation.value();
         }
-        return 0;
+        return defaultValue;
     }
 
     public static boolean allowReordering(TypeDescriptor<?> type, boolean defaultValue) {

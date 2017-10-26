@@ -3,11 +3,10 @@ package com.masyaman.datapack.serializers.numbers;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.utils.MathUtils;
+import com.masyaman.datapack.utils.SlidingMedian;
 
 import java.io.IOException;
 import java.math.RoundingMode;
-
-import static com.masyaman.datapack.utils.MathUtils.median;
 
 final class SerializerWrappers {
 
@@ -99,24 +98,23 @@ final class SerializerWrappers {
 
     public static Serializer<Long> medianSerializer(Serializer<Long> longSerializer, int diffLength) {
         return new Serializer<Long>() {
+            private SlidingMedian slidingMedian = new SlidingMedian(diffLength);
             private long prev = 0L;
-            private long[] diffs = new long[diffLength];
-            private int pos = 0;
             private boolean isFirst = true;
             @Override
             public void serialize(Long o) throws IOException {
                 if (o == null) {
                     longSerializer.serialize(null);
                 } else {
-                    long serializedValue = o.longValue() - (prev + median(diffs));
+                    long median = isFirst ? 0 : slidingMedian.median();
+                    long serializedValue = o.longValue() - (prev + median);
 
                     longSerializer.serialize(serializedValue);
 
                     if (isFirst) {
                         isFirst = false;
                     } else {
-                        diffs[pos] = o.longValue() - prev;
-                        pos = (pos + 1) % diffs.length;
+                        slidingMedian.pushValue(o.longValue() - prev);
                     }
 
                     prev = o.longValue();
