@@ -10,6 +10,7 @@ import com.masyaman.datapack.streams.SerialDataReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 
 public class ConsoleTool {
@@ -34,15 +35,23 @@ public class ConsoleTool {
 
         try {
             ObjectReader objectReader = null;
-            String deserializer = getParam(args, "input", "serial");
+            String[] preprocessors = getParam(args, "input", "").split("\\+");
+            for (String preprocessor : preprocessors) {
+                if (preprocessor.equals("gzip")) {
+                    is = new GZIPInputStream(is);
+                } else if (preprocessor.equals("base64")) {
+                    is = Base64.getMimeDecoder().wrap(is);
+                } else if (!preprocessor.isEmpty()) {
+                    System.err.println("No preprocessor " + preprocessor + " exists.");
+                    System.exit(1);
+                }
+            }
+
+            String deserializer = getParam(args, "deserializer", "serial");
             if ("serial".equals(deserializer)) {
                 objectReader = new SerialDataReader(is);
-            } else if ("serialgzip".equals(deserializer)) {
-                objectReader = new SerialDataReader(new GZIPInputStream(is));
             } else if ("buffered".equals(deserializer)) {
                 objectReader = new BufferedDataReader(is);
-            } else if ("bufferedgzip".equals(deserializer)) {
-                objectReader = new BufferedDataReader(new GZIPInputStream(is));
             } else if ("multigzip".equals(deserializer)) {
                 objectReader = new MultiGzipDataReader(is);
             } else {
@@ -69,7 +78,9 @@ public class ConsoleTool {
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -help //this screen");
-        System.out.println("  -input=[serial, serialgzip, buffered, bufferedgzip, multigzip] //type of parser");
+        System.out.println("  -input=[gzip, base64, base64+gzip] //input preprocessor");
+        System.out.println("  -deserializer=[serial, buffered, multigzip] //type of deserializer");
+        //System.out.println("  -output=[gzip, base64, gzip+base64] //output postprocessor");
         //System.out.println("  -output=[json] //type of output");
         System.out.println("  -typeField=[field name] //field name in Json for original class name");
     }
