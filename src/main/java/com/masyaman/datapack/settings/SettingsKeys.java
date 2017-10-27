@@ -40,6 +40,12 @@ public final class SettingsKeys {
      */
     public static final SettingKey<Integer> DEFAULT_PRECISION = new SettingKey(6);
 
+    /**
+     * Ignore unknown fields during decoding.
+     */
+    public static final SettingKey<Boolean> IGNORE_UNKNOWN_FIELDS = new SettingKey(false);
+
+
 
     /**
      * Default type of deserialized collection if it's requested to deserialize it as object.

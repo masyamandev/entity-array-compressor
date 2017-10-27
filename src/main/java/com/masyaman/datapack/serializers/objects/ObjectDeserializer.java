@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.OBJECT;
+import static com.masyaman.datapack.settings.SettingsKeys.IGNORE_UNKNOWN_FIELDS;
+
 class ObjectDeserializer<T> implements Deserializer<T> {
 
     private DataReader is;
@@ -33,16 +36,24 @@ class ObjectDeserializer<T> implements Deserializer<T> {
         for (FieldDeserializer fieldDeserializer : deserialization) {
             Setter setter = setterMap.get(fieldDeserializer.getFieldName());
             if (setter == null) {
-                throw new IOException("Unable to find setter for field " + className + "." + fieldDeserializer.fieldName);
-            }
-            Object field = fieldDeserializer.getDeserializer().deserialize(setter.type());
-            if (field != null) {
-                try {
-                    setter.set(object, field);
-                } catch (ReflectiveOperationException e) {
-                    throw new IOException("Unable to set field " + className + "." + fieldDeserializer.fieldName);
+                if (is.getSettings().get(IGNORE_UNKNOWN_FIELDS)) {
+                    Object field = fieldDeserializer.getDeserializer().deserialize(OBJECT);
+                    if (field != null) {
+                        allNulls = false;
+                    }
+                } else {
+                    throw new IOException("Unable to find setter for field " + className + "." + fieldDeserializer.fieldName);
                 }
-                allNulls = false;
+            } else {
+                Object field = fieldDeserializer.getDeserializer().deserialize(setter.type());
+                if (field != null) {
+                    try {
+                        setter.set(object, field);
+                    } catch (ReflectiveOperationException e) {
+                        throw new IOException("Unable to set field " + className + "." + fieldDeserializer.fieldName);
+                    }
+                    allNulls = false;
+                }
             }
         }
 

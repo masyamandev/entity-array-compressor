@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 public class TypeDescriptor<T> {
 
+    public static final TypeDescriptor<Object> OBJECT = new TypeDescriptor<>(Object.class);
     public static final TypeDescriptor<String> STRING = new TypeDescriptor<>(String.class);
     public static final TypeDescriptor<Long> LONG = new TypeDescriptor<>(Long.class);
 

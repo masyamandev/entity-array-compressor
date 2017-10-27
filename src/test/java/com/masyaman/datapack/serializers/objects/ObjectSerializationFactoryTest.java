@@ -1,9 +1,13 @@
 package com.masyaman.datapack.serializers.objects;
 
+import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.samples.*;
+import com.masyaman.datapack.settings.ClassManager;
+import com.masyaman.datapack.settings.SettingsHandler;
+import com.masyaman.datapack.settings.SettingsKeys;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
@@ -12,9 +16,12 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
+import static com.masyaman.datapack.settings.SettingsKeys.CLASS_MANAGER;
+import static com.masyaman.datapack.settings.SettingsKeys.IGNORE_UNKNOWN_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ObjectSerializationFactoryTest {
@@ -32,8 +39,6 @@ public class ObjectSerializationFactoryTest {
         serializer.serialize(new TsTz(100000L, 234));
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<TsTz> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
@@ -53,8 +58,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -75,8 +78,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(new LatLon(1.1, 2.2));
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -97,8 +98,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -120,8 +119,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -144,8 +141,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -168,8 +163,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -191,8 +184,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -214,8 +205,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -237,8 +226,6 @@ public class ObjectSerializationFactoryTest {
 //        dw.writeObject(null);
 //
 //        byte[] bytes = os.toByteArray();
-//        System.out.println(bytes.length);
-//        System.out.println(new String(bytes));
 //
 //        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
 //        DataReader dr = new SerialDataReader(is);
@@ -257,8 +244,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(new IgnoredFields("A", "B"));
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -276,8 +261,6 @@ public class ObjectSerializationFactoryTest {
         dw.writeObject(new ObjectWithDate(null));
 
         byte[] bytes = os.toByteArray();
-        System.out.println(bytes.length);
-        System.out.println(new String(bytes));
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is);
@@ -286,4 +269,53 @@ public class ObjectSerializationFactoryTest {
         assertThat(dr.readObject()).isEqualTo(new ObjectWithDate(null));
     }
 
+    @Test
+    public void testDeserializeToAnotherType() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLon.class, ObjectRenameMixIn.class)));
+        dw.writeObject(new LatLon(1.1, 2.2));
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLonAlt.class, ObjectRenameMixIn.class)));
+        assertThat(dr.readObject()).isEqualTo(new LatLonAlt(1.1, 2.2, 0));
+    }
+
+    @Test(expected = IOException.class)
+    public void testDeserializeFailOnUnknownField() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLonAlt.class, ObjectRenameMixIn.class)));
+        dw.writeObject(new LatLonAlt(1.1, 2.2, 3.3));
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLon.class, ObjectRenameMixIn.class)));
+        assertThat(dr.readObject()).isEqualTo(new LatLon(1.1, 2.2));
+    }
+
+    @Test
+    public void testDeserializeIgnoreUnknownField() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLonAlt.class, ObjectRenameMixIn.class)));
+        dw.writeObject(new LatLonAlt(1.1, 2.2, 3.3));
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is, new SettingsHandler()
+                .set(CLASS_MANAGER, new ClassManager().addMixIn(LatLon.class, ObjectRenameMixIn.class))
+                .set(IGNORE_UNKNOWN_FIELDS, true));
+        assertThat(dr.readObject()).isEqualTo(new LatLon(1.1, 2.2));
+    }
+
+
+    @Alias("MyObject")
+    private static class ObjectRenameMixIn {}
 }
