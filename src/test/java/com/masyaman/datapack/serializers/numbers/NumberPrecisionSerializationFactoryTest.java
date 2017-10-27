@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.annotations.serialization.instances.PrecisionInstance;
+import com.masyaman.datapack.annotations.serialization.Precision;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -31,7 +31,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecision6() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(6)));
+                new TypeDescriptor(Double.class, new Precision.Instance(6)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -83,7 +83,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecision2() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(2)));
+                new TypeDescriptor(Double.class, new Precision.Instance(2)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -135,7 +135,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecision2Floor() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(2, RoundingMode.FLOOR)));
+                new TypeDescriptor(Double.class, new Precision.Instance(2, RoundingMode.FLOOR)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -154,7 +154,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecision2Ceiling() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(2, RoundingMode.CEILING)));
+                new TypeDescriptor(Double.class, new Precision.Instance(2, RoundingMode.CEILING)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -173,7 +173,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecision0() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(0)));
+                new TypeDescriptor(Double.class, new Precision.Instance(0)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -199,7 +199,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecisionM2() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(-2)));
+                new TypeDescriptor(Double.class, new Precision.Instance(-2)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -225,7 +225,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testPrecisionM2Up() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Double> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Double.class, new PrecisionInstance(-2, RoundingMode.UP)));
+                new TypeDescriptor(Double.class, new Precision.Instance(-2, RoundingMode.UP)));
         serializer.serialize(1234.1234567890);
         serializer.serialize(1234.987654321);
         serializer.serialize(-1234.1234567890);
@@ -244,7 +244,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testLongPrecisionM2() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Long.class, new PrecisionInstance(-2)));
+                new TypeDescriptor(Long.class, new Precision.Instance(-2)));
         serializer.serialize(123456789L);
         serializer.serialize(987654321L);
         serializer.serialize(-123456789L);
@@ -263,7 +263,7 @@ public class NumberPrecisionSerializationFactoryTest {
     public void testLongPrecisionM2Floor() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os),
-                new TypeDescriptor(Long.class, new PrecisionInstance(-2, RoundingMode.FLOOR)));
+                new TypeDescriptor(Long.class, new Precision.Instance(-2, RoundingMode.FLOOR)));
         serializer.serialize(123456789L);
         serializer.serialize(987654321L);
         serializer.serialize(-123456789L);

@@ -1,7 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
 import com.masyaman.datapack.annotations.deserialization.DateFormatPattern;
-import com.masyaman.datapack.annotations.deserialization.instances.DateFormatPatternInstance;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -119,19 +118,19 @@ public class DateSerializationFactoryTest {
         byte[] bytes = os.toByteArray();
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
-            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance());
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPattern.Instance());
             Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
             assertThat(deserializer.deserialize(type)).isEqualTo("2014-05-13 16:53:20.123");
         }
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
-            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.MILLIS_FORMAT));
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPattern.Instance(DateFormatPattern.MILLIS_FORMAT));
             Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
             assertThat(deserializer.deserialize(type)).isEqualTo("1400000000123");
         }
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
-            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPatternInstance(DateFormatPattern.SECONDS_FORMAT));
+            TypeDescriptor type = new TypeDescriptor(String.class, new DateFormatPattern.Instance(DateFormatPattern.SECONDS_FORMAT));
             Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
             assertThat(deserializer.deserialize(type)).isEqualTo("1400000000");
         }

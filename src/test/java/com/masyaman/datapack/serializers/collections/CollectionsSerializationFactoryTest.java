@@ -1,7 +1,7 @@
 package com.masyaman.datapack.serializers.collections;
 
 import com.masyaman.datapack.annotations.serialization.Precision;
-import com.masyaman.datapack.annotations.serialization.instances.SerializeValueByInstance;
+import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -70,7 +70,7 @@ public class CollectionsSerializationFactoryTest {
         }
         int expectedSize = collection.size() * 6; // valueLen + valueStr(5) = 7 bytes
         TypeDescriptor td = new TypeDescriptor(List.class,
-                new SerializeValueByInstance(StringSerializationFactory.class));
+                new SerializeValueBy.Instance(StringSerializationFactory.class));
         checkSerialization(collection, td, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
@@ -101,7 +101,7 @@ public class CollectionsSerializationFactoryTest {
         collection.add(2.222);
 
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, Precision1.class));
+                new SerializeValueBy.Instance(NumberSerializationFactory.class, Double.class, Precision1.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Collection> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);

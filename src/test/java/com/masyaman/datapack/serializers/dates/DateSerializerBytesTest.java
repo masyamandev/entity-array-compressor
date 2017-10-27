@@ -1,6 +1,6 @@
 package com.masyaman.datapack.serializers.dates;
 
-import com.masyaman.datapack.annotations.serialization.instances.PrecisionInstance;
+import com.masyaman.datapack.annotations.serialization.Precision;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -172,7 +172,7 @@ public class DateSerializerBytesTest {
 
         SerializationFactory serializationFactory = DateSerializationFactory.INSTANCE;
         Serializer<Date> serializer = dataWriter.createAndRegisterSerializer(serializationFactory,
-                new TypeDescriptor<Date>(Date.class, new PrecisionInstance(DatePrecisions.DAY)));
+                new TypeDescriptor<Date>(Date.class, new Precision.Instance(DatePrecisions.DAY)));
         assertThat(stream.getNewBytes()).containsExactly(toByteArray(
                 0x7F, // serializer id, null means id-less serializer
                 serializationFactory.getName().length(), serializationFactory.getName(), // save serializer

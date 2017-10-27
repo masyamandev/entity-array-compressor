@@ -11,5 +11,31 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Alias {
+
     String value();
+
+
+    @Alias("")
+    class Instance extends AbstractAnnotationInstance implements Alias {
+
+        private String value;
+
+        public Instance() {
+            this("");
+        }
+
+        public Instance(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        public Instance setValue(String value) {
+            this.value = value;
+            return this;
+        }
+    }
 }

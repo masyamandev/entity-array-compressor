@@ -1,5 +1,8 @@
 package com.masyaman.datapack.annotations.serialization;
 
+import com.masyaman.datapack.annotations.AbstractAnnotationInstance;
+import com.masyaman.datapack.annotations.Alias;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -10,5 +13,31 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AllowReordering {
+
     boolean value();
+
+
+    @AllowReordering(false)
+    class Instance extends AbstractAnnotationInstance implements AllowReordering {
+
+        private boolean value;
+
+        public Instance() {
+            this(false);
+        }
+
+        public Instance(boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean value() {
+            return value;
+        }
+
+        public Instance setValue(boolean value) {
+            this.value = value;
+            return this;
+        }
+    }
 }

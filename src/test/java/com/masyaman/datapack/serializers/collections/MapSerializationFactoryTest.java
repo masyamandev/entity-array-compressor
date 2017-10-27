@@ -2,8 +2,8 @@ package com.masyaman.datapack.serializers.collections;
 
 import com.masyaman.datapack.annotations.serialization.Precision;
 import com.masyaman.datapack.annotations.InheritFromParent;
-import com.masyaman.datapack.annotations.serialization.instances.SerializeKeyByInstance;
-import com.masyaman.datapack.annotations.serialization.instances.SerializeValueByInstance;
+import com.masyaman.datapack.annotations.serialization.SerializeKeyBy;
+import com.masyaman.datapack.annotations.serialization.SerializeValueBy;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
@@ -51,8 +51,8 @@ public class MapSerializationFactoryTest {
         }
         int expectedSize = map.size() * 14; // keyType + keyLen + keyStr(5) = 7 bytes, same for value
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(UnknownTypeSerializationFactory.class),
-                new SerializeValueByInstance(UnknownTypeSerializationFactory.class));
+                new SerializeKeyBy.Instance(UnknownTypeSerializationFactory.class),
+                new SerializeValueBy.Instance(UnknownTypeSerializationFactory.class));
         checkSerialization(map, td, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
@@ -64,8 +64,8 @@ public class MapSerializationFactoryTest {
         }
         int expectedSize = map.size() * 12; // keyLen + keyStr(5) = 6 bytes, same for value
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(StringSerializationFactory.class),
-                new SerializeValueByInstance(StringSerializationFactory.class));
+                new SerializeKeyBy.Instance(StringSerializationFactory.class),
+                new SerializeValueBy.Instance(StringSerializationFactory.class));
         checkSerialization(map, td, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
@@ -77,8 +77,8 @@ public class MapSerializationFactoryTest {
         }
         int expectedSize = map.size() * 7; // keyLen + keyStr(5) = 6 bytes for key + 1 byte for val
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(StringSerializationFactory.class),
-                new SerializeValueByInstance(StringCachedSerializationFactory.class));
+                new SerializeKeyBy.Instance(StringSerializationFactory.class),
+                new SerializeValueBy.Instance(StringCachedSerializationFactory.class));
         checkSerialization(map, td, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
@@ -138,8 +138,8 @@ public class MapSerializationFactoryTest {
         map.put(2.222, 2.222);
 
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(NumberSerializationFactory.class, Double.class, Precision1.class),
-                new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, InheritFromParent.class));
+                new SerializeKeyBy.Instance(NumberSerializationFactory.class, Double.class, Precision1.class),
+                new SerializeValueBy.Instance(NumberSerializationFactory.class, Double.class, InheritFromParent.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Map> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);
@@ -164,8 +164,8 @@ public class MapSerializationFactoryTest {
         map.put(2.222, 2.222);
 
         TypeDescriptor td = new TypeDescriptor(Map.class,
-                new SerializeKeyByInstance(NumberSerializationFactory.class, Double.class, InheritFromParent.class),
-                new SerializeValueByInstance(NumberSerializationFactory.class, Double.class, Precision1.class));
+                new SerializeKeyBy.Instance(NumberSerializationFactory.class, Double.class, InheritFromParent.class),
+                new SerializeValueBy.Instance(NumberSerializationFactory.class, Double.class, Precision1.class));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Map> serializer = FACTORY.createSerializer(new SerialDataWriter(os), td);
