@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
@@ -12,17 +11,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.INTEGER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NumberIntSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
-    public static final TypeDescriptor INTEGER_TYPE = new TypeDescriptor(Integer.class);
 
     @Test
     public void testInt8Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         byte[] serializerBytes = os.toByteArray();
         for (int l = 63; l >= -63; l--) {
             serializer.serialize(l);
@@ -33,14 +32,14 @@ public class NumberIntSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = 63; l >= -63; l--) {
-            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(l);
         }
     }
 
     @Test
     public void testIntPositive16Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         byte[] serializerBytes = os.toByteArray();
         for (int l = 200; l < 8200; l+= 10) {
             serializer.serialize(l);
@@ -51,14 +50,14 @@ public class NumberIntSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = 200; l < 8200; l+= 10) {
-            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(l);
         }
     }
 
     @Test
     public void testIntNegative16Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         byte[] serializerBytes = os.toByteArray();
         for (int l = -200; l > -8200; l-= 10) {
             serializer.serialize(l);
@@ -69,7 +68,7 @@ public class NumberIntSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int l = -200; l > -8200; l-= 10) {
-            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(l);
         }
     }
 
@@ -82,7 +81,7 @@ public class NumberIntSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -91,7 +90,7 @@ public class NumberIntSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(ll[i]);
         }
     }
 
@@ -103,7 +102,7 @@ public class NumberIntSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -112,14 +111,14 @@ public class NumberIntSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(ll[i]);
         }
     }
 
     @Test
     public void testIntInfinity() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         byte[] serializerBytes = os.toByteArray();
         serializer.serialize(Integer.MAX_VALUE);
         serializer.serialize(Integer.MIN_VALUE);
@@ -129,14 +128,14 @@ public class NumberIntSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(Integer.MAX_VALUE);
-        assertThat(deserializer.deserialize(INTEGER_TYPE)).isEqualTo(Integer.MIN_VALUE);
+        assertThat(deserializer.deserialize(INTEGER)).isEqualTo(Integer.MAX_VALUE);
+        assertThat(deserializer.deserialize(INTEGER)).isEqualTo(Integer.MIN_VALUE);
     }
 
     @Test
     public void testIntNull() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER_TYPE);
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
         byte[] serializerBytes = os.toByteArray();
         serializer.serialize(null);
 
@@ -145,6 +144,6 @@ public class NumberIntSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(INTEGER_TYPE)).isNull();
+        assertThat(deserializer.deserialize(INTEGER)).isNull();
     }
 }

@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.caching;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.numbers.LongDeserializer;
@@ -17,12 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 import static com.masyaman.datapack.utils.ByteStream.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LatestFirstCacheBytesTest {
-
-    public static final TypeDescriptor<Long> LONG_TYPE = new TypeDescriptor<>(Long.class);
 
     @Test
     public void testLimitedCache() throws Exception {
@@ -69,27 +67,27 @@ public class LatestFirstCacheBytesTest {
         DataReader dataReader = new SerialDataReader(new ByteArrayInputStream(stream.toByteArray()));
         Deserializer<Long> deserializer = new LatestFirstCachedDeserializer<>(dataReader, new LongDeserializer(dataReader), cacheSize);
 
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(20L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(20L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
 
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
 
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(30L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(30L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(10L);
 
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(20L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(20L);
 
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(20L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(10L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(50L);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(40L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(20L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(10L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(50L);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(40L);
 
     }
 
@@ -116,7 +114,7 @@ public class LatestFirstCacheBytesTest {
         Deserializer<Long> deserializer = new LatestFirstCachedDeserializer<>(dataReader, new LongDeserializer(dataReader), cacheSize);
 
         for (Long value : values) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(value);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(value);
         }
     }
 
@@ -143,7 +141,7 @@ public class LatestFirstCacheBytesTest {
         Deserializer<Long> deserializer = new LatestFirstCachedDeserializer<>(dataReader, new LongDeserializer(dataReader), cacheSize);
 
         for (Long value : values) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(value);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(value);
         }
     }
 }

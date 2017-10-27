@@ -3,8 +3,6 @@ package com.masyaman.datapack.settings;
 import com.masyaman.datapack.annotations.Alias;
 import com.masyaman.datapack.serializers.objects.samples.LatLon;
 import com.masyaman.datapack.serializers.objects.samples.LatLonAlt;
-import com.masyaman.datapack.settings.ClassManager;
-import com.masyaman.datapack.settings.SettingsHandler;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
@@ -15,7 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_WITH_TYPES_TYPE;
+import static com.masyaman.datapack.reflection.TypeDescriptor.JSON_WITH_TYPES;
 import static com.masyaman.datapack.settings.SettingsKeys.CLASS_MANAGER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +60,7 @@ public class ClassManagerTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
-        String json = dr.readObject(JSON_WITH_TYPES_TYPE);
+        String json = dr.readObject(JSON_WITH_TYPES);
         assertThat(json).contains("\"type\":\"LLClass\"");
         assertThat(json).contains("\"Latitude\":1.1");
         assertThat(json).contains("\"Longitude\":2.2");
@@ -115,7 +113,7 @@ public class ClassManagerTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         DataReader dr = new SerialDataReader(is, new SettingsHandler().set(CLASS_MANAGER, classManager));
 
-        String json = dr.readObject(JSON_WITH_TYPES_TYPE);
+        String json = dr.readObject(JSON_WITH_TYPES);
         assertThat(json).contains("\"type\":\"" + LatLonAlt.class.getName() + "\"");
         assertThat(json).contains("\"Latitude\":1.1");
         assertThat(json).contains("\"Longitude\":2.2");

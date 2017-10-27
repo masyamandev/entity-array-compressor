@@ -77,7 +77,7 @@ public abstract class DataReader implements ObjectReader {
     }
 
     public Object readObject() throws IOException {
-        return readObject(new TypeDescriptor<>(Object.class));
+        return readObject(TypeDescriptor.OBJECT);
     }
 
     public SettingsHandler getSettings() {

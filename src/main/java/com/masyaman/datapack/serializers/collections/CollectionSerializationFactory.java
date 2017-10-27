@@ -27,7 +27,7 @@ public class CollectionSerializationFactory<E> extends SerializationFactory<E> {
 
     @Override
     public TypeDescriptor getDefaultType() {
-        return new TypeDescriptor(ArrayList.class);
+        return TypeDescriptor.ARRAY_LIST;
     }
 
 

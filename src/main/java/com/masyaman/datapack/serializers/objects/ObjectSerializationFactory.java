@@ -36,7 +36,7 @@ public class ObjectSerializationFactory extends SerializationFactory<Object> {
 
     @Override
     public TypeDescriptor<Object> getDefaultType() {
-        return new TypeDescriptor(Object.class);
+        return TypeDescriptor.OBJECT;
     }
 
 

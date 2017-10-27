@@ -14,13 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Random;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.DATE;
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateSerializationFactoryTest {
-    public static final SerializationFactory FACTORY = DateSerializationFactory.INSTANCE;
-    public static final TypeDescriptor DATE_TYPE = new TypeDescriptor(Date.class);
-    public static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
 
+    public static final SerializationFactory FACTORY = DateSerializationFactory.INSTANCE;
 
     @Test
     public void testDateRandom() throws Exception {
@@ -31,7 +31,7 @@ public class DateSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE_TYPE);
+        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -40,7 +40,7 @@ public class DateSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(DATE_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(DATE)).isEqualTo(ll[i]);
         }
     }
 
@@ -53,7 +53,7 @@ public class DateSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -62,7 +62,7 @@ public class DateSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(ll[i]);
         }
     }
 
@@ -75,7 +75,7 @@ public class DateSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE_TYPE);
+        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -84,7 +84,7 @@ public class DateSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i].getTime());
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(ll[i].getTime());
         }
     }
 
@@ -97,7 +97,7 @@ public class DateSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -106,14 +106,14 @@ public class DateSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Date> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(DATE_TYPE).getTime()).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(DATE).getTime()).isEqualTo(ll[i]);
         }
     }
 
     @Test
     public void testDateToString() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE_TYPE);
+        Serializer<Date> serializer = FACTORY.createSerializer(new SerialDataWriter(os), DATE);
         serializer.serialize(new Date(1400000000123L));
         byte[] bytes = os.toByteArray();
 

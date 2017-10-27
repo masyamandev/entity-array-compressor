@@ -27,7 +27,7 @@ public abstract class AbstractNumberSerializationFactory extends SerializationFa
 
     @Override
     public TypeDescriptor<? extends Number> getDefaultType() {
-        return new TypeDescriptor(Double.class);
+        return TypeDescriptor.DOUBLE;
     }
 
     @Override

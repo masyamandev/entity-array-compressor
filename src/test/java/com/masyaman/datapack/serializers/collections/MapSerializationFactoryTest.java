@@ -23,15 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MapSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = MapSerializationFactory.INSTANCE;
-    public static final TypeDescriptor MAP_TYPE = new TypeDescriptor(Map.class);
-    public static final TypeDescriptor HASH_MAP_TYPE = new TypeDescriptor(HashMap.class);
-    public static final TypeDescriptor TREE_MAP_TYPE = new TypeDescriptor(TreeMap.class);
-    public static final TypeDescriptor OBJECT_TYPE = new TypeDescriptor(Object.class);
     private static final int HEADER_MAX_SIZE = 20;
 
     @Test
@@ -40,7 +37,7 @@ public class MapSerializationFactoryTest {
         for (int i = 10; i < 40; i++) {
             map.put("key" + i, "val" + i);
         }
-        checkSerialization(map, MAP_TYPE, map.size() * 10, map.size() * 16 + HEADER_MAX_SIZE);
+        checkSerialization(map, MAP, map.size() * 10, map.size() * 16 + HEADER_MAX_SIZE);
     }
 
     @Test
@@ -94,7 +91,7 @@ public class MapSerializationFactoryTest {
         for (int i = 10; i < 40; i++) {
             map.put(Integer.valueOf(i), "value" + i);
         }
-        checkSerialization(map, MAP_TYPE, map.size() * 10, map.size() * 16 + HEADER_MAX_SIZE);
+        checkSerialization(map, MAP, map.size() * 10, map.size() * 16 + HEADER_MAX_SIZE);
     }
 
     @Test
@@ -105,12 +102,12 @@ public class MapSerializationFactoryTest {
         }
         int minSize = map.size() * 10;
         int maxSize = map.size() * 16 + HEADER_MAX_SIZE;
-        checkSerialization(map, MAP_TYPE, MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, TREE_MAP_TYPE, MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, TREE_MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, TREE_MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
+        checkSerialization(map, MAP, MAP, minSize, maxSize);
+        checkSerialization(map, MAP, HASH_MAP, minSize, maxSize);
+        checkSerialization(map, MAP, TREE_MAP, minSize, maxSize);
+        checkSerialization(map, TREE_MAP, MAP, minSize, maxSize);
+        checkSerialization(map, TREE_MAP, HASH_MAP, minSize, maxSize);
+        checkSerialization(map, TREE_MAP, TREE_MAP, minSize, maxSize);
     }
 
     @Test
@@ -121,14 +118,14 @@ public class MapSerializationFactoryTest {
         }
         int minSize = map.size() * 10;
         int maxSize = map.size() * 16 + HEADER_MAX_SIZE;
-        checkSerialization(map, MAP_TYPE, MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, MAP_TYPE, OBJECT_TYPE, minSize, maxSize);
-        checkSerialization(map, HASH_MAP_TYPE, MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, HASH_MAP_TYPE, HASH_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, HASH_MAP_TYPE, TREE_MAP_TYPE, minSize, maxSize);
-        checkSerialization(map, HASH_MAP_TYPE, OBJECT_TYPE, minSize, maxSize);
+        checkSerialization(map, MAP, MAP, minSize, maxSize);
+        checkSerialization(map, MAP, HASH_MAP, minSize, maxSize);
+        checkSerialization(map, MAP, TREE_MAP, minSize, maxSize);
+        checkSerialization(map, MAP, OBJECT, minSize, maxSize);
+        checkSerialization(map, HASH_MAP, MAP, minSize, maxSize);
+        checkSerialization(map, HASH_MAP, HASH_MAP, minSize, maxSize);
+        checkSerialization(map, HASH_MAP, TREE_MAP, minSize, maxSize);
+        checkSerialization(map, HASH_MAP, OBJECT, minSize, maxSize);
     }
 
     @Test
@@ -149,7 +146,7 @@ public class MapSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        Map deserialized = deserializer.deserialize(MAP_TYPE);
+        Map deserialized = deserializer.deserialize(MAP);
 
         Map expected = new HashMap<>();
         expected.put(1.1, 1.111);
@@ -175,7 +172,7 @@ public class MapSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Map> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        Map deserialized = deserializer.deserialize(MAP_TYPE);
+        Map deserialized = deserializer.deserialize(MAP);
 
         Map expected = new HashMap<>();
         expected.put(1.111, 1.1);

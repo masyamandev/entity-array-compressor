@@ -13,6 +13,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 
 import static com.masyaman.datapack.annotations.AnnotationsHelper.*;
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 import static com.masyaman.datapack.serializers.dates.SerializerWrappers.*;
 import static com.masyaman.datapack.serializers.dates.DeserializerWrappers.*;
 
@@ -23,8 +24,6 @@ import static com.masyaman.datapack.serializers.dates.DeserializerWrappers.*;
  */
 abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
-    static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
-
     protected AbstractDateSerializationFactory(String name) {
         super(name);
     }
@@ -33,7 +32,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
     @Override
     public TypeDescriptor getDefaultType() {
-        return new TypeDescriptor(Date.class);
+        return TypeDescriptor.DATE;
     }
 
     @Override
@@ -53,7 +52,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
         os.writeSignedLong((long) datePrecision); // Date precision
 
-        return convertFrom(scale(getNumberSerializationFactory().createSerializer(os, LONG_TYPE, 0, roundingMode), scale, roundingMode), type);
+        return convertFrom(scale(getNumberSerializationFactory().createSerializer(os, LONG, 0, roundingMode), scale, roundingMode), type);
     }
 
     @Override
@@ -65,7 +64,7 @@ abstract class AbstractDateSerializationFactory extends SerializationFactory {
 
         long scale = DatePrecisions.SCALES[datePrecision];
 
-        return convertTo(scale(getNumberSerializationFactory().createDeserializer(is, LONG_TYPE, 0), scale));
+        return convertTo(scale(getNumberSerializationFactory().createDeserializer(is, LONG, 0), scale));
     }
 
 }

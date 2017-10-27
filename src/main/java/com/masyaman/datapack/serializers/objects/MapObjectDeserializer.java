@@ -11,11 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.OBJECT;
 import static com.masyaman.datapack.serializers.formats.FormatsDeserializerWrappers.toJsonString;
 
 class MapObjectDeserializer implements Deserializer<Map> {
-
-    private static final TypeDescriptor OBJECT_TYPE_DESCRIPTOR = new TypeDescriptor(Object.class);
 
     private DataReader is;
 
@@ -41,7 +40,7 @@ class MapObjectDeserializer implements Deserializer<Map> {
         }
 
         for (FieldDeserializer fieldDeserializer : deserialization) {
-            Object field = fieldDeserializer.getDeserializer().deserialize(OBJECT_TYPE_DESCRIPTOR);
+            Object field = fieldDeserializer.getDeserializer().deserialize(OBJECT);
             allNulls &= field == null;
 
             map.put(fieldDeserializer.getFieldName(), field);

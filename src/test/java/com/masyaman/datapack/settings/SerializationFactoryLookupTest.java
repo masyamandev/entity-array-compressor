@@ -1,14 +1,12 @@
 package com.masyaman.datapack.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.samples.LatLon;
 import com.masyaman.datapack.serializers.objects.samples.ObjectWithDate;
-import com.masyaman.datapack.settings.SerializationFactoryLookup;
 import com.masyaman.datapack.streams.SerialDataReader;
 import com.masyaman.datapack.streams.SerialDataWriter;
 import junit.framework.TestCase;
@@ -23,6 +21,7 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -110,7 +109,7 @@ public class SerializationFactoryLookupTest extends TestCase {
 
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
             Deserializer<String> deserializer = factory.createDeserializer(new SerialDataReader(is));
-            String deserialized = deserializer.deserialize(DeserializationTypes.JSON_TYPE);
+            String deserialized = deserializer.deserialize(JSON);
             assertThat(deserialized).isNotNull();
             assertThat(deserialized).isNotEmpty();
 
@@ -187,7 +186,7 @@ public class SerializationFactoryLookupTest extends TestCase {
             }).collect(Collectors.toList());
         }
 
-        System.out.println(typeDescriptor.getType() + " " + objects.size());
+        // System.out.println(typeDescriptor.getType() + " " + objects.size());
         assertThat(objects.size()).as("No suitable object is created").isGreaterThan(0);
 
         return objects;

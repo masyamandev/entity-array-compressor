@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.strings;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
@@ -11,16 +10,16 @@ import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringSerializationFactoryTest extends TestCase {
 
     public static final SerializationFactory FACTORY = StringSerializationFactory.INSTANCE;
-    public static final TypeDescriptor STRING_TYPE = new TypeDescriptor(String.class);
 
     public void testLowest7bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<String> serializer = FACTORY.createSerializer(new SerialDataWriter(os), STRING_TYPE);
+        Serializer<String> serializer = FACTORY.createSerializer(new SerialDataWriter(os), STRING);
         byte[] dataWriterBytes = os.toByteArray();
 
         serializer.serialize("abcABC123");
@@ -35,18 +34,18 @@ public class StringSerializationFactoryTest extends TestCase {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("1234567890");
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("\n\r\t");
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo("abcABC123");
+        assertThat(deserializer.deserialize(STRING)).isEqualTo("abcABC123");
+        assertThat(deserializer.deserialize(STRING)).isEqualTo("1234567890");
+        assertThat(deserializer.deserialize(STRING)).isEqualTo("abcABC123");
+        assertThat(deserializer.deserialize(STRING)).isEqualTo("\n\r\t");
+        assertThat(deserializer.deserialize(STRING)).isEqualTo("abcABC123");
     }
 
     public void testUnicodeCharacters() throws Exception {
         String testString = "W" + (char) 236 + (char) 0x457;
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<String> serializer = FACTORY.createSerializer(new SerialDataWriter(os), STRING_TYPE);
+        Serializer<String> serializer = FACTORY.createSerializer(new SerialDataWriter(os), STRING);
 
         serializer.serialize(testString);
 
@@ -54,6 +53,6 @@ public class StringSerializationFactoryTest extends TestCase {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<String> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(STRING_TYPE)).isEqualTo(testString);
+        assertThat(deserializer.deserialize(STRING)).isEqualTo(testString);
     }
 }

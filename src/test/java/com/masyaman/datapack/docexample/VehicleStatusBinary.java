@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 
 // This code does not test anything, but it helps to write documentation
 public class VehicleStatusBinary {
+
     @Test
     public void test() throws Exception {
         ByteStream byteStream = new ByteStream();
@@ -44,6 +45,8 @@ public class VehicleStatusBinary {
     }
 
     private void printArray(byte[] bytes) {
+        if (true) return;
+
         System.out.println("Len: " + bytes.length);
         for (byte b : bytes) {
             System.out.print(String.format(((b & 0xF) == b) ? "0x0%x, " : "0x%x, ", b & 0xFF));

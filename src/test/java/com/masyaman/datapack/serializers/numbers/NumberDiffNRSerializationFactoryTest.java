@@ -13,12 +13,12 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.DOUBLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NumberDiffNRSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = NumberDiffNRSerializationFactory.INSTANCE;
-    public static final TypeDescriptor DOUBLE_TYPE = new TypeDescriptor(Double.class);
 
     public static final Offset OFFSET = Offset.offset(0.000000000001);
 
@@ -60,28 +60,28 @@ public class NumberDiffNRSerializationFactoryTest {
 
         ByteArrayInputStream isDouble = new ByteArrayInputStream(bytes);
         Deserializer<Double> doubleDeserializer = FACTORY.createDeserializer(new SerialDataReader(isDouble));
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
 
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(2.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(2.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(2.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(2.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(2.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(2.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(2.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(2.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(2.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(2.0, OFFSET);
 
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(5.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(5.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(5.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(5.0, OFFSET);
 
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(1.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(1.0, OFFSET);
 
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-3.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-5.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-7.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-7.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-6.0, OFFSET);
-        assertThat(doubleDeserializer.deserialize(DOUBLE_TYPE)).isCloseTo(-3.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-3.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-5.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-7.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-7.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-6.0, OFFSET);
+        assertThat(doubleDeserializer.deserialize(DOUBLE)).isCloseTo(-3.0, OFFSET);
     }
 }

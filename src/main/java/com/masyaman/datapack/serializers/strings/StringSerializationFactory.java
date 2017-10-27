@@ -25,7 +25,7 @@ public class StringSerializationFactory extends SerializationFactory<String> imp
 
     @Override
     public TypeDescriptor<String> getDefaultType() {
-        return new TypeDescriptor(String.class);
+        return TypeDescriptor.STRING;
     }
 
 

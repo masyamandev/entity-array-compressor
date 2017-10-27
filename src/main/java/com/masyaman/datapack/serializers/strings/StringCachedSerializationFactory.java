@@ -29,7 +29,7 @@ public class StringCachedSerializationFactory extends SerializationFactory<Strin
 
     @Override
     public TypeDescriptor<String> getDefaultType() {
-        return new TypeDescriptor(String.class);
+        return TypeDescriptor.STRING;
     }
 
 

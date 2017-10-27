@@ -4,8 +4,8 @@ import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.streams.BufferedDataWriter;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
+
+import static com.masyaman.datapack.reflection.TypeDescriptor.COLLECTION;
 
 /**
  * Contains all setting keys.
@@ -51,7 +51,7 @@ public final class SettingsKeys {
      * Default type of deserialized collection if it's requested to deserialize it as object.
      * Can be new TypeDescriptor<>(Collection.class) or new TypeDescriptor<>(Object[].class)
      */
-    public static final SettingKey<TypeDescriptor> DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE = new SettingKey(new TypeDescriptor<>(Collection.class), TypeDescriptor.class);
+    public static final SettingKey<TypeDescriptor> DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE = new SettingKey(COLLECTION, TypeDescriptor.class);
 
     /**
      * Option for {@link BufferedDataWriter}. Indicates byte buffer size.

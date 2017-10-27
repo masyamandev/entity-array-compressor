@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.numbers;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
@@ -12,17 +11,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.LONG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NumberLongLinearSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = NumberLinearSerializationFactory.INSTANCE;
-    public static final TypeDescriptor LONG_TYPE = new TypeDescriptor(Long.class);
 
     @Test
     public void testLong8Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         for (long l = 63; l >= -63; l--) {
             serializer.serialize(l);
         }
@@ -31,14 +30,14 @@ public class NumberLongLinearSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 63; l >= -63; l--) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(l);
         }
     }
 
     @Test
     public void testLongPositive16Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         byte[] serializerBytes = os.toByteArray();
         for (long l = 200; l < 8200; l+= 10) {
             serializer.serialize(l);
@@ -49,14 +48,14 @@ public class NumberLongLinearSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = 200; l < 8200; l+= 10) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(l);
         }
     }
 
     @Test
     public void testLongNegative16Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         byte[] serializerBytes = os.toByteArray();
         for (long l = -200; l > -8200; l-= 10) {
             serializer.serialize(l);
@@ -67,7 +66,7 @@ public class NumberLongLinearSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (long l = -200; l > -8200; l-= 10) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(l);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(l);
         }
     }
 
@@ -80,7 +79,7 @@ public class NumberLongLinearSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -89,7 +88,7 @@ public class NumberLongLinearSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(ll[i]);
         }
     }
 
@@ -101,7 +100,7 @@ public class NumberLongLinearSerializationFactoryTest {
         }
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         for (int i = 0; i < ll.length; i++) {
             serializer.serialize(ll[i]);
         }
@@ -110,14 +109,14 @@ public class NumberLongLinearSerializationFactoryTest {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
         for (int i = 0; i < ll.length; i++) {
-            assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(ll[i]);
+            assertThat(deserializer.deserialize(LONG)).isEqualTo(ll[i]);
         }
     }
 
     @Test
     public void testLongInfinity() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         serializer.serialize(Long.MAX_VALUE);
         serializer.serialize(Long.MIN_VALUE);
 
@@ -125,14 +124,14 @@ public class NumberLongLinearSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MAX_VALUE);
-        assertThat(deserializer.deserialize(LONG_TYPE)).isEqualTo(Long.MIN_VALUE);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(Long.MAX_VALUE);
+        assertThat(deserializer.deserialize(LONG)).isEqualTo(Long.MIN_VALUE);
     }
 
     @Test
     public void testLongNull() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG_TYPE);
+        Serializer<Long> serializer = FACTORY.createSerializer(new SerialDataWriter(os), LONG);
         byte[] serializerBytes = os.toByteArray();
         serializer.serialize(null);
 
@@ -141,6 +140,6 @@ public class NumberLongLinearSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Long> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        assertThat(deserializer.deserialize(LONG_TYPE)).isNull();
+        assertThat(deserializer.deserialize(LONG)).isNull();
     }
 }

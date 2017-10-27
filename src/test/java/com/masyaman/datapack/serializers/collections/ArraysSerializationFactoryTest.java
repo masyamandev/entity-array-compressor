@@ -1,6 +1,5 @@
 package com.masyaman.datapack.serializers.collections;
 
-import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.Deserializer;
 import com.masyaman.datapack.serializers.SerializationFactory;
 import com.masyaman.datapack.serializers.Serializer;
@@ -12,16 +11,14 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collection;
 import java.util.List;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArraysSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = CollectionSerializationFactory.INSTANCE;
-
-    public static final TypeDescriptor<String[]> STRING_ARRAY = new TypeDescriptor(String[].class);
 
     @Test
     public void testStrings() throws Exception {
@@ -60,8 +57,8 @@ public class ArraysSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Object> deserializer = FACTORY.createDeserializer(new SerialDataReader(is, new SettingsHandler()
-            .set(SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, new TypeDescriptor(Collection.class))));
-        Object deserialized = deserializer.deserialize(new TypeDescriptor(Object.class));
+            .set(SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, COLLECTION)));
+        Object deserialized = deserializer.deserialize(OBJECT);
 
         assertThat(deserialized).isInstanceOf(List.class);
 
@@ -85,8 +82,8 @@ public class ArraysSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Object> deserializer = FACTORY.createDeserializer(new SerialDataReader(is, new SettingsHandler()
-            .set(SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, new TypeDescriptor(Object[].class))));
-        Object deserialized = deserializer.deserialize(new TypeDescriptor(Object.class));
+            .set(SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, OBJECT_ARRAY)));
+        Object deserialized = deserializer.deserialize(OBJECT);
 
         assertThat(deserialized).isInstanceOf(Object[].class);
 

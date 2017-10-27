@@ -29,7 +29,7 @@ public class StringConstantsSerializationFactory extends SerializationFactory<St
 
     @Override
     public TypeDescriptor<String> getDefaultType() {
-        return new TypeDescriptor(String.class);
+        return TypeDescriptor.STRING;
     }
 
 

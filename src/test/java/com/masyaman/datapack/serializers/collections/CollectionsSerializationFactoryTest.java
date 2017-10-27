@@ -17,27 +17,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CollectionsSerializationFactoryTest {
 
     public static final SerializationFactory FACTORY = CollectionSerializationFactory.INSTANCE;
 
-    public static final TypeDescriptor OBJECT_TYPE = new TypeDescriptor(Object.class);
-    public static final TypeDescriptor ARRAY_TYPE = new TypeDescriptor(Object[].class);
-    public static final TypeDescriptor COLLECTION_TYPE = new TypeDescriptor(Collection.class);
-    public static final TypeDescriptor LIST_TYPE = new TypeDescriptor(List.class);
-    public static final TypeDescriptor ARRAY_LIST_TYPE = new TypeDescriptor(ArrayList.class);
-    public static final TypeDescriptor LINKED_LIST_TYPE = new TypeDescriptor(LinkedList.class);
-    public static final TypeDescriptor SET_TYPE = new TypeDescriptor(Set.class);
-    public static final TypeDescriptor HASH_SET_TYPE = new TypeDescriptor(HashSet.class);
-    public static final TypeDescriptor TREE_SET_TYPE = new TypeDescriptor(TreeSet.class);
-    public static final TypeDescriptor LINKED_HASH_SET_TYPE = new TypeDescriptor(LinkedHashSet.class);
-
     public static final TypeDescriptor[] TYPES = new TypeDescriptor[] {
-            COLLECTION_TYPE, LIST_TYPE, ARRAY_LIST_TYPE, LINKED_LIST_TYPE,
-            SET_TYPE, HASH_SET_TYPE, TREE_SET_TYPE, LINKED_HASH_SET_TYPE,
-            OBJECT_TYPE, ARRAY_TYPE
+            COLLECTION, LIST, ARRAY_LIST, LINKED_LIST,
+            SET, HASH_SET, TREE_SET, LINKED_HASH_SET,
+            OBJECT, OBJECT_ARRAY
     };
 
     private static final int HEADER_MAX_SIZE = 20;
@@ -49,7 +39,7 @@ public class CollectionsSerializationFactoryTest {
             collection.add("val" + i);
         }
         int expectedSize = collection.size() * 7; // valueType + valueLen + valueStr(5) = 7 bytes
-        checkSerialization(collection, COLLECTION_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE);
+        checkSerialization(collection, COLLECTION, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
     @Test
@@ -59,7 +49,7 @@ public class CollectionsSerializationFactoryTest {
             collection.add("val" + i);
         }
         int expectedSize = collection.size() * 7; // valueType + valueLen + valueStr(5) = 7 bytes
-        checkSerialization(collection, COLLECTION_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE);
+        checkSerialization(collection, COLLECTION, expectedSize, expectedSize + HEADER_MAX_SIZE);
     }
 
     @Test
@@ -87,11 +77,11 @@ public class CollectionsSerializationFactoryTest {
             collection.add("value" + i);
         }
         int expectedSize = collection.size() / 3 * (2 + 4 + 9);
-        checkSerialization(collection, LIST_TYPE, COLLECTION_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
-        checkSerialization(collection, LIST_TYPE, LIST_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
-        checkSerialization(collection, LIST_TYPE, ARRAY_LIST_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
-        checkSerialization(collection, LIST_TYPE, SET_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
-        checkSerialization(collection, LIST_TYPE, HASH_SET_TYPE, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
+        checkSerialization(collection, LIST, COLLECTION, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
+        checkSerialization(collection, LIST, LIST, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
+        checkSerialization(collection, LIST, ARRAY_LIST, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
+        checkSerialization(collection, LIST, SET, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
+        checkSerialization(collection, LIST, HASH_SET, expectedSize, expectedSize + HEADER_MAX_SIZE * 2);
     }
 
     @Test
@@ -111,7 +101,7 @@ public class CollectionsSerializationFactoryTest {
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
         Deserializer<Collection> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
-        Collection deserialized = deserializer.deserialize(LIST_TYPE);
+        Collection deserialized = deserializer.deserialize(LIST);
 
         Collection expected = new ArrayList<>();
         expected.add(1.1);

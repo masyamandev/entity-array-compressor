@@ -7,7 +7,6 @@ import com.masyaman.datapack.serializers.Serializer;
 import com.masyaman.datapack.serializers.objects.samples.*;
 import com.masyaman.datapack.settings.ClassManager;
 import com.masyaman.datapack.settings.SettingsHandler;
-import com.masyaman.datapack.settings.SettingsKeys;
 import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 import com.masyaman.datapack.streams.SerialDataReader;
@@ -27,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ObjectSerializationFactoryTest {
 
     public static final ObjectSerializationFactory FACTORY = ObjectSerializationFactory.INSTANCE;
-
 
     @Test
     public void testSimpleSerialization() throws Exception {

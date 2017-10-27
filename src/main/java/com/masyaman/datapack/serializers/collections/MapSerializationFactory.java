@@ -11,7 +11,6 @@ import com.masyaman.datapack.streams.DataReader;
 import com.masyaman.datapack.streams.DataWriter;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class MapSerializationFactory<E> extends SerializationFactory<E> {
 
     @Override
     public TypeDescriptor getDefaultType() {
-        return new TypeDescriptor(HashMap.class);
+        return TypeDescriptor.HASH_MAP;
     }
 
 

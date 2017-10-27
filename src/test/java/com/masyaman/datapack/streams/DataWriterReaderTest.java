@@ -15,13 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.masyaman.datapack.annotations.deserialization.DeserializationTypes.JSON_TYPE;
+import static com.masyaman.datapack.reflection.TypeDescriptor.*;
 import static com.masyaman.datapack.settings.SettingsKeys.DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataWriterReaderTest extends TestCase {
-
-    public static final TypeDescriptor<Map> MAP_TYPE = new TypeDescriptor<Map>(Map.class);
 
     public void testStrings() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -138,14 +136,14 @@ public class DataWriterReaderTest extends TestCase {
         DataReader dr = new SerialDataReader(is);
         ObjectMapper mapper = new ObjectMapper();
 
-        assertThat(mapper.readValue(dr.readObject(JSON_TYPE), ArrayFields.class))
+        assertThat(mapper.readValue(dr.readObject(JSON), ArrayFields.class))
                 .isEqualTo(new ArrayFields(new Object[] {1, 1, 1D}, new String[] {"A", "B"})); // No Long here
-        assertThat(mapper.readValue(dr.readObject(JSON_TYPE), LatLonTsTz.class))
+        assertThat(mapper.readValue(dr.readObject(JSON), LatLonTsTz.class))
                 .isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
 
-        assertThat(dr.readObject(JSON_TYPE)).contains("\"alt\":3.3");
-        assertThat(dr.readObject(JSON_TYPE)).isEqualTo("{\"stored\":\"yy\"}");
-        assertThat(dr.readObject(JSON_TYPE)).isNull();
+        assertThat(dr.readObject(JSON)).contains("\"alt\":3.3");
+        assertThat(dr.readObject(JSON)).isEqualTo("{\"stored\":\"yy\"}");
+        assertThat(dr.readObject(JSON)).isNull();
     }
 
     @Test
@@ -187,7 +185,7 @@ public class DataWriterReaderTest extends TestCase {
         DataReader dr = new SerialDataReader(is);
         ObjectMapper mapper = new ObjectMapper();
 
-        Map<String, Object> content = dr.readObject(MAP_TYPE);
+        Map<String, Object> content = dr.readObject(MAP);
         assertThat(content).isNotNull();
         assertThat(content).hasSize(2);
         assertThat(content.get("strings")).isInstanceOf(List.class);
@@ -205,10 +203,10 @@ public class DataWriterReaderTest extends TestCase {
         byte[] bytes = os.toByteArray();
 
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, new TypeDescriptor(Object[].class)));
+        DataReader dr = new SerialDataReader(is, new SettingsHandler().set(DEFAULT_COLLECTIONS_DESERIALIZATION_TYPE, TypeDescriptor.OBJECT_ARRAY));
         ObjectMapper mapper = new ObjectMapper();
 
-        Map<String, Object> content = dr.readObject(MAP_TYPE);
+        Map<String, Object> content = dr.readObject(MAP);
         assertThat(content).isNotNull();
         assertThat(content).hasSize(2);
         assertThat(content.get("strings")).isInstanceOf(Object[].class);

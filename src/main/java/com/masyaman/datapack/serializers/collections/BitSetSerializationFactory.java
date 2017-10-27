@@ -21,7 +21,7 @@ public class BitSetSerializationFactory extends SerializationFactory {
 
     @Override
     public TypeDescriptor getDefaultType() {
-        return new TypeDescriptor(BitSet.class);
+        return TypeDescriptor.BIT_SET;
     }
 
 

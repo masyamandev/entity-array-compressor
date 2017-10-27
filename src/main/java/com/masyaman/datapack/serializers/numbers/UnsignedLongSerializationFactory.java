@@ -31,7 +31,7 @@ public class UnsignedLongSerializationFactory extends AbstractNumberSerializatio
 
     @Override
     public TypeDescriptor<? extends Number> getDefaultType() {
-        return new TypeDescriptor(Long.class);
+        return TypeDescriptor.LONG;
     }
 
     @Override

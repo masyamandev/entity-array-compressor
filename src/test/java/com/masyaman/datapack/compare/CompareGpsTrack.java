@@ -4,7 +4,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.masyaman.datapack.annotations.deserialization.DeserializationTypes;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
@@ -28,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import static com.masyaman.datapack.compare.objects.CsvResourceParser.parseCsv;
+import static com.masyaman.datapack.reflection.TypeDescriptor.JSON;
+import static com.masyaman.datapack.reflection.TypeDescriptor.JSON_WITH_TYPES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompareGpsTrack {
@@ -163,7 +164,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        String deserialized = objectReader.readObject(JSON);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
@@ -172,7 +173,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
+                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
@@ -210,7 +211,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        String deserialized = objectReader.readObject(JSON);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
@@ -219,7 +220,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
+                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
@@ -255,7 +256,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_TYPE);
+                        String deserialized = objectReader.readObject(JSON);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }
@@ -264,7 +265,7 @@ public class CompareGpsTrack {
                 try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
                     for (Object event : e) {
                         assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(DeserializationTypes.JSON_WITH_TYPES_TYPE);
+                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
                         assertThat(deserialized).isNotEmpty();
                         assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
                     }

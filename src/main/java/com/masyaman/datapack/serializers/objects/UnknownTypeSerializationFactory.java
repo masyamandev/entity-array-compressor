@@ -22,7 +22,7 @@ public final class UnknownTypeSerializationFactory<E> extends SerializationFacto
 
     @Override
     public TypeDescriptor<E> getDefaultType() {
-        return new TypeDescriptor(Object.class);
+        return (TypeDescriptor<E>) TypeDescriptor.OBJECT;
     }
 
 

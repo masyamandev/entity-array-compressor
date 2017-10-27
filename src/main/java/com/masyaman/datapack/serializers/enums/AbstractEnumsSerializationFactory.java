@@ -23,7 +23,7 @@ public abstract class AbstractEnumsSerializationFactory<E extends Enum> extends 
 
     @Override
     public TypeDescriptor<E> getDefaultType() {
-        return new TypeDescriptor(Enum.class);
+        return (TypeDescriptor<E>) TypeDescriptor.ENUM;
     }
 
 

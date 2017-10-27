@@ -1,14 +1,46 @@
 package com.masyaman.datapack.reflection;
 
+import com.masyaman.datapack.annotations.deserialization.AsJson;
+import com.masyaman.datapack.annotations.deserialization.TypeFieldName;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
+import java.util.*;
 
 public class TypeDescriptor<T> {
 
+    public static final TypeDescriptor<String> JSON = new TypeDescriptor(String.class, new AsJson.Instance());
+    public static final TypeDescriptor<String> JSON_WITH_TYPES = new TypeDescriptor(String.class, new AsJson.Instance(false), new TypeFieldName.Instance("type"));
+
     public static final TypeDescriptor<Object> OBJECT = new TypeDescriptor<>(Object.class);
     public static final TypeDescriptor<String> STRING = new TypeDescriptor<>(String.class);
+    public static final TypeDescriptor<Date> DATE = new TypeDescriptor<>(Date.class);
+
+    public static final TypeDescriptor<Enum> ENUM = new TypeDescriptor<>(Enum.class);
     public static final TypeDescriptor<Long> LONG = new TypeDescriptor<>(Long.class);
+    public static final TypeDescriptor<Integer> INTEGER = new TypeDescriptor<>(Integer.class);
+    public static final TypeDescriptor<Double> DOUBLE = new TypeDescriptor<>(Double.class);
+
+    public static final TypeDescriptor<Collection> COLLECTION = new TypeDescriptor<>(Collection.class);
+
+    public static final TypeDescriptor<List> LIST = new TypeDescriptor<>(List.class);
+    public static final TypeDescriptor<LinkedList> LINKED_LIST = new TypeDescriptor<>(LinkedList.class);
+    public static final TypeDescriptor<ArrayList> ARRAY_LIST = new TypeDescriptor<>(ArrayList.class);
+
+    public static final TypeDescriptor<Set> SET = new TypeDescriptor<>(Set.class);
+    public static final TypeDescriptor<HashSet> HASH_SET = new TypeDescriptor<>(HashSet.class);
+    public static final TypeDescriptor<TreeSet> TREE_SET = new TypeDescriptor<>(TreeSet.class);
+    public static final TypeDescriptor<LinkedHashSet> LINKED_HASH_SET = new TypeDescriptor<>(LinkedHashSet.class);
+
+    public static final TypeDescriptor<Map> MAP = new TypeDescriptor<>(Map.class);
+    public static final TypeDescriptor<HashMap> HASH_MAP = new TypeDescriptor<>(HashMap.class);
+    public static final TypeDescriptor<TreeMap> TREE_MAP = new TypeDescriptor<>(TreeMap.class);
+    public static final TypeDescriptor<LinkedHashMap> LINKED_HASH_MAP = new TypeDescriptor<>(LinkedHashMap.class);
+
+    public static final TypeDescriptor<BitSet> BIT_SET = new TypeDescriptor<>(BitSet.class);
+
+    public static final TypeDescriptor<Object[]> OBJECT_ARRAY = new TypeDescriptor<>(Object[].class);
+    public static final TypeDescriptor<String[]> STRING_ARRAY = new TypeDescriptor<>(String[].class);
 
     private Class<T> type;
     private ParameterizedType parametrizedType;
