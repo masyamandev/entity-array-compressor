@@ -2,10 +2,12 @@ package com.masyaman.datapack.compare;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeed;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedDataLoss;
+import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedInts;
 import com.masyaman.datapack.compare.objects.GpsPositionWithSpeedOptimized;
 import com.masyaman.datapack.compare.objects.protobuf.GpsPositionWithSpeed.GpsPositionWithSpeedProto;
 import com.masyaman.datapack.settings.SettingsHandler;
@@ -14,6 +16,7 @@ import com.masyaman.datapack.streams.*;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -33,36 +36,145 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompareGpsTrack {
 
-    @Test
-    public void test() throws Exception {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private List<GpsPositionWithSpeed> events;
+    private List<GpsPositionWithSpeedOptimized> eventsOptimized;
+    private List<GpsPositionWithSpeedDataLoss> eventsDataLoss;
+    private List<GpsPositionWithSpeed> eventsDiff;
+    private List<GpsPositionWithSpeedInts> eventsInt;
+    private List<GpsPositionWithSpeedInts> eventsIntDiff;
+    private int warmUpCycles;
+    private int testCycles;
+
+    @Before
+    public void setUp() throws Exception {
 
         String resourceName = "/samples/gpsTrack1.csv";
-        List<GpsPositionWithSpeed> events = parseCsv(GpsPositionWithSpeed.class, resourceName);
-        List<GpsPositionWithSpeedOptimized> eventsOptimized = parseCsv(GpsPositionWithSpeedOptimized.class, resourceName);
-        List<GpsPositionWithSpeedDataLoss> eventsDataLoss = parseCsv(GpsPositionWithSpeedDataLoss.class, resourceName);
+        events = parseCsv(GpsPositionWithSpeed.class, resourceName);
+        eventsOptimized = parseCsv(GpsPositionWithSpeedOptimized.class, resourceName);
+        eventsDataLoss = parseCsv(GpsPositionWithSpeedDataLoss.class, resourceName);
+
+        eventsDiff = new ArrayList<>();
+        eventsDiff.add(events.get(0));
+        for (int i = 1; i < events.size(); i++) {
+            GpsPositionWithSpeed prev = events.get(i - 1);
+            GpsPositionWithSpeed next = events.get(i);
+            GpsPositionWithSpeed event = new GpsPositionWithSpeed();
+            event.setLat(next.getLat() - prev.getLat());
+            event.setLon(next.getLon() - prev.getLon());
+            event.setSpeed(next.getSpeed() - prev.getSpeed());
+            event.setTimestamp(next.getTimestamp() - prev.getTimestamp());
+            eventsDiff.add(event);
+        }
+
+        eventsInt = new ArrayList<>();
+        for (GpsPositionWithSpeed event : events) {
+            eventsInt.add(new GpsPositionWithSpeedInts(event));
+        }
+
+        eventsIntDiff = new ArrayList<>();
+        for (GpsPositionWithSpeed event : eventsDiff) {
+            eventsIntDiff.add(new GpsPositionWithSpeedInts(event));
+        }
 
         System.out.println("Got " + events.size() + " objects of type " + events.get(0).getClass().getSimpleName());
 
-        testSerialization("BinaryStream", binarySerialize(true), events);
-        testSerialization("BinaryOptimized", binarySerialize(true), eventsOptimized);
-        testSerialization("BinaryDataLoss", binarySerialize(false), eventsDataLoss);
-        testSerialization("MultiGzipStream", multiGzipSerialize(true), events);
-        testSerialization("MultiGzipOptimized", multiGzipSerialize(true), eventsOptimized);
-        testSerialization("MultiGzipDataLoss", multiGzipSerialize(false), eventsDataLoss);
-        testSerialization("BufferedStream32k", bufferedSerialize(32000, true), events);
-        testSerialization("BufferedOptimized32k", bufferedSerialize(32000, true), eventsOptimized);
-        testSerialization("BufferedDataLoss32k", bufferedSerialize(32000, false), eventsDataLoss);
-        testSerialization("BufferedStream1k", bufferedSerialize(1000, true), events);
-        testSerialization("BufferedOptimized1k", bufferedSerialize(1000, true), eventsOptimized);
-        testSerialization("BufferedDataLoss1k", bufferedSerialize(1000, false), eventsDataLoss);
+        warmUpCycles = 0;
+        testCycles = 1;
+    }
+
+    @Test
+    public void compareSerialization() throws Exception {
+        warmUp();
+
+        testSerialization("BinaryStream", binarySerialize(false, false), events);
+        testSerialization("BinaryOptimized", binarySerialize(false, false), eventsOptimized);
+        testSerialization("BinaryDataLoss", binarySerialize(false, false), eventsDataLoss);
+        //testSerialization("BinaryInt", binarySerialize(false, false), eventsInt);
+        //testSerialization("BinaryIntDiff", binarySerialize(false, false), eventsIntDiff);
+        testSerialization("BufferedStream32k", bufferedSerialize(32000, false, false), events);
+        testSerialization("BufferedOptimized32k", bufferedSerialize(32000, false, false), eventsOptimized);
+        testSerialization("BufferedDataLoss32k", bufferedSerialize(32000, false, false), eventsDataLoss);
+        //testSerialization("BufferedInt32k", bufferedSerialize(32000, false, false), eventsInt);
+        //testSerialization("BufferedIntDiff32k", bufferedSerialize(32000, false, false), eventsIntDiff);
+        testSerialization("BufferedStream1k", bufferedSerialize(1000, false, false), events);
+        testSerialization("BufferedOptimized1k", bufferedSerialize(1000, false, false), eventsOptimized);
+        testSerialization("BufferedDataLoss1k", bufferedSerialize(1000, false, false), eventsDataLoss);
+        //testSerialization("BufferedInt1k", bufferedSerialize(1000, false, false), eventsInt);
+        //testSerialization("BufferedIntDiff1k", bufferedSerialize(1000, false, false), eventsIntDiff);
+        testSerialization("MultiGzipExperimentalStream", multiGzipSerialize(false, false), events);
+        testSerialization("MultiGzipExperimentalOptimized", multiGzipSerialize(false, false), eventsOptimized);
+        testSerialization("MultiGzipExperimentalDataLoss", multiGzipSerialize(false, false), eventsDataLoss);
+        //testSerialization("MultiGzipExperimentalInt", multiGzipSerialize(false, false), eventsInt);
+        //testSerialization("MultiGzipExperimentalIntDiff", multiGzipSerialize(false, false), eventsIntDiff);
         testSerialization("Csv", csvSerialize(), events);
         testSerialization("Json", jsonSerialize(), events);
         testSerialization("Smile", smileSerialize(), events);
         testSerialization("KryoAll", kryoSerializeAll(), events);
         testSerialization("KryoByOne", kryoSerializeByOne(), events);
-        testSerialization("Protobuf", protobufSerialize(), events);
+        //testSerialization("Protobuf", protobufSerialize(), events);
+        testSerialization("CsvDiff", csvSerialize(), eventsDiff);
+        testSerialization("JsonDiff", jsonSerialize(), eventsDiff);
+        testSerialization("SmileDiff", smileSerialize(), eventsDiff);
+        testSerialization("KryoAllDiff", kryoSerializeAll(), eventsDiff);
+        testSerialization("KryoByOneDiff", kryoSerializeByOne(), eventsDiff);
+        //testSerialization("ProtobufDiff", protobufSerialize(), eventsDiff);
+        testSerialization("CsvInt", csvSerialize(), eventsInt);
+        testSerialization("JsonInt", jsonSerialize(), eventsInt);
+        testSerialization("SmileInt", smileSerialize(), eventsInt);
+        testSerialization("KryoAllInt", kryoSerializeAll(), eventsInt);
+        testSerialization("KryoByOneInt", kryoSerializeByOne(), eventsInt);
+        testSerialization("ProtobufInt", protobufSerialize(), eventsInt);
+        testSerialization("CsvIntDiff", csvSerialize(), eventsIntDiff);
+        testSerialization("JsonIntDiff", jsonSerialize(), eventsIntDiff);
+        testSerialization("SmileIntDiff", smileSerialize(), eventsIntDiff);
+        testSerialization("KryoAllIntDiff", kryoSerializeAll(), eventsIntDiff);
+        testSerialization("KryoByOneIntDiff", kryoSerializeByOne(), eventsIntDiff);
+        testSerialization("ProtobufIntDiff", protobufSerialize(), eventsIntDiff);
     }
 
+    @Test
+    public void testDeserialization() throws Exception {
+        testSerialization("BinaryStream", binarySerialize(true, true), events);
+        testSerialization("BinaryOptimized", binarySerialize(true, true), eventsOptimized);
+        testSerialization("BufferedStream32k", bufferedSerialize(32000, true, true), events);
+        testSerialization("BufferedOptimized32k", bufferedSerialize(32000, true, true), eventsOptimized);
+        testSerialization("BufferedStream1k", bufferedSerialize(1000, true, true), events);
+        testSerialization("BufferedOptimized1k", bufferedSerialize(1000, true, true), eventsOptimized);
+        testSerialization("MultiGzipExperimentalStream", multiGzipSerialize(true, true), events);
+        testSerialization("MultiGzipExperimentalOptimized", multiGzipSerialize(true, true), eventsOptimized);
+    }
+
+    @Test
+    public void timeSimpleDeserialization() throws Exception {
+        warmUp();
+
+        testSerialization("Json", jsonSerializeDeserialize(new TypeReference<List<GpsPositionWithSpeed>>() {}), events);
+        testSerialization("JsonInt", jsonSerializeDeserialize(new TypeReference<List<GpsPositionWithSpeedInts>>() {}), eventsInt);
+        testSerialization("JsonIntDiff", jsonSerializeDeserialize(new TypeReference<List<GpsPositionWithSpeedInts>>() {}), eventsIntDiff);
+        testSerialization("BinaryStream", binarySerialize(true, false), events);
+        //testSerialization("BinaryOptimized", binarySerialize(true, false), eventsOptimized);
+        testSerialization("BinaryInt", binarySerialize(true, false), eventsInt);
+        //testSerialization("BinaryIntDiff", binarySerialize(true, false), eventsIntDiff);
+        testSerialization("BufferedStream32k", bufferedSerialize(32000, true, false), events);
+        //testSerialization("BufferedOptimized32k", bufferedSerialize(32000, true, false), eventsOptimized);
+        testSerialization("BufferedStream32kInt", bufferedSerialize(32000, true, false), eventsInt);
+        //testSerialization("BufferedStream32kIntDiff", bufferedSerialize(32000, true, false), eventsIntDiff);
+        testSerialization("BufferedStream1k", bufferedSerialize(1000, true, false), events);
+        //testSerialization("BufferedOptimized1k", bufferedSerialize(1000, true, false), eventsOptimized);
+        testSerialization("BufferedStream1kInt", bufferedSerialize(1000, true, false), eventsInt);
+        //testSerialization("BufferedStream1kIntDiff", bufferedSerialize(1000, true, false), eventsIntDiff);
+        testSerialization("MultiGzipExperimentalStream", multiGzipSerialize(true, false), events);
+        //testSerialization("MultiGzipExperimentalOptimized", multiGzipSerialize(true, false), eventsOptimized);
+        testSerialization("MultiGzipExperimentalStreamInt", multiGzipSerialize(true, false), eventsInt);
+        //testSerialization("MultiGzipExperimentalStreamIntDiff", multiGzipSerialize(true, false), eventsIntDiff);
+    }
+
+    private void warmUp() {
+//        warmUpCycles = 50;
+//        testCycles = 20;
+    }
 
     private static DataSerializer csvSerialize() throws Exception {
         return e -> {
@@ -92,6 +204,14 @@ public class CompareGpsTrack {
 
     private static DataSerializer jsonSerialize() throws Exception {
         return e -> new ObjectMapper().writeValueAsBytes(e);
+    }
+
+    private static DataSerializer jsonSerializeDeserialize(TypeReference typeReference) throws Exception {
+        return e -> {
+            byte[] bytes = OBJECT_MAPPER.writeValueAsBytes(e);
+            assertThat((Iterable<?>) OBJECT_MAPPER.readValue(bytes, typeReference)).isEqualTo(e);
+            return bytes;
+        };
     }
 
     private static DataSerializer smileSerialize() throws Exception {
@@ -126,11 +246,14 @@ public class CompareGpsTrack {
         return e -> {
             try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
                 for (Object o : e) {
-                    GpsPositionWithSpeed pos = (GpsPositionWithSpeed) o;
+                    GpsPositionWithSpeedInts pos = (GpsPositionWithSpeedInts) o;
                     GpsPositionWithSpeedProto proto = GpsPositionWithSpeedProto.newBuilder()
-                                    .setLat((int) Math.round(pos.getLat() * 1000000))
-                                    .setLon((int) Math.round(pos.getLon() * 1000000))
-                                    .setSpeed((int) Math.round(pos.getSpeed() * 10))
+//                                    .setLat((int) Math.round(pos.getLat() * 1000000))
+//                                    .setLon((int) Math.round(pos.getLon() * 1000000))
+//                                    .setSpeed((int) Math.round(pos.getSpeed() * 10))
+                                    .setLat(pos.getLat())
+                                    .setLon(pos.getLon())
+                                    .setSpeed(pos.getSpeed())
                                     .setTs(pos.getTimestamp())
                                     .build();
                     proto.writeTo(byteStream);
@@ -140,7 +263,7 @@ public class CompareGpsTrack {
         };
     }
 
-    private static DataSerializer binarySerialize(boolean testDeserialization) throws Exception {
+    private static DataSerializer binarySerialize(boolean testDeserialization, boolean testToJson) throws Exception {
         return e -> {
             byte[] serialized;
             try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
@@ -161,23 +284,25 @@ public class CompareGpsTrack {
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
-                try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                if (testToJson) {
+                    try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
-                }
-                try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    try (ObjectReader objectReader = new SerialDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON_WITH_TYPES);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
                 }
             }
 
@@ -185,7 +310,7 @@ public class CompareGpsTrack {
         };
     }
 
-    private static DataSerializer bufferedSerialize(int bufferSize, boolean testDeserialization) throws Exception {
+    private static DataSerializer bufferedSerialize(int bufferSize, boolean testDeserialization, boolean testToJson) throws Exception {
         return e -> {
             SettingsHandler settings = new SettingsHandler()
                     .set(SettingsKeys.BYTE_BUFFER_SIZE, bufferSize);
@@ -208,23 +333,25 @@ public class CompareGpsTrack {
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
-                try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                if (testToJson) {
+                    try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
-                }
-                try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    try (ObjectReader objectReader = new BufferedDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON_WITH_TYPES);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
                 }
             }
 
@@ -232,7 +359,7 @@ public class CompareGpsTrack {
         };
     }
 
-    private static DataSerializer multiGzipSerialize(boolean testDeserialization) throws Exception {
+    private static DataSerializer multiGzipSerialize(boolean testDeserialization, boolean testToJson) throws Exception {
         return e -> {
             byte[] serialized;
             try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
@@ -253,23 +380,25 @@ public class CompareGpsTrack {
                     }
                     assertThat(objectReader.hasObjects()).isFalse();
                 }
-                try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                if (testToJson) {
+                    try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
-                }
-                try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
-                    for (Object event : e) {
-                        assertThat(objectReader.hasObjects()).isTrue();
-                        String deserialized = objectReader.readObject(JSON_WITH_TYPES);
-                        assertThat(deserialized).isNotEmpty();
-                        assertThat(new ObjectMapper().readValue(deserialized, Object.class)).isNotNull();
+                    try (ObjectReader objectReader = new MultiGzipDataReader(new ByteArrayInputStream(serialized))) {
+                        for (Object event : e) {
+                            assertThat(objectReader.hasObjects()).isTrue();
+                            String deserialized = objectReader.readObject(JSON_WITH_TYPES);
+                            assertThat(deserialized).isNotEmpty();
+                            assertThat(OBJECT_MAPPER.readValue(deserialized, Object.class)).isNotNull();
+                        }
+                        assertThat(objectReader.hasObjects()).isFalse();
                     }
-                    assertThat(objectReader.hasObjects()).isFalse();
                 }
             }
 
@@ -278,13 +407,24 @@ public class CompareGpsTrack {
     }
 
 
-    private static void testSerialization(String name, DataSerializer dataSerializer, List<?> data) throws Exception {
+    private void testSerialization(String name, DataSerializer dataSerializer, List<?> data) throws Exception {
 //        System.out.println("\n\n");
 
-        byte[] allBytes = dataSerializer.serialize(data);
+        for (int i = 0; i < warmUpCycles; i++) {
+            dataSerializer.serialize(data);
+        }
+
+        byte[] allBytes = null;
+        long start = System.nanoTime();
+        for (int i = 0; i < testCycles; i++) {
+            allBytes = dataSerializer.serialize(data);
+        }
+        long finish = System.nanoTime();
+        long time = (finish - start) / testCycles;
+
         byte[] gzipAllBytes = gzipBytes(allBytes);
-        System.out.println(String.format("Serializer %s, serialized size %s, compressed %s",
-                name, allBytes.length, gzipAllBytes.length));
+        System.out.println(String.format("Serializer %s, time %s ms, serialized size %s, compressed %s",
+                name, time / 1000000 + "." + time % 1000000, allBytes.length, gzipAllBytes.length));
         String allBytesAsString = new String(allBytes);
 
         if (false) {
