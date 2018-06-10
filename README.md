@@ -120,6 +120,8 @@ class may not be required during deserialization, data stream can be converted i
 Here is a list of available serialization factories in package `com.masyaman.datapack.serializers`. All serializers are
 null-friendly.
 
+* `booleans` - Stores boolean values (true, false, null).
+  * `BooleanSerializationFactory` - Default serializer for all booleans.
 * `numbers` - Stores singed or unsigned Long. Values are stored as fixed-points Longs. Doubles are prescaled to Longs with 
   specified precisions (by default 6 decimal digits).
   * `NumberDiffSerializationFactory` - Default serializer for all numbers. During serialization it saves difference to 
@@ -169,13 +171,18 @@ null-friendly.
 
 ## Caching
 
-If the same object is serialized several times it may worth to use serializer with caching suppurt. In this case when object is serialized for the first time it will be serialized only once and added to cache list, when it's aimed to be serialized for the next time then only cache id will be written instead of serializing whole oblect. Good candidates for caching are Strings, enums and immutable objects.
+If the same object is serialized several times it may worth to use serializer with caching support. In this case when object 
+is serialized for the first time it will be serialized only once and added to cache list, when it's aimed to be serialized
+for the next time then only cache id will be written instead of serializing whole object. Good candidates for caching are 
+Strings, enums and immutable objects.
 
 There are two basic caching algorithms.
 
 ### Simple caching
 
-Add tail caching strategy. When element is added to cache, it's added to the tail of the list. So, index of cached object remains the same until cache size limit is reached and object is pushed out by another object. This cache algorithm could be good for a small amount of different objects.
+Add tail caching strategy. When element is added to cache, it's added to the tail of the list. So, index of cached object 
+remains the same until cache size limit is reached and object is pushed out by another object. This cache algorithm could 
+be good for a small amount of different objects.
 
 Here is an example of using this cache:
 ```
@@ -201,11 +208,14 @@ $ push "AAA"
 // Cache: ["AAA", "DDD", "CCC"]
 ```
 
-This cahce algorithm is used in the following serializers: `StringConstantsSerializationFactory`, `EnumsConstantsSerializationFactory`
+This cache algorithm is used in the following serializers: `StringConstantsSerializationFactory`, 
+`EnumsConstantsSerializationFactory`
 
 ### Latest first caching
 
-When new element is added, it's added to the head of a list. When object is used and it's already in the cache list, it's moved th the head. This approach keeps recent and most often used objects near the head of the list. This cache algorithm could be good in case of mixing up oftely used object and objects used only once.
+When new element is added, it's added to the head of a list. When object is used and it's already in the cache list, it's 
+moved th the head. This approach keeps recent and most often used objects near the head of the list. This cache algorithm 
+could be good in case of mixing up frequently used object and objects used only once.
 
 Here is an example of using this cache:
 ```
@@ -231,7 +241,8 @@ $ push "AAA"
 // Cache: ["AAA", "DDD", "CCC"]
 ```
 
-This cache algorithm is used in the following serializers: `StringCachedSerializationFactory`, `EnumsSerializationFactory`, `UnknownTypeCachedSerializationFactory`
+This cache algorithm is used in the following serializers: `StringCachedSerializationFactory`, `EnumsSerializationFactory`,
+`UnknownTypeCachedSerializationFactory`
 
 
 # Format description
@@ -244,7 +255,7 @@ There are several types of primitives:
   depending on it's value. Smaller values uses less space. In average one byte contains 7 effective bits. Thus signed 
   values in range -63..63 are saved as 1 byte, -8192..8191 as 2 bytes, -1m..1m as 3 bytes and so on. Any long value 
   could be saved as 9 bytes or less. With such approach there is no need for special handling of 32 bits Integers, 
-  Shorts, Bytes etc: small values requires less space. Such coding is also null-friendly. Single-byted value -64 is 
+  Shorts, Bytes etc: small values requires less space. Such coding is also null-friendly. Single-byte value -64 is 
   reserved for nulls.
 * Unsigned Longs are also supported and used mostly for storing IDs. Coding is almost the same as signed, but sign bit 
   is used to save bigger values. Thus values in range 0..126 requires 1 byte, 127..16383 2 bytes etc. Single-byte value 
