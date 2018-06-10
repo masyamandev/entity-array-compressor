@@ -16,6 +16,7 @@ public class TypeDescriptor<T> {
     public static final TypeDescriptor<String> STRING = new TypeDescriptor<>(String.class);
     public static final TypeDescriptor<Date> DATE = new TypeDescriptor<>(Date.class);
 
+    public static final TypeDescriptor<Boolean> BOOLEAN = new TypeDescriptor<>(Boolean.class);
     public static final TypeDescriptor<Enum> ENUM = new TypeDescriptor<>(Enum.class);
     public static final TypeDescriptor<Long> LONG = new TypeDescriptor<>(Long.class);
     public static final TypeDescriptor<Integer> INTEGER = new TypeDescriptor<>(Integer.class);

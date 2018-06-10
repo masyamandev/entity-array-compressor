@@ -123,6 +123,10 @@ public class SerializationFactoryLookupTest extends TestCase {
         // Default constructor
         objects.add(create(typeDescriptor.getType()));
 
+        // Add Booleans
+        objects.add(create(typeDescriptor.getType(), true));
+        objects.add(create(typeDescriptor.getType(), false));
+
         // Add Integers
         objects.add(create(typeDescriptor.getType(), 0));
         objects.add(create(typeDescriptor.getType(), 1));

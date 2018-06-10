@@ -172,6 +172,29 @@ public class ObjectSerializationFactoryTest {
     }
 
     @Test
+    public void testSerializationWithBooleans() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new BooleanFields(true, true));
+        dw.writeObject(new BooleanFields(false, false));
+        dw.writeObject(new BooleanFields(false, null));
+        dw.writeObject(Boolean.TRUE);
+        dw.writeObject(Boolean.FALSE);
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        assertThat(dr.readObject()).isEqualTo(new BooleanFields(true, true));
+        assertThat(dr.readObject()).isEqualTo(new BooleanFields(false, false));
+        assertThat(dr.readObject()).isEqualTo(new BooleanFields(false, null));
+        assertThat(dr.readObject()).isEqualTo(Boolean.TRUE);
+        assertThat(dr.readObject()).isEqualTo(Boolean.FALSE);
+        assertThat(dr.readObject()).isNull();
+    }
+
+    @Test
     public void testSerializationWithCollections() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         DataWriter dw = new SerialDataWriter(os);

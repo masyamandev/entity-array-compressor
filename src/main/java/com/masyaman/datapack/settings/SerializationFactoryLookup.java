@@ -2,6 +2,7 @@ package com.masyaman.datapack.settings;
 
 import com.masyaman.datapack.reflection.TypeDescriptor;
 import com.masyaman.datapack.serializers.SerializationFactory;
+import com.masyaman.datapack.serializers.booleans.BooleanSerializationFactory;
 import com.masyaman.datapack.serializers.collections.BitSetSerializationFactory;
 import com.masyaman.datapack.serializers.collections.CollectionSerializationFactory;
 import com.masyaman.datapack.serializers.collections.MapSerializationFactory;
@@ -25,6 +26,7 @@ import java.util.*;
 public class SerializationFactoryLookup {
 
     static List<SerializationFactory> DEFAULT_FACTORIES = Arrays.asList(
+            BooleanSerializationFactory.INSTANCE,
             NumberDiffSerializationFactory.INSTANCE,
             NumberIncrementalSerializationFactory.INSTANCE,
             NumberLinearSerializationFactory.INSTANCE,
@@ -62,6 +64,10 @@ public class SerializationFactoryLookup {
             case "java.lang.String":
                 return StringSerializationFactory.INSTANCE;
 
+            case "boolean":
+            case "java.lang.Boolean":
+                return BooleanSerializationFactory.INSTANCE;
+
             case "int":
             case "java.lang.Integer":
             case "long":
@@ -72,8 +78,6 @@ public class SerializationFactoryLookup {
             case "java.lang.Float":
                 return NumberDiffSerializationFactory.INSTANCE;
 
-            case "boolean":
-            case "java.lang.Boolean":
             case "byte":
             case "java.lang.Byte":
             case "char":

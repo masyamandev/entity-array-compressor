@@ -128,6 +128,8 @@ public class DataWriterReaderTest extends TestCase {
         dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
         dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
         dw.writeObject(new IgnoredFields("xx", "yy"));
+        dw.writeObject(new BooleanFields(true, false));
+        dw.writeObject(new BooleanFields(false, null));
         dw.writeObject(null);
 
         byte[] bytes = os.toByteArray();
@@ -141,9 +143,66 @@ public class DataWriterReaderTest extends TestCase {
         assertThat(mapper.readValue(dr.readObject(JSON), LatLonTsTz.class))
                 .isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
 
-        assertThat(dr.readObject(JSON)).contains("\"alt\":3.3");
+        String latLonAlt = dr.readObject(JSON);
+        assertThat(latLonAlt).contains("\"lat\":1.1");
+        assertThat(latLonAlt).contains("\"lon\":2.2");
+        assertThat(latLonAlt).contains("\"alt\":3.3");
+        assertThat(latLonAlt).contains("\"tsTz\":null");
+
         assertThat(dr.readObject(JSON)).isEqualTo("{\"stored\":\"yy\"}");
+
+        String booleans = dr.readObject(JSON);
+        assertThat(booleans.contains("\"primitive\":true"));
+        assertThat(booleans.contains("\"wrapper\":false"));
+
+        String booleansWithNull = dr.readObject(JSON);
+        assertThat(booleansWithNull.contains("\"primitive\":false"));
+        assertThat(booleansWithNull.contains("\"wrapper\":null"));
+
         assertThat(dr.readObject(JSON)).isNull();
+    }
+
+    @Test
+    public void testObjectDeserializationAsJsonNumbersAsStrings() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        DataWriter dw = new SerialDataWriter(os);
+        dw.writeObject(new ArrayFields(new Object[] {1, 1L, 1D}, new String[] {"A", "B"}));
+        dw.writeObject(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+        dw.writeObject(new LatLonTsTz(new LatLonAlt(1.1, 2.2, 3.3), null));
+        dw.writeObject(new IgnoredFields("xx", "yy"));
+        dw.writeObject(new BooleanFields(true, false));
+        dw.writeObject(new BooleanFields(false, null));
+        dw.writeObject(null);
+
+        byte[] bytes = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        DataReader dr = new SerialDataReader(is);
+        ObjectMapper mapper = new ObjectMapper();
+
+        TypeDescriptor<String> json = new TypeDescriptor(String.class, new AsJson.Instance(true));
+        assertThat(mapper.readValue(dr.readObject(json), ArrayFields.class))
+                .isEqualTo(new ArrayFields(new Object[] {"1", "1", "1.0"}, new String[] {"A", "B"})); // No Long here
+        assertThat(mapper.readValue(dr.readObject(json), LatLonTsTz.class))
+                .isEqualTo(new LatLonTsTz(new LatLon(1.1, 2.2), new TsTz(100000L, 234)));
+
+        String latLonAlt = dr.readObject(json);
+        assertThat(latLonAlt).contains("\"lat\":\"1.1\"");
+        assertThat(latLonAlt).contains("\"lon\":\"2.2\"");
+        assertThat(latLonAlt).contains("\"alt\":\"3.3\"");
+        assertThat(latLonAlt).contains("\"tsTz\":null");
+
+        assertThat(dr.readObject(json)).isEqualTo("{\"stored\":\"yy\"}");
+
+        String booleans = dr.readObject(json);
+        assertThat(booleans.contains("\"primitive\":\"true\""));
+        assertThat(booleans.contains("\"wrapper\":\"false\""));
+
+        String booleansWithNull = dr.readObject(json);
+        assertThat(booleansWithNull.contains("\"primitive\":\"false\""));
+        assertThat(booleansWithNull.contains("\"wrapper\":null"));
+
+        assertThat(dr.readObject(json)).isNull();
     }
 
     @Test
