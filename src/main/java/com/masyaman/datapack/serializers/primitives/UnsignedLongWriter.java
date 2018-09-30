@@ -5,6 +5,8 @@ import com.masyaman.datapack.serializers.Serializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static com.masyaman.datapack.serializers.primitives.Constants.*;
+
 public class UnsignedLongWriter implements Serializer<Long> {
 
     private OutputStream os;
@@ -16,24 +18,25 @@ public class UnsignedLongWriter implements Serializer<Long> {
     @Override
     public void serialize(Long l) throws IOException {
         if (l == null) {
-           os.write(0x7F); // 127 in single byte representation
+           os.write(NULL_VALUE);
            return;
         }
-        int minBytes = l >= 127 ? 2 : 1; // preserve 127 for 1-byte null value
-        for (int i = minBytes; i <= 8; i++) {
-            int shift = 64 - 7 * i;
-            if ((l & ~(0x8000000000000000L >> (shift - 1))) == l) {
-                int prefix = 0xFFFFFF00 >> (i - 1);
-                os.write((byte) (prefix | (l >> ((i - 1) * 8)) & ~(prefix >> 1)));
-                for (int j = i - 2; j >= 0; j--) {
-                    os.write((byte) (l >> (j * 8)));
-                }
-                return;
+
+        long value = l;
+
+        if (value == NULL_VALUE) {
+            os.write(0xFF);
+            os.write(0);
+            return;
+        }
+
+        do {
+            long next = value & SEVEN_BITS_MASK;
+            value = (value >>> 7);// & BIT_MASK;
+            if (value != 0L) {
+                next |= MORE_BYTES_MASK;
             }
-        }
-        os.write(0xFF);
-        for (int i = 0; i < 8; i++) {
-            os.write((byte) (l >> (56 - i * 8)));
-        }
+            os.write((byte) next);
+        } while (value != 0L);
     }
 }

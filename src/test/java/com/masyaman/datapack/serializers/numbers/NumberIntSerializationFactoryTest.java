@@ -19,6 +19,19 @@ public class NumberIntSerializationFactoryTest {
     public static final SerializationFactory FACTORY = NumberSerializationFactory.INSTANCE;
 
     @Test
+    public void test() throws Exception {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);
+        byte[] serializerBytes = os.toByteArray();
+            serializer.serialize(-64);
+        byte[] bytes = os.toByteArray();
+//        assertThat(bytes).hasSize(serializerBytes.length + 63 * 2 + 1);
+
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        Deserializer<Integer> deserializer = FACTORY.createDeserializer(new SerialDataReader(is));
+            assertThat(deserializer.deserialize(INTEGER)).isEqualTo(-64);
+    }
+    @Test
     public void testInt8Bits() throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Serializer<Integer> serializer = FACTORY.createSerializer(new SerialDataWriter(os), INTEGER);

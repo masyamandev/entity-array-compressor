@@ -6,6 +6,10 @@ import com.masyaman.datapack.serializers.Deserializer;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.masyaman.datapack.serializers.primitives.Constants.MORE_BYTES_MASK;
+import static com.masyaman.datapack.serializers.primitives.Constants.NULL_VALUE;
+import static com.masyaman.datapack.serializers.primitives.Constants.SEVEN_BITS_MASK;
+
 public class UnsignedLongReader implements Deserializer<Long> {
 
     private InputStream is;
@@ -17,16 +21,17 @@ public class UnsignedLongReader implements Deserializer<Long> {
     @Override
     public Long deserialize(TypeDescriptor unused) throws IOException {
         int b = is.read();
-        if (b == 0x7F) {
-            return null; // -64 in single byte representation
+
+        if (b == NULL_VALUE) {
+            return null;
         }
+
         int bytesToRead = 0;
-        while ((b & (0x80 >> bytesToRead)) != 0) {
+        long result = b & SEVEN_BITS_MASK;
+        while ((b & MORE_BYTES_MASK) != 0) {
             bytesToRead++;
-        }
-        long result = b & ~(0xFFFFFF80 >> bytesToRead);
-        for (int i = 0; i < bytesToRead; i++) {
-            result = (result << 8) | is.read();
+            b = is.read();
+            result |= (b & SEVEN_BITS_MASK) << (7 * bytesToRead);
         }
         return result;
     }

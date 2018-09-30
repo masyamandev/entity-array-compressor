@@ -6,6 +6,8 @@ import com.masyaman.datapack.serializers.Deserializer;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.masyaman.datapack.serializers.primitives.Constants.*;
+
 public class SignedLongReader implements Deserializer<Long> {
 
     private InputStream is;
@@ -17,21 +19,23 @@ public class SignedLongReader implements Deserializer<Long> {
     @Override
     public Long deserialize(TypeDescriptor unused) throws IOException {
         int b = is.read();
-        if (b == 0x40) {
-            return null; // -64 in single byte representation
+
+        if (b == NULL_VALUE) {
+            return null;
         }
+
         int bytesToRead = 0;
-        while ((b & (0x80 >> bytesToRead)) != 0) {
+        long result = b & SEVEN_BITS_MASK;
+        while ((b & MORE_BYTES_MASK) != 0) {
             bytesToRead++;
+            b = is.read();
+            result |= (b & SEVEN_BITS_MASK) << (7 * bytesToRead);
         }
-        long result = b & ~(0xFFFFFF80 >> bytesToRead);
-        for (int i = 0; i < bytesToRead; i++) {
-            result = (result << 8) | is.read();
+
+        if ((b & NEGATIVE_BYTE_MASK) != 0) {
+            result = (~result) | (NEGATIVE_BYTE_MASK << (7 * bytesToRead));
         }
-        if (bytesToRead < 8) {
-            int shift = 64 - 7 * (bytesToRead + 1);
-            result = (result << shift) >> shift;
-        }
+
         return result;
     }
 }
